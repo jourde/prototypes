@@ -1264,11 +1264,12 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
         // Markdown generation - shared core logic
         function generateMarkdownContent() {
             const name = document.getElementById('name').value || 'Persona';
-            let md = `# Profil Persona : ${name}\n`;
-            md += `> Contexte : Éducation nationale / Académie de Guyane\n`;
-            md += `> Date : ${new Date().toLocaleDateString()}\n\n`;
-
             const isGuyane = document.getElementById('contextToggle').checked;
+            let md = `# Profil Persona : ${name}\n`;
+            md += isGuyane
+                ? `> Contexte : Éducation nationale / Académie de Guyane\n`
+                : `> Contexte : Éducation nationale\n`;
+            md += `> Date : ${new Date().toLocaleDateString()}\n\n`;
 
             // Helper to process a specific DOM element (form-group or checkbox-group)
             // Using textContent instead of innerText to avoid costly reflows
