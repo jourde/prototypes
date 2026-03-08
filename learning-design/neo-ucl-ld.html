@@ -315,13 +315,25 @@ select:focus-visible,
   font-size: 22px;
 }
 
-.analysis-warning {
-  border: 1px solid #e9d897;
-  background: #f6ecc9;
-  color: #6b4c14;
-  border-radius: 5px;
-  padding: 10px 12px;
+.analysis-alerts {
+  display: grid;
+  gap: 8px;
+}
+
+.analysis-alert {
+  border: 1px solid #dbc67f;
+  background: #f4e8be;
+  color: #664e12;
+  border-radius: 10px;
+  padding: 12px 14px;
   font-size: 13px;
+  line-height: 1.35;
+}
+
+.analysis-alert.info {
+  border-color: #8eb6df;
+  background: #dfeeff;
+  color: #123f78;
 }
 
 .analysis-main-grid {
@@ -935,7 +947,7 @@ main {
     </style>
   </head>
   <body>
-    <a class="skip-link" href="#board">Aller au contenu principal</a>
+    <a id="skip-link" class="skip-link" href="#board">Aller au contenu principal</a>
     <p id="sr-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
     <section id="top-panel" class="top-panel" role="region" aria-labelledby="app-title">
       <div class="top-brand">
@@ -954,47 +966,47 @@ main {
         <div id="timeline-view" class="panel-grid" role="tabpanel" aria-labelledby="top-tab-settings">
           <div class="panel-column panel-column-left">
             <div class="form-row">
-              <label for="meta-name">Titre</label>
+              <label id="label-meta-name" for="meta-name">Titre</label>
               <input id="meta-name" class="panel-input" type="text" />
             </div>
             <div class="form-row">
-              <label>Temps d'apprentissage</label>
+              <label id="label-meta-learning">Temps d'apprentissage</label>
               <div class="time-inline">
                 <input id="meta-learning-days" class="panel-input" type="number" min="0" />
-                <span class="time-unit">jours</span>
+                <span id="unit-learning-days" class="time-unit">jours</span>
                 <input id="meta-learning-hours" class="panel-input" type="number" min="0" />
-                <span class="time-unit">heures</span>
+                <span id="unit-learning-hours" class="time-unit">heures</span>
                 <input id="meta-learning-minutes" class="panel-input" type="number" min="0" max="59" />
-                <span class="time-unit">minutes</span>
+                <span id="unit-learning-minutes" class="time-unit">minutes</span>
               </div>
             </div>
             <div class="form-row">
-              <label>Temps conçu</label>
+              <label id="label-meta-designed">Temps conçu</label>
               <div class="time-inline">
                 <input id="meta-designed-days" class="panel-input" type="number" readonly />
-                <span class="time-unit">jours</span>
+                <span id="unit-designed-days" class="time-unit">jours</span>
                 <input id="meta-designed-hours" class="panel-input" type="number" readonly />
-                <span class="time-unit">heures</span>
+                <span id="unit-designed-hours" class="time-unit">heures</span>
                 <input id="meta-designed-minutes" class="panel-input" type="number" readonly />
-                <span class="time-unit">minutes</span>
+                <span id="unit-designed-minutes" class="time-unit">minutes</span>
               </div>
             </div>
             <div class="form-row">
-              <label for="meta-day-hours">1 jour =</label>
+              <label id="label-meta-day-hours" for="meta-day-hours">1 jour =</label>
               <div class="time-inline">
                 <input id="meta-day-hours" class="panel-input" type="number" min="1" />
-                <span class="time-unit">heures</span>
+                <span id="unit-day-hours" class="time-unit">heures</span>
               </div>
             </div>
             <div class="form-row">
-              <label for="meta-description">Description</label>
+              <label id="label-meta-description" for="meta-description">Description</label>
               <div class="expandable-field">
                 <textarea id="meta-description" class="panel-textarea"></textarea>
                 <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
               </div>
             </div>
             <div class="form-row">
-              <label for="meta-command">Commande institutionnelle</label>
+              <label id="label-meta-command" for="meta-command">Commande institutionnelle</label>
               <div class="expandable-field">
                 <textarea id="meta-command" class="panel-textarea" placeholder="Collez ici la commande institutionnelle déjà définie..."></textarea>
                 <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
@@ -1003,30 +1015,30 @@ main {
           </div>
           <div class="panel-column panel-column-right">
             <div class="form-row">
-              <label for="meta-delivery">Mode</label>
+              <label id="label-meta-delivery" for="meta-delivery">Mode</label>
               <select id="meta-delivery" class="panel-select">
-                <option value="onsite">Présentiel</option>
-                <option value="online">Distanciel</option>
-                <option value="hybrid">Hybride</option>
+                <option id="opt-meta-delivery-onsite" value="onsite">Présentiel</option>
+                <option id="opt-meta-delivery-online" value="online">Distanciel</option>
+                <option id="opt-meta-delivery-hybrid" value="hybrid">Hybride</option>
               </select>
             </div>
             <div class="form-row">
-              <label for="meta-size-class">Taille du groupe</label>
+              <label id="label-meta-size-class" for="meta-size-class">Taille du groupe</label>
               <input id="meta-size-class" class="panel-input" type="number" min="1" />
             </div>
             <div class="form-row">
-              <label for="meta-designers">Concepteur(s)</label>
+              <label id="label-meta-designers" for="meta-designers">Concepteur(s)</label>
               <input id="meta-designers" class="panel-input" type="text" />
             </div>
             <div class="form-row">
-              <label for="meta-personas">Personas (profils)</label>
+              <label id="label-meta-personas" for="meta-personas">Personas (profils)</label>
               <div class="expandable-field">
                 <textarea id="meta-personas" class="panel-textarea" placeholder="Collez ici les personas (profils) déjà définis..."></textarea>
                 <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
               </div>
             </div>
             <div class="form-row">
-              <label for="meta-sliders">Curseurs</label>
+              <label id="label-meta-sliders" for="meta-sliders">Curseurs</label>
               <div class="expandable-field">
                 <textarea id="meta-sliders" class="panel-textarea" placeholder="Collez ici les curseurs déjà définis..."></textarea>
                 <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
@@ -1039,10 +1051,8 @@ main {
           </div>
         </div>
         <div id="analysis-view" class="analysis-view hidden" role="tabpanel" aria-labelledby="top-tab-analysis">
-          <h2 class="analysis-title">Expérience d’apprentissage</h2>
-          <div id="analysis-warning" class="analysis-warning hidden">
-            Le graphe social peut être imprécis: un ou plusieurs types d’apprentissage n’ont pas de taille de groupe définie.
-          </div>
+          <h2 id="analysis-title" class="analysis-title">Expérience d’apprentissage</h2>
+          <div id="analysis-alerts" class="analysis-alerts hidden" role="status" aria-live="polite" aria-atomic="false"></div>
           <div class="analysis-main-grid">
             <div class="analysis-block analysis-learning-block">
               <div id="analysis-learning-pie" class="analysis-big-pie"></div>
@@ -1118,7 +1128,7 @@ main {
         <footer class="session-footer">
           <button class="btn btn-light add-activity-btn">+ Ajouter type d'apprentissage</button>
           <div class="session-metas">
-            <span class="duration-pill"><span class="total-duration">0</span> min</span>
+            <span class="duration-pill"><span class="total-duration">0</span> <span class="duration-unit">min</span></span>
             <button class="btn btn-light toggle-session-notes-btn">Notes</button>
           </div>
         </footer>
@@ -1137,7 +1147,7 @@ main {
           <div class="activity-controls">
             <button class="choice-btn activity-type-btn" type="button"></button>
             <label class="mini-label">
-              <span class="sr-only">Durée en minutes</span>
+              <span class="sr-only activity-duration-sr-label">Durée en minutes</span>
               ⏱
               <input class="activity-duration" type="number" min="1" />
             </label>
@@ -1174,11 +1184,11 @@ main {
     <div id="info-modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="info-modal-title">
       <div class="modal">
         <h2 id="info-modal-title" class="modal-title">À propos</h2>
-        <p>Cette application web monopage s’inspire de l’UCL Learning Designer :</p>
+        <p id="info-modal-p1">Cette application web monopage s’inspire de l’UCL Learning Designer :</p>
         <p><a href="https://www.ucl.ac.uk/learning-designer/" target="_blank" rel="noopener noreferrer">https://www.ucl.ac.uk/learning-designer/</a></p>
-        <p>(UCL Knowledge Lab, UCL Institute of Education, 2013-2026).</p>
-        <p>Traitement local : toutes les données restent dans votre navigateur ; aucune donnée n’est transmise en ligne.</p>
-        <p>François Jourde (2026) • CC BY-SA<br />Code source : <a href="https://github.com/jourde/learning-designer" target="_blank" rel="noopener noreferrer">https://github.com/jourde/learning-designer</a></p>
+        <p id="info-modal-p2">(UCL Knowledge Lab, UCL Institute of Education, 2013-2026).</p>
+        <p id="info-modal-p3">Traitement local : toutes les données restent dans votre navigateur ; aucune donnée n’est transmise en ligne.</p>
+        <p id="info-modal-p4">François Jourde (2026) • CC BY-SA<br />Code source : <a href="https://github.com/jourde/learning-designer" target="_blank" rel="noopener noreferrer">https://github.com/jourde/learning-designer</a></p>
         <div class="modal-actions">
           <button id="info-modal-close-btn" class="btn btn-primary" type="button">Fermer</button>
         </div>
@@ -1525,7 +1535,7 @@ const metaPersonasInput = document.getElementById("meta-personas");
 const metaSlidersInput = document.getElementById("meta-sliders");
 const topPie = document.getElementById("top-pie");
 const topLegend = document.getElementById("top-legend");
-const analysisWarning = document.getElementById("analysis-warning");
+const analysisAlerts = document.getElementById("analysis-alerts");
 const analysisLearningPie = document.getElementById("analysis-learning-pie");
 const analysisLearningLegend = document.getElementById("analysis-learning-legend");
 const analysisDeliveryPie = document.getElementById("analysis-delivery-pie");
@@ -1552,6 +1562,8 @@ let previousFocusedElement = null;
 
 const I18N = {
   fr: {
+    docTitle: "Interface de conception d’apprentissage - Prototype",
+    skipLink: "Aller au contenu principal",
     appTitle: "Interface de conception d’apprentissage",
     tabSettings: "Paramètres",
     tabAnalysis: "Analyse",
@@ -1566,6 +1578,25 @@ const I18N = {
     save: "Sauvegarder",
     saved: "Exporté",
     info: "Information",
+    toolbarRegion: "Actions du design",
+    analysisTitle: "Expérience d’apprentissage",
+    metaNameLabel: "Titre",
+    metaLearningLabel: "Temps d'apprentissage",
+    metaDesignedLabel: "Temps conçu",
+    metaDayLabel: "1 jour =",
+    metaDescriptionLabel: "Description",
+    metaCommandLabel: "Commande institutionnelle",
+    metaDeliveryLabel: "Mode",
+    metaSizeLabel: "Taille du groupe",
+    metaDesignersLabel: "Concepteur(s)",
+    metaPersonasLabel: "Personas (profils)",
+    metaSlidersLabel: "Curseurs",
+    unitDays: "jours",
+    unitHours: "heures",
+    unitMinutes: "minutes",
+    modeOnsite: "Présentiel",
+    modeOnline: "Distanciel",
+    modeHybrid: "Hybride",
     exportTitle: "Exporter le design",
     format: "Format",
     cancel: "Annuler",
@@ -1573,15 +1604,69 @@ const I18N = {
     boardRegion: "Séquences de séances",
     sessionNotes: "Notes",
     addLearningType: "+ Ajouter type d'apprentissage",
+    sessionPrefix: "Séance",
+    sessionMoveHint: "Alt+Flèche gauche/droite pour déplacer.",
+    activityMoveHint: "Alt+Flèche haut/bas pour déplacer dans la séance.",
+    sessionTitleLabel: "Titre de la séance",
+    sessionActivitiesLabel: "Activités de la séance",
+    activityLabel: "Activité",
+    activityDurationLabel: "Durée en minutes de l'activité",
+    activityDescriptionLabel: "Description de l'activité",
+    activityNotesLabel: "Notes de l'activité",
+    sessionNotesLabel: "Notes de la séance",
+    deleteSession: "Supprimer la séance",
+    deleteActivity: "Supprimer l'activité",
+    groupTitleType: "Type",
+    groupTitleGroup: "Groupe",
+    groupTitleTrainer: "Formateur",
+    groupTitlePacing: "Rythme",
+    groupTitleMode: "Modalité",
+    groupTitleEvaluation: "Évaluation",
+    newActivityDescription: "Nouvelle activité",
     newDesignConfirm: "Créer un nouveau design et écraser le contenu actuel ?",
     importInvalid: "Fichier invalide. Importez un JSON exporté depuis cette application.",
     commandPlaceholder: "Collez ici la commande institutionnelle déjà définie...",
     personasPlaceholder: "Collez ici les personas (profils) déjà définis...",
     slidersPlaceholder: "Collez ici les curseurs déjà définis...",
+    sessionNotesPlaceholder: "Notes de la séance...",
+    activityNotesPlaceholder: "Notes de l'activité...",
+    durationMinutesSr: "Durée en minutes",
     fullscreen: "Plein écran",
     closeFullscreen: "Quitter le plein écran",
     uiLanguage: "Langue de l’interface",
     moved: "Élément déplacé.",
+    an01: "Un ou plusieurs graphiques peuvent être incorrects, car une ou plusieurs activités n’ont pas de durée valide.",
+    an02: "Les graphiques ne peuvent pas être calculés, car aucune durée d’activité n’est définie.",
+    an03: "Le graphe social peut être incorrect, car un ou plusieurs types d’apprentissage n’ont pas de taille de groupe définie.",
+    an04: "Le graphique « Formateur » peut être incorrect, car une ou plusieurs activités n’ont pas ce paramètre défini.",
+    an05: "Le graphique « Rythme » peut être incorrect, car une ou plusieurs activités n’ont pas ce paramètre défini.",
+    an06: "Le graphique « Modalité » peut être incorrect, car une ou plusieurs activités n’ont pas ce paramètre défini.",
+    an07: "Le temps conçu dépasse le temps d’apprentissage déclaré.",
+    an08: "Le temps d’apprentissage n’est pas défini, mais des activités ont une durée.",
+    lt_read: "Lire / Regarder / Écouter",
+    lt_investigate: "Investiguer",
+    lt_practice: "Pratiquer",
+    lt_produce: "Produire",
+    lt_discuss: "Discuter",
+    lt_collaborate: "Collaborer",
+    group_whole: "Groupe entier",
+    group_subgroups: "Sous-groupes",
+    group_individual: "Individuel",
+    trainer_present: "Présent",
+    trainer_absent: "Absent",
+    sync_sync: "Synchrone",
+    sync_async: "Asynchrone",
+    eval_none: "Aucune évaluation",
+    eval_diagnostic: "Diagnostique",
+    eval_formative: "Formative",
+    eval_summative: "Sommative",
+    eval_certificative: "Certificative",
+    infoTitle: "À propos",
+    infoP1: "Cette application web monopage s’inspire de l’UCL Learning Designer :",
+    infoP2: "(UCL Knowledge Lab, UCL Institute of Education, 2013-2026).",
+    infoP3: "Traitement local : toutes les données restent dans votre navigateur ; aucune donnée n’est transmise en ligne.",
+    infoP4: "François Jourde (2026) • CC BY-SA<br />Code source : <a href=\"https://github.com/jourde/learning-designer\" target=\"_blank\" rel=\"noopener noreferrer\">https://github.com/jourde/learning-designer</a>",
+    noData: "Aucune donnée",
     learningDaysLabel: "Jours d'apprentissage",
     learningHoursLabel: "Heures d'apprentissage",
     learningMinutesLabel: "Minutes d'apprentissage",
@@ -1590,6 +1675,8 @@ const I18N = {
     designedMinutesLabel: "Minutes conçues"
   },
   en: {
+    docTitle: "Learning Design Interface - Prototype",
+    skipLink: "Skip to main content",
     appTitle: "Learning Design Interface",
     tabSettings: "Settings",
     tabAnalysis: "Analysis",
@@ -1604,6 +1691,25 @@ const I18N = {
     save: "Save",
     saved: "Exported",
     info: "About",
+    toolbarRegion: "Design actions",
+    analysisTitle: "Learning Experience",
+    metaNameLabel: "Title",
+    metaLearningLabel: "Learning time",
+    metaDesignedLabel: "Designed time",
+    metaDayLabel: "1 day =",
+    metaDescriptionLabel: "Description",
+    metaCommandLabel: "Institutional brief",
+    metaDeliveryLabel: "Mode",
+    metaSizeLabel: "Group size",
+    metaDesignersLabel: "Designer(s)",
+    metaPersonasLabel: "Personas (profiles)",
+    metaSlidersLabel: "Sliders",
+    unitDays: "days",
+    unitHours: "hours",
+    unitMinutes: "minutes",
+    modeOnsite: "Onsite",
+    modeOnline: "Online",
+    modeHybrid: "Hybrid",
     exportTitle: "Export design",
     format: "Format",
     cancel: "Cancel",
@@ -1611,15 +1717,69 @@ const I18N = {
     boardRegion: "Sequence board",
     sessionNotes: "Notes",
     addLearningType: "+ Add learning type",
+    sessionPrefix: "Session",
+    sessionMoveHint: "Alt+Left/Right Arrow to move.",
+    activityMoveHint: "Alt+Up/Down Arrow to move within the session.",
+    sessionTitleLabel: "Session title",
+    sessionActivitiesLabel: "Activities for session",
+    activityLabel: "Activity",
+    activityDurationLabel: "Activity duration in minutes",
+    activityDescriptionLabel: "Activity description",
+    activityNotesLabel: "Activity notes",
+    sessionNotesLabel: "Session notes",
+    deleteSession: "Delete session",
+    deleteActivity: "Delete activity",
+    groupTitleType: "Type",
+    groupTitleGroup: "Group",
+    groupTitleTrainer: "Trainer",
+    groupTitlePacing: "Pacing",
+    groupTitleMode: "Mode",
+    groupTitleEvaluation: "Assessment",
+    newActivityDescription: "New activity",
     newDesignConfirm: "Create a new design and replace current content?",
     importInvalid: "Invalid file. Import a JSON exported by this application.",
     commandPlaceholder: "Paste the previously defined institutional brief here...",
     personasPlaceholder: "Paste previously defined personas here...",
     slidersPlaceholder: "Paste previously defined sliders here...",
+    sessionNotesPlaceholder: "Session notes...",
+    activityNotesPlaceholder: "Activity notes...",
+    durationMinutesSr: "Duration in minutes",
     fullscreen: "Fullscreen",
     closeFullscreen: "Exit fullscreen",
     uiLanguage: "Interface language",
     moved: "Item moved.",
+    an01: "One or more graphs might not display correctly, because one or more activities do not have a valid duration.",
+    an02: "Graphs cannot be computed, because no activity duration is set.",
+    an03: "The social learning graph might not display correctly, because one or more learning types do not have group size set.",
+    an04: "The “Trainer presence” graph might be inaccurate, because one or more activities are missing this setting.",
+    an05: "The “Pacing” graph might be inaccurate, because one or more activities are missing this setting.",
+    an06: "The “Delivery mode” graph might be inaccurate, because one or more activities are missing this setting.",
+    an07: "Designed time exceeds declared learning time.",
+    an08: "Learning time is not set, but activities have durations.",
+    lt_read: "Read / Watch / Listen",
+    lt_investigate: "Investigate",
+    lt_practice: "Practice",
+    lt_produce: "Produce",
+    lt_discuss: "Discuss",
+    lt_collaborate: "Collaborate",
+    group_whole: "Whole class",
+    group_subgroups: "Sub-groups",
+    group_individual: "Individual",
+    trainer_present: "Present",
+    trainer_absent: "Absent",
+    sync_sync: "Synchronous",
+    sync_async: "Asynchronous",
+    eval_none: "No assessment",
+    eval_diagnostic: "Diagnostic",
+    eval_formative: "Formative",
+    eval_summative: "Summative",
+    eval_certificative: "Certifying",
+    infoTitle: "About",
+    infoP1: "This single-page web app is inspired by the UCL Learning Designer:",
+    infoP2: "(UCL Knowledge Lab, UCL Institute of Education, 2013-2026).",
+    infoP3: "Local processing: all data remains in your browser; no data is transmitted online.",
+    infoP4: "François Jourde (2026) • CC BY-SA<br />Source code: <a href=\"https://github.com/jourde/learning-designer\" target=\"_blank\" rel=\"noopener noreferrer\">https://github.com/jourde/learning-designer</a>",
+    noData: "No data",
     learningDaysLabel: "Learning days",
     learningHoursLabel: "Learning hours",
     learningMinutesLabel: "Learning minutes",
@@ -1638,6 +1798,10 @@ function t(key) {
   return I18N[lang][key] || I18N.fr[key] || key;
 }
 
+function defaultSessionTitle(index1Based) {
+  return `${t("sessionPrefix")} ${index1Based}`;
+}
+
 function announce(message) {
   if (!message || !srStatus) return;
   srStatus.textContent = "";
@@ -1646,12 +1810,90 @@ function announce(message) {
   }, 10);
 }
 
+function shortLabel(label) {
+  return String(label || "")
+    .split(/[ /-]+/)
+    .filter(Boolean)[0] || String(label || "");
+}
+
+function refreshLocalizedCatalogs() {
+  LEARNING_TYPES.forEach((type) => {
+    type.label = t(`lt_${type.id}`);
+  });
+
+  ACTIVITY_TYPE_OPTIONS.forEach((option) => {
+    option.label = t(`lt_${option.value}`);
+    option.short = shortLabel(option.label);
+  });
+
+  GROUP_MODE_OPTIONS.forEach((option) => {
+    if (option.value === "whole") option.label = t("group_whole");
+    if (option.value === "subgroups") option.label = t("group_subgroups");
+    if (option.value === "individual") option.label = t("group_individual");
+    option.short = shortLabel(option.label);
+  });
+
+  TRAINER_OPTIONS.forEach((option) => {
+    if (option.value === "present") option.label = t("trainer_present");
+    if (option.value === "absent") option.label = t("trainer_absent");
+    option.short = shortLabel(option.label);
+  });
+
+  SYNC_OPTIONS.forEach((option) => {
+    if (option.value === "sync") option.label = t("sync_sync");
+    if (option.value === "async") option.label = t("sync_async");
+    option.short = shortLabel(option.label);
+  });
+
+  LOCATION_OPTIONS.forEach((option) => {
+    if (option.value === "onsite") option.label = t("modeOnsite");
+    if (option.value === "online") option.label = t("modeOnline");
+    if (option.value === "hybrid") option.label = t("modeHybrid");
+    option.short = shortLabel(option.label);
+  });
+
+  EVAL_OPTIONS.forEach((option) => {
+    if (option.value === "none") option.label = t("eval_none");
+    if (option.value === "diagnostic") option.label = t("eval_diagnostic");
+    if (option.value === "formative") option.label = t("eval_formative");
+    if (option.value === "summative") option.label = t("eval_summative");
+    if (option.value === "certificative") option.label = t("eval_certificative");
+    option.short = shortLabel(option.label);
+  });
+}
+
 function applyLocalizedUI() {
+  refreshLocalizedCatalogs();
   document.documentElement.lang = currentLang();
+  document.title = t("docTitle");
   if (langSelect) langSelect.value = currentLang();
+  document.getElementById("skip-link").textContent = t("skipLink");
+  document.querySelector(".toolbar").setAttribute("aria-label", t("toolbarRegion"));
   appTitle.textContent = t("appTitle");
   topTabSettings.textContent = t("tabSettings");
   topTabAnalysis.textContent = t("tabAnalysis");
+  document.getElementById("analysis-title").textContent = t("analysisTitle");
+  document.getElementById("label-meta-name").textContent = t("metaNameLabel");
+  document.getElementById("label-meta-learning").textContent = t("metaLearningLabel");
+  document.getElementById("label-meta-designed").textContent = t("metaDesignedLabel");
+  document.getElementById("label-meta-day-hours").textContent = t("metaDayLabel");
+  document.getElementById("label-meta-description").textContent = t("metaDescriptionLabel");
+  document.getElementById("label-meta-command").textContent = t("metaCommandLabel");
+  document.getElementById("label-meta-delivery").textContent = t("metaDeliveryLabel");
+  document.getElementById("label-meta-size-class").textContent = t("metaSizeLabel");
+  document.getElementById("label-meta-designers").textContent = t("metaDesignersLabel");
+  document.getElementById("label-meta-personas").textContent = t("metaPersonasLabel");
+  document.getElementById("label-meta-sliders").textContent = t("metaSlidersLabel");
+  document.getElementById("unit-learning-days").textContent = t("unitDays");
+  document.getElementById("unit-learning-hours").textContent = t("unitHours");
+  document.getElementById("unit-learning-minutes").textContent = t("unitMinutes");
+  document.getElementById("unit-designed-days").textContent = t("unitDays");
+  document.getElementById("unit-designed-hours").textContent = t("unitHours");
+  document.getElementById("unit-designed-minutes").textContent = t("unitMinutes");
+  document.getElementById("unit-day-hours").textContent = t("unitHours");
+  document.getElementById("opt-meta-delivery-onsite").textContent = t("modeOnsite");
+  document.getElementById("opt-meta-delivery-online").textContent = t("modeOnline");
+  document.getElementById("opt-meta-delivery-hybrid").textContent = t("modeHybrid");
   topPanelToggleBtn.textContent = state.topPanelCollapsed ? t("expandPanel") : t("collapsePanel");
   addSessionBtn.textContent = t("addMoment");
   newDesignBtn.textContent = t("new");
@@ -1675,8 +1917,25 @@ function applyLocalizedUI() {
   exportModalBackdrop.querySelector("label[for='export-format-select']").textContent = t("format");
   exportModalCancelBtn.textContent = t("cancel");
   exportModalConfirmBtn.textContent = t("export");
+  document.getElementById("info-modal-title").textContent = t("infoTitle");
+  document.getElementById("info-modal-p1").textContent = t("infoP1");
+  document.getElementById("info-modal-p2").textContent = t("infoP2");
+  document.getElementById("info-modal-p3").textContent = t("infoP3");
+  document.getElementById("info-modal-p4").innerHTML = t("infoP4");
   infoModalCloseBtn.textContent = t("close");
   document.querySelector("label[for='lang-select']").textContent = t("uiLanguage");
+  document.querySelectorAll(".duration-unit").forEach((unit) => {
+    unit.textContent = "min";
+  });
+  document.querySelectorAll(".session-notes-input").forEach((input) => {
+    input.placeholder = t("sessionNotesPlaceholder");
+  });
+  document.querySelectorAll(".activity-notes-input").forEach((input) => {
+    input.placeholder = t("activityNotesPlaceholder");
+  });
+  document.querySelectorAll(".activity-duration-sr-label").forEach((label) => {
+    label.textContent = t("durationMinutesSr");
+  });
   topPanel.querySelector(".top-tabs").setAttribute(
     "aria-label",
     currentLang() === "en" ? "Top panel views" : "Vues du panneau supérieur"
@@ -1698,7 +1957,7 @@ function hydrateState(parsed, fallback = defaultState()) {
     meta: { ...DEFAULT_META, ...(parsed.meta || {}) },
     sessions: parsed.sessions.map((session, sessionIndex) => ({
       id: session?.id || nextId(),
-      title: typeof session?.title === "string" ? session.title : `Séance ${sessionIndex + 1}`,
+      title: typeof session?.title === "string" ? session.title : defaultSessionTitle(sessionIndex + 1),
       notes: typeof session?.notes === "string" ? session.notes : "",
       notesExpanded: Boolean(session?.notesExpanded),
       activities: Array.isArray(session?.activities)
@@ -2069,7 +2328,7 @@ function buildSegments(definitions, totals) {
   return { sum, segments };
 }
 
-function chartSummary(data, emptyLabel = "Aucune donnée") {
+function chartSummary(data, emptyLabel = t("noData")) {
   if (!data || data.sum <= 0) return emptyLabel;
   return data.segments
     .filter((segment) => segment.pct > 0)
@@ -2081,7 +2340,7 @@ function renderConic(el, data) {
   el.setAttribute("role", "img");
   if (data.sum <= 0) {
     el.style.background = "conic-gradient(#d2d2d2 0% 100%)";
-    el.setAttribute("aria-label", "Aucune donnée");
+    el.setAttribute("aria-label", t("noData"));
     return;
   }
   const parts = data.segments
@@ -2105,7 +2364,7 @@ function renderGroupBar(data) {
   analysisGroupBar.setAttribute("role", "img");
   if (data.sum <= 0) {
     analysisGroupBar.style.background = "linear-gradient(90deg, #d2d2d2 0% 100%)";
-    analysisGroupBar.setAttribute("aria-label", "Aucune donnée");
+    analysisGroupBar.setAttribute("aria-label", t("noData"));
     return;
   }
   const parts = data.segments
@@ -2115,11 +2374,75 @@ function renderGroupBar(data) {
   analysisGroupBar.setAttribute("aria-label", chartSummary(data));
 }
 
-function renderAnalysisPanel() {
-  const missingGroupMode = state.sessions.some((session) =>
-    session.activities.some((activity) => !["whole", "subgroups", "individual"].includes(activity.groupMode))
+function totalDeclaredLearningMinutes() {
+  const normalized = normalizePedagogicalTime(
+    state.meta.learningDays,
+    state.meta.learningHours,
+    state.meta.learningMinutes,
+    getDayHours()
   );
-  analysisWarning.classList.toggle("hidden", !missingGroupMode);
+  return ((normalized.days * getDayHours() + normalized.hours) * 60) + normalized.minutes;
+}
+
+function collectActivities() {
+  return state.sessions.flatMap((session) => (Array.isArray(session.activities) ? session.activities : []));
+}
+
+function getAnalysisAlerts() {
+  const activities = collectActivities();
+  const designedMinutes = totalDesignedMinutes();
+  const learningMinutes = totalDeclaredLearningMinutes();
+
+  const hasInvalidDuration = activities.some((activity) => {
+    const duration = Number(activity.duration);
+    return !Number.isFinite(duration) || duration <= 0;
+  });
+  const hasInvalidGroupMode = activities.some(
+    (activity) => !["whole", "subgroups", "individual"].includes(activity.groupMode)
+  );
+  const hasInvalidTrainerMode = activities.some(
+    (activity) => !["present", "absent"].includes(activity.teacherPresence)
+  );
+  const hasInvalidSyncMode = activities.some(
+    (activity) => !["sync", "async"].includes(activity.syncMode)
+  );
+  const hasInvalidLocationMode = activities.some(
+    (activity) => !["onsite", "online", "hybrid"].includes(activity.locationMode)
+  );
+
+  const alerts = [];
+  if (hasInvalidDuration) alerts.push({ id: "AN-01", level: "warning", message: t("an01") });
+  if (designedMinutes <= 0) alerts.push({ id: "AN-02", level: "warning", message: t("an02") });
+  if (hasInvalidGroupMode) alerts.push({ id: "AN-03", level: "warning", message: t("an03") });
+  if (hasInvalidTrainerMode) alerts.push({ id: "AN-04", level: "warning", message: t("an04") });
+  if (hasInvalidSyncMode) alerts.push({ id: "AN-05", level: "warning", message: t("an05") });
+  if (hasInvalidLocationMode) alerts.push({ id: "AN-06", level: "warning", message: t("an06") });
+  if (learningMinutes > 0 && designedMinutes > learningMinutes) {
+    alerts.push({ id: "AN-07", level: "info", message: t("an07") });
+  }
+  if (learningMinutes === 0 && designedMinutes > 0) {
+    alerts.push({ id: "AN-08", level: "info", message: t("an08") });
+  }
+  return alerts;
+}
+
+function renderAnalysisAlerts() {
+  const alerts = getAnalysisAlerts();
+  analysisAlerts.innerHTML = "";
+  analysisAlerts.classList.toggle("hidden", alerts.length === 0);
+  if (!alerts.length) return;
+
+  alerts.forEach((alert) => {
+    const item = document.createElement("p");
+    item.className = `analysis-alert ${alert.level}`;
+    item.textContent = alert.message;
+    item.dataset.alertId = alert.id;
+    analysisAlerts.appendChild(item);
+  });
+}
+
+function renderAnalysisPanel() {
+  renderAnalysisAlerts();
 
   const learningDefs = LEARNING_TYPES.map((type) => ({
     key: type.id,
@@ -2131,33 +2454,33 @@ function renderAnalysisPanel() {
   renderLegend(analysisLearningLegend, learningData, false);
 
   const deliveryDefs = [
-    { key: "onsite", label: "Présentiel", color: "#37658b" },
-    { key: "online", label: "Distanciel", color: "#bcc7d7" },
-    { key: "hybrid", label: "Hybride", color: "#4e84c8" }
+    { key: "onsite", label: t("modeOnsite"), color: "#37658b" },
+    { key: "online", label: t("modeOnline"), color: "#bcc7d7" },
+    { key: "hybrid", label: t("modeHybrid"), color: "#4e84c8" }
   ];
   const deliveryData = buildSegments(deliveryDefs, aggregateDurations((a) => a.locationMode).totals);
   renderConic(analysisDeliveryPie, deliveryData);
   renderLegend(analysisDeliveryLegend, deliveryData);
 
   const teacherDefs = [
-    { key: "present", label: "Formateur présent", color: "#7a6854" },
-    { key: "absent", label: "Formateur absent", color: "#c5b59f" }
+    { key: "present", label: `${currentLang() === "en" ? "Trainer" : "Formateur"} ${t("trainer_present").toLowerCase()}`, color: "#7a6854" },
+    { key: "absent", label: `${currentLang() === "en" ? "Trainer" : "Formateur"} ${t("trainer_absent").toLowerCase()}`, color: "#c5b59f" }
   ];
   const teacherData = buildSegments(teacherDefs, aggregateDurations((a) => a.teacherPresence).totals);
   renderConic(analysisTeacherPie, teacherData);
   renderLegend(analysisTeacherLegend, teacherData);
 
   const syncDefs = [
-    { key: "sync", label: "Synchrone", color: "#ac7f8d" },
-    { key: "async", label: "Asynchrone", color: "#cbbec2" }
+    { key: "sync", label: t("sync_sync"), color: "#ac7f8d" },
+    { key: "async", label: t("sync_async"), color: "#cbbec2" }
   ];
   const syncData = buildSegments(syncDefs, aggregateDurations((a) => a.syncMode).totals);
   renderConic(analysisSyncPie, syncData);
   renderLegend(analysisSyncLegend, syncData);
 
   const evalDefs = [
-    { key: "formative", label: "Formative", color: "#ccd5aa" },
-    { key: "summative", label: "Sommative", color: "#b2cf69" }
+    { key: "formative", label: t("eval_formative"), color: "#ccd5aa" },
+    { key: "summative", label: t("eval_summative"), color: "#b2cf69" }
   ];
   const evalTotals = aggregateDurations((activity) => {
     if (activity.evaluationMode === "summative" || activity.evaluationMode === "certificative") {
@@ -2170,9 +2493,9 @@ function renderAnalysisPanel() {
   renderLegend(analysisEvalLegend, evalData);
 
   const groupDefs = [
-    { key: "whole", label: "Groupe entier", color: "#4f7d5a" },
-    { key: "subgroups", label: "Sous-groupes", color: "#6ab084" },
-    { key: "individual", label: "Individuel", color: "#a8c8b1" }
+    { key: "whole", label: t("group_whole"), color: "#4f7d5a" },
+    { key: "subgroups", label: t("group_subgroups"), color: "#6ab084" },
+    { key: "individual", label: t("group_individual"), color: "#a8c8b1" }
   ];
   const groupData = buildSegments(groupDefs, aggregateDurations((a) => a.groupMode).totals);
   renderGroupBar(groupData);
@@ -2229,7 +2552,7 @@ function renderTopPanel() {
   if (overall <= 0) {
     topPie.style.background = "conic-gradient(#d2d2d2 0% 100%)";
     topPie.setAttribute("role", "img");
-    topPie.setAttribute("aria-label", "Aucune donnée");
+    topPie.setAttribute("aria-label", t("noData"));
   } else {
     let cursor = 0;
     const segments = [];
@@ -2260,31 +2583,31 @@ function labelForType(typeId) {
 }
 
 function labelForGroupMode(groupMode) {
-  if (groupMode === "whole") return "Groupe entier";
-  if (groupMode === "subgroups") return "Sous-groupes";
-  return "Individuel";
+  if (groupMode === "whole") return t("group_whole");
+  if (groupMode === "subgroups") return t("group_subgroups");
+  return t("group_individual");
 }
 
 function labelForTrainerMode(mode) {
-  return mode === "absent" ? "Absent" : "Présent";
+  return mode === "absent" ? t("trainer_absent") : t("trainer_present");
 }
 
 function labelForSyncMode(mode) {
-  return mode === "async" ? "Asynchrone" : "Synchrone";
+  return mode === "async" ? t("sync_async") : t("sync_sync");
 }
 
 function labelForLocationMode(mode) {
-  if (mode === "online") return "Distanciel";
-  if (mode === "hybrid") return "Hybride";
-  return "Présentiel";
+  if (mode === "online") return t("modeOnline");
+  if (mode === "hybrid") return t("modeHybrid");
+  return t("modeOnsite");
 }
 
 function labelForEvaluationMode(mode) {
-  if (mode === "diagnostic") return "Diagnostique";
-  if (mode === "formative") return "Formative";
-  if (mode === "summative") return "Sommative";
-  if (mode === "certificative") return "Certificative";
-  return "Aucune évaluation";
+  if (mode === "diagnostic") return t("eval_diagnostic");
+  if (mode === "formative") return t("eval_formative");
+  if (mode === "summative") return t("eval_summative");
+  if (mode === "certificative") return t("eval_certificative");
+  return t("eval_none");
 }
 
 function escapeHtml(value) {
@@ -2728,16 +3051,16 @@ function render() {
     card.setAttribute("role", "group");
     card.setAttribute(
       "aria-label",
-      `${sessionIndex + 1}. ${session.title || `Séance ${sessionIndex + 1}`}. Alt+Flèche gauche/droite pour déplacer.`
+      `${sessionIndex + 1}. ${session.title || defaultSessionTitle(sessionIndex + 1)}. ${t("sessionMoveHint")}`
     );
     strip.style.background = stripGradientForSession(session);
     title.value = session.title;
-    title.setAttribute("aria-label", `Titre de la séance ${sessionIndex + 1}`);
+    title.setAttribute("aria-label", `${t("sessionTitleLabel")} ${sessionIndex + 1}`);
     title.addEventListener("input", (e) => {
       session.title = e.target.value;
       saveState();
     });
-    deleteSessionBtn.title = currentLang() === "en" ? "Delete session" : "Supprimer la séance";
+    deleteSessionBtn.title = t("deleteSession");
     deleteSessionBtn.setAttribute("aria-label", deleteSessionBtn.title);
     card.addEventListener("dragstart", (event) => {
       if (isInteractiveTarget(event.target)) {
@@ -2770,7 +3093,7 @@ function render() {
     totalDuration.textContent = String(totalSessionMinutes(session));
     activitiesWrap.dataset.sessionId = session.id;
     activitiesWrap.setAttribute("role", "group");
-    activitiesWrap.setAttribute("aria-label", `Activités de la séance ${sessionIndex + 1}`);
+    activitiesWrap.setAttribute("aria-label", `${t("sessionActivitiesLabel")} ${sessionIndex + 1}`);
     activitiesWrap.addEventListener("dragover", (event) => {
       if (!dragState || dragState.type !== "activity") return;
       event.preventDefault();
@@ -2831,36 +3154,34 @@ function render() {
       activityCard.draggable = true;
       activityCard.tabIndex = 0;
       activityCard.setAttribute("role", "group");
-      activityCard.setAttribute(
-        "aria-label",
-        `Activité ${activityIndex + 1}. Alt+Flèche haut/bas pour déplacer dans la séance.`
-      );
+      activityCard.setAttribute("aria-label", `${t("activityLabel")} ${activityIndex + 1}. ${t("activityMoveHint")}`);
       setChoiceButton(typeBtn, ACTIVITY_TYPE_OPTIONS, activity.type);
-      typeBtn.dataset.groupTitle = "Type";
-      typeBtn.title = `Type d'apprentissage: ${getOption(ACTIVITY_TYPE_OPTIONS, activity.type).label}`;
+      typeBtn.dataset.groupTitle = t("groupTitleType");
+      typeBtn.title = `${t("groupTitleType")}: ${getOption(ACTIVITY_TYPE_OPTIONS, activity.type).label}`;
       durationInput.value = activity.duration;
       durationInput.setAttribute("inputmode", "numeric");
-      durationInput.setAttribute("aria-label", `Durée en minutes de l'activité ${activityIndex + 1}`);
+      durationInput.setAttribute("aria-label", `${t("activityDurationLabel")} ${activityIndex + 1}`);
       setChoiceButton(groupModeBtn, GROUP_MODE_OPTIONS, activity.groupMode);
       setChoiceButton(trainerModeBtn, TRAINER_OPTIONS, activity.teacherPresence);
       setChoiceButton(syncModeBtn, SYNC_OPTIONS, activity.syncMode);
       setChoiceButton(locationModeBtn, LOCATION_OPTIONS, activity.locationMode);
       setChoiceButton(evaluationModeBtn, EVAL_OPTIONS, activity.evaluationMode);
-      groupModeBtn.dataset.groupTitle = "Groupe";
-      trainerModeBtn.dataset.groupTitle = "Formateur";
-      syncModeBtn.dataset.groupTitle = "Rythme";
-      locationModeBtn.dataset.groupTitle = "Modalité";
-      evaluationModeBtn.dataset.groupTitle = "Évaluation";
-      groupModeBtn.title = `Groupe: ${getOption(GROUP_MODE_OPTIONS, activity.groupMode).label}`;
-      trainerModeBtn.title = `Formateur: ${getOption(TRAINER_OPTIONS, activity.teacherPresence).label}`;
-      syncModeBtn.title = `Rythme: ${getOption(SYNC_OPTIONS, activity.syncMode).label}`;
-      locationModeBtn.title = `Modalité: ${getOption(LOCATION_OPTIONS, activity.locationMode).label}`;
-      evaluationModeBtn.title = `Évaluation: ${getOption(EVAL_OPTIONS, activity.evaluationMode).label}`;
+      groupModeBtn.dataset.groupTitle = t("groupTitleGroup");
+      trainerModeBtn.dataset.groupTitle = t("groupTitleTrainer");
+      syncModeBtn.dataset.groupTitle = t("groupTitlePacing");
+      locationModeBtn.dataset.groupTitle = t("groupTitleMode");
+      evaluationModeBtn.dataset.groupTitle = t("groupTitleEvaluation");
+      groupModeBtn.title = `${t("groupTitleGroup")}: ${getOption(GROUP_MODE_OPTIONS, activity.groupMode).label}`;
+      trainerModeBtn.title = `${t("groupTitleTrainer")}: ${getOption(TRAINER_OPTIONS, activity.teacherPresence).label}`;
+      syncModeBtn.title = `${t("groupTitlePacing")}: ${getOption(SYNC_OPTIONS, activity.syncMode).label}`;
+      locationModeBtn.title = `${t("groupTitleMode")}: ${getOption(LOCATION_OPTIONS, activity.locationMode).label}`;
+      evaluationModeBtn.title = `${t("groupTitleEvaluation")}: ${getOption(EVAL_OPTIONS, activity.evaluationMode).label}`;
       description.value = activity.description;
-      description.setAttribute("aria-label", `Description de l'activité ${activityIndex + 1}`);
+      description.setAttribute("aria-label", `${t("activityDescriptionLabel")} ${activityIndex + 1}`);
       activityNotesInput.value = activity.notes || "";
-      activityNotesInput.setAttribute("aria-label", `Notes de l'activité ${activityIndex + 1}`);
-      deleteActivityBtn.title = currentLang() === "en" ? "Delete activity" : "Supprimer l'activité";
+      activityNotesInput.setAttribute("aria-label", `${t("activityNotesLabel")} ${activityIndex + 1}`);
+      activityNotesInput.placeholder = t("activityNotesPlaceholder");
+      deleteActivityBtn.title = t("deleteActivity");
       deleteActivityBtn.setAttribute("aria-label", deleteActivityBtn.title);
       activityNotes.classList.toggle("hidden", !(state.allNotesExpanded || session.notesExpanded));
       activityCard.addEventListener("dragstart", (event) => {
@@ -3003,7 +3324,7 @@ function render() {
         syncMode: "sync",
         locationMode: "onsite",
         evaluationMode: "none",
-        description: "Nouvelle activité",
+        description: t("newActivityDescription"),
         notes: ""
       });
       saveState();
@@ -3025,7 +3346,8 @@ function render() {
     });
 
     sessionNotesInput.value = session.notes || "";
-    sessionNotesInput.setAttribute("aria-label", `Notes de la séance ${sessionIndex + 1}`);
+    sessionNotesInput.setAttribute("aria-label", `${t("sessionNotesLabel")} ${sessionIndex + 1}`);
+    sessionNotesInput.placeholder = t("sessionNotesPlaceholder");
     sessionNotesInput.addEventListener("input", (e) => {
       session.notes = e.target.value;
       saveState();
@@ -3135,7 +3457,7 @@ function bindTopPanelEvents() {
 addSessionBtn.addEventListener("click", () => {
   state.sessions.push({
     id: nextId(),
-    title: `Séance ${state.sessions.length + 1}`,
+    title: defaultSessionTitle(state.sessions.length + 1),
     notes: "",
     notesExpanded: false,
     activities: []
