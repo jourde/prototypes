@@ -249,36 +249,96 @@
             to { opacity: 1; transform: translate(-50%, 0); }
         }
 
-        /* Grid Layout */
-        .canvas-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        /* App layout */
+        .app-layout {
+            display: flex;
             gap: 1.5rem;
+            align-items: flex-start;
         }
 
-        .full-width {
-            grid-column: 1 / -1;
+        .content-panel {
+            flex: 1;
+            min-width: 0;
         }
 
-        /* Cards */
+        /* Sidebar */
+        .sidebar {
+            width: 210px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            user-select: none;
+        }
+
+        .nav-item:hover:not(.active) {
+            background: #f8fafc;
+        }
+
+        .nav-item.active {
+            background: #eff6ff;
+            border-left-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .nav-item .material-icons {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            margin-left: auto;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .nav-dot.filled {
+            background: var(--primary);
+        }
+
+        /* Cards : une seule visible à la fois */
         .card {
             background: var(--bg-card);
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid var(--border);
-            display: flex;
             flex-direction: column;
             gap: 1rem;
-            page-break-inside: avoid; /* Prevent breaking inside cards when printing */
-            /* Performance: contain layout for independent rendering */
+            page-break-inside: avoid;
             contain: content;
+            display: none;
+        }
+
+        .card.active-section {
+            display: flex;
         }
 
         .card h2 {
             font-size: 1.1rem;
             color: var(--primary-dark);
-            margin: 0 0 0.2rem 0; /* Reduced margin */
+            margin: 0 0 0.2rem 0;
             border-bottom: 2px solid #f1f5f9;
             padding-bottom: 0.5rem;
             text-transform: uppercase;
@@ -546,6 +606,9 @@
                      <button class="btn btn-outline" onclick="exportFullMarkdown()" data-tooltip="Exporter Canevas Complet (Markdown)">
                         <span class="material-icons">list_alt</span>
                     </button>
+                    <button class="btn btn-outline" onclick="openSynthesisModal()" data-tooltip="Afficher la synthèse (copier en texte ou Markdown)">
+                        <span class="material-icons">visibility</span>
+                    </button>
                 </div>
             </div>
 
@@ -578,7 +641,10 @@
     </header>
 
     <div class="container">
-        <form id="personaForm" class="canvas-grid">
+        <div class="app-layout">
+        <nav class="sidebar" id="sectionSidebar"></nav>
+        <div class="content-panel">
+        <form id="personaForm">
 
             <!-- 1. IDENTITÉ -->
             <div class="card">
@@ -851,12 +917,14 @@
                 <h2><span class="material-icons">edit_note</span> Scénario / Journée Type</h2>
                 <div class="card-desc">Déroulé d'une journée type et disponibilités.</div>
                 <div class="form-group">
-                    <label>Racontez sa journée pour identifier les créneaux disponibles et les contraintes techniques.</label>
+                    <label data-export-label="">Racontez sa journée pour identifier les créneaux disponibles et les contraintes techniques.</label>
                     <textarea id="scenario" placeholder="Ex: Finit la classe à 13h à cause de la chaleur. Pas de réseau le soir..."></textarea>
                 </div>
             </div>
 
         </form>
+        </div><!-- .content-panel -->
+        </div><!-- .app-layout -->
     </div>
 
     <footer>
@@ -896,6 +964,7 @@ Le bloc <strong>IMPORT & EXPORT</strong> regroupe les actions de partage et de s
     <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">upload_file</span> Charger une sauvegarde (.json)</strong> : recharge un fichier précédemment sauvegardé.</li>
     <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">picture_as_pdf</span> PDF</strong> : génère une fiche persona imprimable/partageable.</li>
     <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">integration_instructions</span> Markdown</strong> : produit un texte structuré, utile pour copier-coller dans un assistant IA afin de générer un scénario ou un plan de formation contextualisé.</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">visibility</span> Synthèse</strong> : affiche la synthèse du persona dans une fenêtre, avec deux boutons pour copier directement en <strong>texte brut</strong> ou en <strong>Markdown</strong>.</li>
 </ul>
 </p>
 
@@ -974,6 +1043,33 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
         </div>
     </div>
 
+
+<!-- Modal Synthèse (Ignored in PDF) -->
+    <div id="synthesisModal" class="modal" data-html2canvas-ignore="true">
+        <div class="modal-content" style="max-width: 720px;">
+            <span class="close-btn" onclick="closeSynthesisModal()">&times;</span>
+            <h2 id="synthesisModalTitle" style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Synthèse du persona</h2>
+            <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">
+                Relisez et copiez la synthèse ci-dessous pour la coller dans un outil tiers (assistant IA, document, email…).
+            </div>
+            <textarea id="synthesisContent" readonly
+                style="width: 100%; height: 350px; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; line-height: 1.5; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; color: #0f172a; resize: vertical; box-sizing: border-box;"></textarea>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px;">
+                <button class="btn btn-primary" onclick="copyAsText()">
+                    <span class="material-icons" style="vertical-align: middle; font-size: 18px;">content_copy</span>
+                    Copier en texte
+                </button>
+                <button class="btn btn-outline" onclick="copyAsMarkdown()">
+                    <span class="material-icons" style="vertical-align: middle; font-size: 18px;">code</span>
+                    Copier en Markdown
+                </button>
+                <span id="synthesisCopiedFeedback" style="display: none; color: #059669; font-weight: 600; font-size: 0.9rem;">✓ Copié !</span>
+                <button class="btn btn-reset" onclick="closeSynthesisModal()" style="margin-left: auto;">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
 <!-- Modal Info (Ignored in PDF) -->
     <div id="infoModal" class="modal" data-html2canvas-ignore="true">
@@ -1129,36 +1225,44 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
                     }
                 }
             }
+
+            updateAllDots();
         }
 
         // PDF Export Functionality
         function exportPDF() {
-            // Retrieve name for filename
+            // Temporarily show all cards for capture
+            document.querySelectorAll('.card').forEach(c => c.classList.add('active-section'));
+
             const nameValue = document.getElementById('name').value;
             const safeName = nameValue ? nameValue.replace(/[^a-z0-9]/gi, '_') : 'persona';
-            
+
             const element = document.body;
-            // Use cached html2pdf to prevent multiple initializations if library supports it
-            // Basic usage creates new instance each time, which is fine for click events.
             const opt = {
-                margin:       10, // mm
+                margin:       10,
                 filename:     `Canevas_${safeName}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Generate PDF
-            // The data-html2canvas-ignore attributes in HTML will prevent buttons/controls from appearing
+            const restoreActiveSection = () => {
+                const activeIndex = parseInt(document.querySelector('.nav-item.active')?.dataset.index ?? 0);
+                document.querySelectorAll('.card').forEach((c, i) => {
+                    c.classList.toggle('active-section', i === activeIndex);
+                });
+            };
+
             if (typeof html2pdf !== 'undefined') {
-                html2pdf().set(opt).from(element).save();
+                html2pdf().set(opt).from(element).save().then(restoreActiveSection);
             } else {
+                restoreActiveSection();
                 alert("La librairie PDF n'est pas encore chargée. Veuillez réessayer dans un instant.");
             }
         }
 
-        // Markdown Export Functionality - Optimized for performance
-        function exportMarkdown() {
+        // Markdown generation - shared core logic
+        function generateMarkdownContent() {
             const name = document.getElementById('name').value || 'Persona';
             let md = `# Profil Persona : ${name}\n`;
             md += `> Contexte : Éducation nationale / Académie de Guyane\n`;
@@ -1170,18 +1274,22 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
             // Using textContent instead of innerText to avoid costly reflows
             const processElement = (el) => {
                 let text = '';
-                
+
                 if (el.classList.contains('form-group')) {
                     const labelEl = el.querySelector('label');
-                    // Optimization: textContent is faster than innerText
-                    const label = labelEl ? labelEl.textContent.replace(':','').trim() : 'Champ';
-                    
+                    const exportLabel = labelEl ? labelEl.dataset.exportLabel : undefined;
+                    const label = (exportLabel !== undefined) ? exportLabel : (labelEl ? labelEl.textContent.replace(':','').trim() : 'Champ');
+
                     // Text/Select/Textarea
                     const simpleInput = el.querySelector('input[type="text"], select, textarea');
                     if (simpleInput) {
                         const val = simpleInput.value.trim();
                         if (val && val !== 'Sélectionner...') {
-                            text += `- **${label}** : ${val}\n`;
+                            if (label === '') {
+                                text += `${val}\n`;
+                            } else {
+                                text += `- **${label}** : ${val}\n`;
+                            }
                         }
                     }
 
@@ -1191,7 +1299,6 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
                         if (inputs[0].type === 'radio') {
                             const checked = el.querySelector('input:checked');
                             if (checked) {
-                                // Optimization: textContent
                                 text += `- **${label}** : ${checked.parentElement.textContent.trim()}\n`;
                             }
                         } else {
@@ -1200,7 +1307,6 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
                             if (checked.length > 0) {
                                 text += `- **${label}** :\n`;
                                 checked.forEach(c => {
-                                    // Optimization: textContent
                                     text += `  - ${c.parentElement.textContent.trim()}\n`;
                                 });
                             }
@@ -1210,7 +1316,6 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
                     // Standalone checkbox group (no label wrapper)
                     const checked = el.querySelectorAll('input:checked');
                     checked.forEach(c => {
-                        // Optimization: textContent
                         text += `- ${c.parentElement.textContent.trim()}\n`;
                     });
                 }
@@ -1218,14 +1323,9 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
             };
 
             document.querySelectorAll('.card').forEach(card => {
-                // Title cleaning
-                // Using textContent. Note: Material icon text might be included in textContent.
-                // We must handle the removal carefully.
                 let title = "";
                 const h2 = card.querySelector('h2');
                 if (h2) {
-                     // Clone to safely manipulate without DOM reflows on the live page
-                    // Optimization: Use childNodes filtering instead of cloneNode to improve performance
                     title = Array.from(h2.childNodes)
                         .filter(n => n.nodeType === Node.TEXT_NODE)
                         .map(n => n.textContent.trim())
@@ -1234,11 +1334,10 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
 
                 let sectionContent = '';
 
-                // Iterate children
                 Array.from(card.children).forEach(child => {
                     if (child.tagName === 'H2') return;
-                    if (child.tagName === 'BUTTON') return; // Skip toggle buttons
-                    if (child.classList.contains('card-desc')) return; // Skip description
+                    if (child.tagName === 'BUTTON') return;
+                    if (child.classList.contains('card-desc')) return;
 
                     if (child.classList.contains('guyane-context')) {
                         if (isGuyane) {
@@ -1251,7 +1350,6 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
                             }
                         }
                     } else if (child.classList.contains('suggestions-panel')) {
-                        // Handle wrapped content
                         Array.from(child.children).forEach(innerChild => {
                             sectionContent += processElement(innerChild);
                         });
@@ -1265,6 +1363,13 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
                 }
             });
 
+            return md;
+        }
+
+        // Markdown Export Functionality
+        function exportMarkdown() {
+            const name = document.getElementById('name').value || 'Persona';
+            const md = generateMarkdownContent();
             const blob = new Blob([md], { type: 'text/markdown' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1537,6 +1642,110 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
         }
 
 
+        // Sidebar navigation
+        function initSidebar() {
+            const sidebar = document.getElementById('sectionSidebar');
+            const cards = Array.from(document.querySelectorAll('.card'));
+
+            cards.forEach((card, i) => {
+                const h2 = card.querySelector('h2');
+                if (!h2) return;
+
+                const iconEl = h2.querySelector('.material-icons');
+                const icon = iconEl ? iconEl.textContent.trim() : 'circle';
+                const label = Array.from(h2.childNodes)
+                    .filter(n => n.nodeType === Node.TEXT_NODE)
+                    .map(n => n.textContent.trim())
+                    .join(' ').trim();
+
+                const item = document.createElement('div');
+                item.className = 'nav-item';
+                item.dataset.index = i;
+                item.innerHTML = `<span class="material-icons">${icon}</span><span>${label}</span><span class="nav-dot" id="nav-dot-${i}"></span>`;
+                item.addEventListener('click', () => activateSection(i));
+                sidebar.appendChild(item);
+            });
+
+            activateSection(0);
+
+            document.getElementById('personaForm').addEventListener('input', updateAllDots);
+            document.getElementById('personaForm').addEventListener('change', updateAllDots);
+        }
+
+        function activateSection(index) {
+            document.querySelectorAll('.card').forEach((c, i) => c.classList.toggle('active-section', i === index));
+            document.querySelectorAll('.nav-item').forEach((it, i) => it.classList.toggle('active', i === index));
+            document.querySelector('.content-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function hasCardContent(card) {
+            for (const el of card.querySelectorAll('input, select, textarea')) {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    if (el.checked) return true;
+                } else if (el.value && el.value.trim()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function updateAllDots() {
+            document.querySelectorAll('.card').forEach((card, i) => {
+                const dot = document.getElementById(`nav-dot-${i}`);
+                if (dot) dot.classList.toggle('filled', hasCardContent(card));
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSidebar();
+            updateAllDots();
+        });
+
+        // Synthesis Modal
+        const synthesisModal = document.getElementById('synthesisModal');
+
+        function openSynthesisModal() {
+            const name = document.getElementById('name').value || 'Persona';
+            document.getElementById('synthesisModalTitle').textContent = `Synthèse du persona : ${name}`;
+            document.getElementById('synthesisContent').value = generateMarkdownContent();
+            document.getElementById('synthesisCopiedFeedback').style.display = 'none';
+            synthesisModal.style.display = 'block';
+        }
+
+        function closeSynthesisModal() {
+            synthesisModal.style.display = 'none';
+        }
+
+        function showCopiedFeedback() {
+            const fb = document.getElementById('synthesisCopiedFeedback');
+            fb.style.display = 'inline';
+            setTimeout(() => { fb.style.display = 'none'; }, 2000);
+        }
+
+        function copyAsMarkdown() {
+            const md = document.getElementById('synthesisContent').value;
+            navigator.clipboard.writeText(md).then(showCopiedFeedback);
+        }
+
+        function markdownToPlainText(md) {
+            return md
+                .replace(/^## (.+)$/gm, (_, t) => `\n${t.toUpperCase()}\n`)
+                .replace(/^> \*\*(.+?)\*\*$/gm, '[$1]')
+                .replace(/^> (.+)$/gm, '$1')
+                .replace(/^- \*\*(.+?)\*\* : (.+)$/gm, '$1 : $2')
+                .replace(/^- \*\*(.+?)\*\* :$/gm, '$1 :')
+                .replace(/^  - (.+)$/gm, '  · $1')
+                .replace(/^- (.+)$/gm, '  · $1')
+                .replace(/\*\*(.+?)\*\*/g, '$1')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        }
+
+        function copyAsText() {
+            const md = document.getElementById('synthesisContent').value;
+            navigator.clipboard.writeText(markdownToPlainText(md)).then(showCopiedFeedback);
+        }
+
         // Modal Logic
         function openInfoModal() {
             infoModal.style.display = "block";
@@ -1564,6 +1773,9 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
             }
             if (event.target == suggestionsModal) {
                 suggestionsModal.style.display = "none";
+            }
+            if (event.target == synthesisModal) {
+                synthesisModal.style.display = "none";
             }
         }
     </script>
