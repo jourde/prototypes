@@ -2901,8 +2901,9 @@ function renderTopPanel() {
   metaPersonasInput.value = state.meta.personas;
   metaSlidersInput.value = state.meta.sliders;
 
-  topTabSettings.classList.toggle("active", state.meta.activeTab === "settings");
-  topTabAnalysis.classList.toggle("active", state.meta.activeTab === "analysis");
+  const panelExpanded = !state.topPanelCollapsed;
+  topTabSettings.classList.toggle("active", panelExpanded && state.meta.activeTab === "settings");
+  topTabAnalysis.classList.toggle("active", panelExpanded && state.meta.activeTab === "analysis");
   topTabSettings.setAttribute("aria-selected", state.meta.activeTab === "settings" ? "true" : "false");
   topTabAnalysis.setAttribute("aria-selected", state.meta.activeTab === "analysis" ? "true" : "false");
   topTabSettings.tabIndex = state.meta.activeTab === "settings" ? 0 : -1;
