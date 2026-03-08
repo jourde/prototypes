@@ -106,26 +106,6 @@ select:focus-visible,
   gap: 8px;
 }
 
-.brand-logo {
-  display: grid;
-  grid-template-columns: repeat(2, 14px);
-  gap: 3px;
-}
-
-.brand-logo span {
-  display: block;
-  width: 14px;
-  height: 5px;
-  border-radius: 1px;
-}
-
-.brand-logo span:nth-child(1) { background: #5cc9de; }
-.brand-logo span:nth-child(2) { background: #a9d85d; }
-.brand-logo span:nth-child(3) { background: #f7c72e; }
-.brand-logo span:nth-child(4) { background: #f78282; }
-.brand-logo span:nth-child(5) { background: #66a5f2; }
-.brand-logo span:nth-child(6) { background: #bd93e6; }
-
 .brand-title {
   margin: 0;
   font-size: 18px;
@@ -629,10 +609,7 @@ main {
   padding-bottom: 1px;
 }
 
-.activity-type,
-.activity-duration,
-.activity-group-mode,
-.activity-param select {
+.activity-duration {
   border: 1px solid #b9b9b9;
   border-radius: 4px;
   background: #f4f4f4;
@@ -747,10 +724,6 @@ main {
 
 .activity-duration {
   width: 56px;
-}
-
-.activity-group-mode {
-  width: 130px;
 }
 
 .mini-label {
@@ -1230,6 +1203,8 @@ main {
     </div>
 
     <script>
+(() => {
+"use strict";
 const STORAGE_KEY = "learning-designer-fr-v1";
 
 const LEARNING_TYPES = [
@@ -1606,7 +1581,13 @@ const I18N = {
     fullscreen: "Plein écran",
     closeFullscreen: "Quitter le plein écran",
     uiLanguage: "Langue de l’interface",
-    moved: "Élément déplacé."
+    moved: "Élément déplacé.",
+    learningDaysLabel: "Jours d'apprentissage",
+    learningHoursLabel: "Heures d'apprentissage",
+    learningMinutesLabel: "Minutes d'apprentissage",
+    designedDaysLabel: "Jours conçus",
+    designedHoursLabel: "Heures conçues",
+    designedMinutesLabel: "Minutes conçues"
   },
   en: {
     appTitle: "Learning Design Interface",
@@ -1638,7 +1619,13 @@ const I18N = {
     fullscreen: "Fullscreen",
     closeFullscreen: "Exit fullscreen",
     uiLanguage: "Interface language",
-    moved: "Item moved."
+    moved: "Item moved.",
+    learningDaysLabel: "Learning days",
+    learningHoursLabel: "Learning hours",
+    learningMinutesLabel: "Learning minutes",
+    designedDaysLabel: "Designed days",
+    designedHoursLabel: "Designed hours",
+    designedMinutesLabel: "Designed minutes"
   }
 };
 
@@ -1678,6 +1665,12 @@ function applyLocalizedUI() {
   metaCommandInput.placeholder = t("commandPlaceholder");
   metaPersonasInput.placeholder = t("personasPlaceholder");
   metaSlidersInput.placeholder = t("slidersPlaceholder");
+  metaLearningDaysInput.setAttribute("aria-label", t("learningDaysLabel"));
+  metaLearningHoursInput.setAttribute("aria-label", t("learningHoursLabel"));
+  metaLearningMinutesInput.setAttribute("aria-label", t("learningMinutesLabel"));
+  metaDesignedDaysInput.setAttribute("aria-label", t("designedDaysLabel"));
+  metaDesignedHoursInput.setAttribute("aria-label", t("designedHoursLabel"));
+  metaDesignedMinutesInput.setAttribute("aria-label", t("designedMinutesLabel"));
   exportModalBackdrop.querySelector("#export-modal-title").textContent = t("exportTitle");
   exportModalBackdrop.querySelector("label[for='export-format-select']").textContent = t("format");
   exportModalCancelBtn.textContent = t("cancel");
@@ -1775,7 +1768,12 @@ function createNewDesignState() {
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error("Impossible de sauvegarder l'état local.", error);
+    announce(currentLang() === "en" ? "Local save failed." : "Échec de la sauvegarde locale.");
+  }
 }
 
 function setupAutoSave() {
@@ -3255,6 +3253,7 @@ setupExpandableFields();
 setupFormAccessibility();
 bindTopPanelEvents();
 render();
+})();
     </script>
   </body>
 </html>
