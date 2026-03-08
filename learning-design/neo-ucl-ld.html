@@ -130,14 +130,15 @@ body {
 
 .panel-grid {
   display: grid;
-  grid-template-columns: 1.25fr 1.25fr 0.9fr;
-  gap: 12px;
+  grid-template-columns: 1.05fr 1.15fr 0.7fr;
+  gap: 14px;
   align-items: start;
 }
 
 .panel-column {
   display: grid;
   gap: 8px;
+  align-content: start;
 }
 
 .form-row {
@@ -151,6 +152,14 @@ body {
   font-weight: 700;
   font-size: 14px;
   color: #2d3137;
+}
+
+.panel-column-left .form-row {
+  grid-template-columns: 130px minmax(0, 1fr);
+}
+
+.panel-column-right .form-row {
+  grid-template-columns: 150px minmax(0, 1fr);
 }
 
 .panel-input,
@@ -168,6 +177,44 @@ body {
 .panel-textarea {
   min-height: 64px;
   resize: vertical;
+}
+
+.expandable-field {
+  position: relative;
+}
+
+.expand-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #aeb6bf;
+  border-radius: 4px;
+  background: #eef1f4;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.expandable-field .panel-textarea {
+  padding-right: 30px;
+}
+
+.expandable-field.fullscreen {
+  position: fixed;
+  inset: 24px;
+  z-index: 1200;
+  background: #f5f5f5;
+  border: 1px solid #bcc3cb;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.expandable-field.fullscreen .panel-textarea {
+  height: calc(100vh - 88px);
+  min-height: calc(100vh - 88px);
+  resize: none;
 }
 
 .time-inline {
@@ -193,7 +240,8 @@ body {
 .analysis-wrap {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 10px;
+  align-content: start;
 }
 
 .top-pie {
@@ -209,7 +257,7 @@ body {
   flex-wrap: wrap;
   gap: 6px 10px;
   justify-content: center;
-  max-width: 220px;
+  max-width: 250px;
 }
 
 .legend-item {
@@ -695,6 +743,16 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 1500px) {
+  .panel-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .analysis-wrap {
+    grid-column: 1 / -1;
+  }
+}
     </style>
   </head>
   <body>
@@ -711,7 +769,7 @@ main {
       </div>
       <div id="top-panel-body" class="top-panel-body">
         <div id="timeline-view" class="panel-grid">
-          <div class="panel-column">
+          <div class="panel-column panel-column-left">
             <div class="form-row">
               <label for="meta-name">Titre</label>
               <input id="meta-name" class="panel-input" type="text" />
@@ -745,8 +803,22 @@ main {
                 <span class="time-unit">heures</span>
               </div>
             </div>
+            <div class="form-row">
+              <label for="meta-description">Description</label>
+              <div class="expandable-field">
+                <textarea id="meta-description" class="panel-textarea"></textarea>
+                <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="meta-command">Commande institutionnelle</label>
+              <div class="expandable-field">
+                <textarea id="meta-command" class="panel-textarea" placeholder="Collez ici la commande institutionnelle déjà définie..."></textarea>
+                <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
+              </div>
+            </div>
           </div>
-          <div class="panel-column">
+          <div class="panel-column panel-column-right">
             <div class="form-row">
               <label for="meta-delivery">Mode</label>
               <select id="meta-delivery" class="panel-select">
@@ -764,8 +836,18 @@ main {
               <input id="meta-designers" class="panel-input" type="text" />
             </div>
             <div class="form-row">
-              <label for="meta-description">Description</label>
-              <textarea id="meta-description" class="panel-textarea"></textarea>
+              <label for="meta-personas">Personas (profils)</label>
+              <div class="expandable-field">
+                <textarea id="meta-personas" class="panel-textarea" placeholder="Collez ici les personas (profils) déjà définis..."></textarea>
+                <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="meta-sliders">Curseurs</label>
+              <div class="expandable-field">
+                <textarea id="meta-sliders" class="panel-textarea" placeholder="Collez ici les curseurs déjà définis..."></textarea>
+                <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
+              </div>
             </div>
           </div>
           <div class="analysis-wrap">
@@ -917,9 +999,15 @@ main {
             </select>
           </label>
         </div>
-        <textarea class="activity-description" rows="3"></textarea>
+        <div class="expandable-field">
+          <textarea class="activity-description" rows="3"></textarea>
+          <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
+        </div>
         <div class="activity-notes hidden">
-          <textarea class="activity-notes-input" rows="2" placeholder="Notes de l'activité..."></textarea>
+          <div class="expandable-field">
+            <textarea class="activity-notes-input" rows="2" placeholder="Notes de l'activité..."></textarea>
+            <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
+          </div>
         </div>
       </div>
     </template>
@@ -980,6 +1068,9 @@ const DEFAULT_META = {
   sizeClass: 26,
   designers: "",
   description: "Étude du conte La Belle et la Bête",
+  command: "",
+  personas: "",
+  sliders: "",
   activeTab: "settings"
 };
 
@@ -993,6 +1084,9 @@ const NEW_DESIGN_META = {
   sizeClass: "",
   designers: "",
   description: "",
+  command: "",
+  personas: "",
+  sliders: "",
   activeTab: "settings"
 };
 
@@ -1178,6 +1272,9 @@ const metaDayHoursInput = document.getElementById("meta-day-hours");
 const metaSizeClassInput = document.getElementById("meta-size-class");
 const metaDesignersInput = document.getElementById("meta-designers");
 const metaDescriptionInput = document.getElementById("meta-description");
+const metaCommandInput = document.getElementById("meta-command");
+const metaPersonasInput = document.getElementById("meta-personas");
+const metaSlidersInput = document.getElementById("meta-sliders");
 const topPie = document.getElementById("top-pie");
 const topLegend = document.getElementById("top-legend");
 const analysisWarning = document.getElementById("analysis-warning");
@@ -1488,6 +1585,9 @@ function renderTopPanel() {
   metaSizeClassInput.value = state.meta.sizeClass;
   metaDesignersInput.value = state.meta.designers;
   metaDescriptionInput.value = state.meta.description;
+  metaCommandInput.value = state.meta.command;
+  metaPersonasInput.value = state.meta.personas;
+  metaSlidersInput.value = state.meta.sliders;
 
   topTabSettings.classList.toggle("active", state.meta.activeTab === "settings");
   topTabAnalysis.classList.toggle("active", state.meta.activeTab === "analysis");
@@ -1676,6 +1776,18 @@ function openInfoModal() {
 
 function closeInfoModal() {
   infoModalBackdrop.classList.add("hidden");
+}
+
+function setupExpandableFields() {
+  document.addEventListener("click", (event) => {
+    const btn = event.target.closest(".expand-btn");
+    if (!btn) return;
+    const wrapper = btn.closest(".expandable-field");
+    if (!wrapper) return;
+    const isFullscreen = wrapper.classList.toggle("fullscreen");
+    btn.textContent = isFullscreen ? "✕" : "⤢";
+    btn.setAttribute("aria-label", isFullscreen ? "Quitter le plein écran" : "Plein écran");
+  });
 }
 
 function stripGradientForSession(session) {
@@ -2068,6 +2180,18 @@ function bindTopPanelEvents() {
     state.meta.description = event.target.value;
     saveState();
   });
+  metaCommandInput.addEventListener("input", (event) => {
+    state.meta.command = event.target.value;
+    saveState();
+  });
+  metaPersonasInput.addEventListener("input", (event) => {
+    state.meta.personas = event.target.value;
+    saveState();
+  });
+  metaSlidersInput.addEventListener("input", (event) => {
+    state.meta.sliders = event.target.value;
+    saveState();
+  });
 }
 
 addSessionBtn.addEventListener("click", () => {
@@ -2183,6 +2307,7 @@ importFileInput.addEventListener("change", async (e) => {
 });
 
 setupAutoSave();
+setupExpandableFields();
 bindTopPanelEvents();
 render();
     </script>
