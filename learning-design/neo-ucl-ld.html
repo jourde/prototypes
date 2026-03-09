@@ -588,6 +588,7 @@ select:focus-visible,
 
 main {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -597,6 +598,7 @@ main {
   flex-direction: row;
   align-items: stretch;
   height: 100%;
+  min-height: 0;
   padding: 8px 6px 10px;
 }
 
@@ -604,14 +606,16 @@ main {
   flex-direction: row;
   align-items: stretch;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
 }
 
 .board.layout-list {
   flex-direction: column;
   align-items: stretch;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
   gap: 10px;
   padding: 10px clamp(18px, 4vw, 72px) 14px;
 }
@@ -658,10 +662,13 @@ main {
 }
 
 .session-title-wrap {
+  display: grid;
+  gap: 5px;
   padding: 5px 7px 7px;
 }
 
 .session-title,
+.session-objectives,
 .activity-description,
 .session-notes-input,
 .activity-notes-input {
@@ -1033,6 +1040,7 @@ main {
   }
 
   main {
+    min-height: 0;
     overflow: auto;
   }
 
@@ -1155,6 +1163,7 @@ main {
             <div class="form-row">
               <label id="label-meta-delivery" for="meta-delivery">Mode</label>
               <select id="meta-delivery" class="panel-select">
+                <option id="opt-meta-delivery-empty" value=""></option>
                 <option id="opt-meta-delivery-onsite" value="onsite">Présentiel</option>
                 <option id="opt-meta-delivery-online" value="online">Distanciel</option>
                 <option id="opt-meta-delivery-hybrid" value="hybrid">Hybride</option>
@@ -1165,7 +1174,7 @@ main {
               <input id="meta-size-class" class="panel-input" type="number" min="1" />
             </div>
             <div class="form-row">
-              <label id="label-meta-designers" for="meta-designers">Concepteur(s)</label>
+              <label id="label-meta-designers" for="meta-designers">Concepteur(s)/Formateur(s)</label>
               <input id="meta-designers" class="panel-input" type="text" />
             </div>
             <div class="form-row">
@@ -1176,7 +1185,7 @@ main {
               </div>
             </div>
             <div class="form-row">
-              <label id="label-meta-sliders" for="meta-sliders">Curseurs</label>
+              <label id="label-meta-sliders" for="meta-sliders">Curseurs de la formation</label>
               <div class="expandable-field">
                 <textarea id="meta-sliders" class="panel-textarea" placeholder="Collez ici les curseurs déjà définis..."></textarea>
                 <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
@@ -1297,6 +1306,10 @@ main {
         </header>
         <div class="session-title-wrap">
           <textarea class="session-title" rows="2"></textarea>
+          <div class="expandable-field">
+            <textarea class="session-objectives" rows="2" placeholder="Objectifs du moment..."></textarea>
+            <button class="expand-btn" type="button" aria-label="Plein écran">⤢</button>
+          </div>
         </div>
         <div class="activities"></div>
         <footer class="session-footer">
@@ -1378,7 +1391,7 @@ main {
           <option value="markdown">Markdown</option>
           <option value="word">Word</option>
           <option value="html">HTML</option>
-          <option value="csv">CSV</option>
+          <option value="excel">Excel</option>
         </select>
         <div class="modal-actions">
           <button id="export-modal-cancel-btn" class="btn btn-light" type="button">Annuler</button>
@@ -1405,7 +1418,7 @@ main {
     <script>
 (() => {
 "use strict";
-const STORAGE_KEY = "learning-designer-fr-v1";
+const STORAGE_KEY = "learning-designer-fr-v2";
 
 const LEARNING_TYPES = [
   { id: "read", label: "Lire / Regarder / Écouter", color: "#5cc9de" },
@@ -1502,16 +1515,16 @@ let uid = 0;
 const nextId = () => `id-${Date.now()}-${uid++}`;
 const DEFAULT_DAY_HOURS = 7;
 const DEFAULT_META = {
-  name: "La Belle et la Bête",
+  name: "",
   uiLanguage: "fr",
   dayHours: DEFAULT_DAY_HOURS,
   learningDays: 0,
   learningHours: 0,
   learningMinutes: 0,
-  modeDelivery: "onsite",
-  sizeClass: 26,
+  modeDelivery: "",
+  sizeClass: "",
   designers: "",
-  description: "Étude du conte La Belle et la Bête",
+  description: "",
   command: "",
   personas: "",
   sliders: "",
@@ -1526,7 +1539,7 @@ const NEW_DESIGN_META = {
   learningDays: 0,
   learningHours: 0,
   learningMinutes: 0,
-  modeDelivery: "onsite",
+  modeDelivery: "",
   sizeClass: "",
   designers: "",
   description: "",
@@ -1541,152 +1554,7 @@ const defaultState = () => ({
   allNotesExpanded: false,
   topPanelCollapsed: false,
   meta: { ...DEFAULT_META },
-  sessions: [
-    {
-      id: nextId(),
-      title: "Séance 1 - Le début du conte",
-      notes: "",
-      notesExpanded: false,
-      activities: [
-        {
-          id: nextId(),
-          type: "read",
-          duration: 15,
-          groupMode: "individual",
-          description: "Lecture des pages 6 à 11 (Mme Leprince de Beaumont et son époque).",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "practice",
-          duration: 5,
-          groupMode: "subgroups",
-          description: "Quiz sur les connaissances acquises durant cette lecture.",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "read",
-          duration: 10,
-          groupMode: "individual",
-          description: "Lecture des pages 13 à 14 (incipit du conte).",
-          notes: ""
-        }
-      ]
-    },
-    {
-      id: nextId(),
-      title: "Séance 2 - Les caractéristiques du conte",
-      notes: "",
-      notesExpanded: false,
-      activities: [
-        {
-          id: nextId(),
-          type: "read",
-          duration: 3,
-          groupMode: "individual",
-          description: "Vous avez lu les pages 1 à 28 de La Belle et la Bête. Regardez cette vidéo.",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "practice",
-          duration: 10,
-          groupMode: "subgroups",
-          description: "Répondez aux questions sur le schéma narratif (étapes et définition).",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "read",
-          duration: 2,
-          groupMode: "individual",
-          description: "Regardez la vidéo sur les personnages des contes.",
-          notes: ""
-        }
-      ]
-    },
-    {
-      id: nextId(),
-      title: "Séance 3 - Nature et fonction",
-      notes: "",
-      notesExpanded: false,
-      activities: [
-        {
-          id: nextId(),
-          type: "read",
-          duration: 30,
-          groupMode: "whole",
-          description: "Comprendre la différence entre nature et fonction. Questionnement collectif puis synthèse.",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "investigate",
-          duration: 10,
-          groupMode: "subgroups",
-          description: "Quels mots pouvez-vous trouver pour compléter la carte mentale sur la nature des mots ?",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "practice",
-          duration: 30,
-          groupMode: "subgroups",
-          description: "Exercices d'entraînement sur la nature des mots.",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "produce",
-          duration: 40,
-          groupMode: "individual",
-          description: "Évaluation formative/sommative de grammaire.",
-          notes: ""
-        }
-      ]
-    },
-    {
-      id: nextId(),
-      title: "Séance 4 - Le dialogue",
-      notes: "",
-      notesExpanded: false,
-      activities: [
-        {
-          id: nextId(),
-          type: "read",
-          duration: 5,
-          groupMode: "individual",
-          description: "Lire un extrait de La Belle et la Bête.",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "discuss",
-          duration: 10,
-          groupMode: "subgroups",
-          description: "Répondre aux questions sur les verbes introducteurs de dialogue.",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "read",
-          duration: 5,
-          groupMode: "individual",
-          description: "Courte leçon sur le dialogue.",
-          notes: ""
-        },
-        {
-          id: nextId(),
-          type: "practice",
-          duration: 35,
-          groupMode: "individual",
-          description: "Exercices d'application sur le dialogue.",
-          notes: ""
-        }
-      ]
-    }
-  ]
+  sessions: []
 });
 
 const board = document.getElementById("board");
@@ -1795,9 +1663,9 @@ const I18N = {
     metaCommandLabel: "Commande institutionnelle",
     metaDeliveryLabel: "Mode",
     metaSizeLabel: "Taille du groupe",
-    metaDesignersLabel: "Concepteur(s)",
+    metaDesignersLabel: "Concepteur(s)/Formateur(s)",
     metaPersonasLabel: "Personas (profils)",
-    metaSlidersLabel: "Curseurs",
+    metaSlidersLabel: "Curseurs de la formation",
     unitDays: "jours",
     unitHours: "heures",
     unitMinutes: "minutes",
@@ -1820,6 +1688,7 @@ const I18N = {
     sessionMoveHintList: "Alt+Flèche haut/bas pour déplacer.",
     activityMoveHint: "Alt+Flèche haut/bas pour déplacer dans la séance.",
     sessionTitleLabel: "Titre de la séance",
+    sessionObjectivesLabel: "Objectifs du moment",
     sessionActivitiesLabel: "Activités de la séance",
     activityLabel: "Activité",
     activityDurationLabel: "Durée en minutes de l'activité",
@@ -1841,6 +1710,7 @@ const I18N = {
     personasPlaceholder: "Collez ici les personas (profils) déjà définis...",
     slidersPlaceholder: "Collez ici les curseurs déjà définis...",
     sessionNotesPlaceholder: "Notes de la séance...",
+    sessionObjectivesPlaceholder: "Objectifs du moment...",
     activityNotesPlaceholder: "Notes de l'activité...",
     durationMinutesSr: "Durée en minutes",
     fullscreen: "Plein écran",
@@ -1915,9 +1785,9 @@ const I18N = {
     metaCommandLabel: "Institutional brief",
     metaDeliveryLabel: "Mode",
     metaSizeLabel: "Group size",
-    metaDesignersLabel: "Designer(s)",
+    metaDesignersLabel: "Designer(s)/Trainer(s)",
     metaPersonasLabel: "Personas (profiles)",
-    metaSlidersLabel: "Sliders",
+    metaSlidersLabel: "Training sliders",
     unitDays: "days",
     unitHours: "hours",
     unitMinutes: "minutes",
@@ -1940,6 +1810,7 @@ const I18N = {
     sessionMoveHintList: "Alt+Up/Down Arrow to move.",
     activityMoveHint: "Alt+Up/Down Arrow to move within the session.",
     sessionTitleLabel: "Session title",
+    sessionObjectivesLabel: "Moment objectives",
     sessionActivitiesLabel: "Activities for session",
     activityLabel: "Activity",
     activityDurationLabel: "Activity duration in minutes",
@@ -1961,6 +1832,7 @@ const I18N = {
     personasPlaceholder: "Paste previously defined personas here...",
     slidersPlaceholder: "Paste previously defined sliders here...",
     sessionNotesPlaceholder: "Session notes...",
+    sessionObjectivesPlaceholder: "Moment objectives...",
     activityNotesPlaceholder: "Activity notes...",
     durationMinutesSr: "Duration in minutes",
     fullscreen: "Fullscreen",
@@ -2124,6 +1996,7 @@ function applyLocalizedUI() {
   document.getElementById("unit-designed-hours").textContent = t("unitHours");
   document.getElementById("unit-designed-minutes").textContent = t("unitMinutes");
   document.getElementById("unit-day-hours").textContent = t("unitHours");
+  document.getElementById("opt-meta-delivery-empty").textContent = "";
   document.getElementById("opt-meta-delivery-onsite").textContent = t("modeOnsite");
   document.getElementById("opt-meta-delivery-online").textContent = t("modeOnline");
   document.getElementById("opt-meta-delivery-hybrid").textContent = t("modeHybrid");
@@ -2178,6 +2051,9 @@ function applyLocalizedUI() {
   document.querySelectorAll(".session-notes-input").forEach((input) => {
     input.placeholder = t("sessionNotesPlaceholder");
   });
+  document.querySelectorAll(".session-objectives").forEach((input) => {
+    input.placeholder = t("sessionObjectivesPlaceholder");
+  });
   document.querySelectorAll(".activity-notes-input").forEach((input) => {
     input.placeholder = t("activityNotesPlaceholder");
   });
@@ -2206,6 +2082,7 @@ function hydrateState(parsed, fallback = defaultState()) {
     sessions: parsed.sessions.map((session, sessionIndex) => ({
       id: session?.id || nextId(),
       title: typeof session?.title === "string" ? session.title : defaultSessionTitle(sessionIndex + 1),
+      objectives: typeof session?.objectives === "string" ? session.objectives : "",
       notes: typeof session?.notes === "string" ? session.notes : "",
       notesExpanded: Boolean(session?.notesExpanded),
       activities: Array.isArray(session?.activities)
@@ -2239,13 +2116,16 @@ function hydrateState(parsed, fallback = defaultState()) {
   hydrated.meta.learningDays = normalizedLearning.days;
   hydrated.meta.learningHours = normalizedLearning.hours;
   hydrated.meta.learningMinutes = normalizedLearning.minutes;
-  hydrated.meta.sizeClass = Math.max(1, Number(hydrated.meta.sizeClass) || 1);
+  hydrated.meta.sizeClass =
+    String(hydrated.meta.sizeClass ?? "").trim() === ""
+      ? ""
+      : Math.max(1, Number(hydrated.meta.sizeClass) || 1);
   if (!["fr", "en"].includes(hydrated.meta.uiLanguage)) hydrated.meta.uiLanguage = "fr";
 
   if (hydrated.meta.modeDelivery === "classroom") hydrated.meta.modeDelivery = "onsite";
   if (hydrated.meta.modeDelivery === "blended") hydrated.meta.modeDelivery = "hybrid";
-  if (!["onsite", "online", "hybrid"].includes(hydrated.meta.modeDelivery)) {
-    hydrated.meta.modeDelivery = "onsite";
+  if (!["", "onsite", "online", "hybrid"].includes(hydrated.meta.modeDelivery)) {
+    hydrated.meta.modeDelivery = "";
   }
   if (hydrated.meta.activeTab === "timeline") hydrated.meta.activeTab = "settings";
   if (!["settings", "analysis"].includes(hydrated.meta.activeTab)) {
@@ -2973,6 +2853,7 @@ function labelForSyncMode(mode) {
 }
 
 function labelForLocationMode(mode) {
+  if (!mode) return "-";
   if (mode === "online") return t("modeOnline");
   if (mode === "hybrid") return t("modeHybrid");
   return t("modeOnsite");
@@ -3018,7 +2899,7 @@ function buildMarkdownExport() {
   const lines = [`# ${state.meta.name || "Design Learning"}`, "", "## Paramètres", ""];
   lines.push(`- Mode: ${labelForLocationMode(state.meta.modeDelivery)}`);
   lines.push(`- Taille du groupe: ${state.meta.sizeClass || "-"}`);
-  lines.push(`- Concepteur(s): ${state.meta.designers || "-"}`);
+  lines.push(`- Concepteur(s)/Formateur(s): ${state.meta.designers || "-"}`);
   lines.push(
     `- Temps d'apprentissage: ${formatPedagogicalTime(
       state.meta.learningDays,
@@ -3056,6 +2937,10 @@ function buildMarkdownExport() {
 
   state.sessions.forEach((session, sessionIndex) => {
     lines.push(`## ${sessionIndex + 1}. ${session.title}`);
+    if (session.objectives) {
+      lines.push("> Objectifs:");
+      lines.push(markdownQuoteBlock(session.objectives));
+    }
     if (session.notes) {
       lines.push("> Notes:");
       lines.push(markdownQuoteBlock(session.notes));
@@ -3101,6 +2986,7 @@ function buildHtmlExportDocument() {
       return `
       <section>
         <h2>${sessionIndex + 1}. ${escapeHtml(session.title)}</h2>
+        ${session.objectives ? `<p><strong>Objectifs:</strong><br />${escapeHtmlWithBreaks(session.objectives)}</p>` : ""}
         ${session.notes ? `<p><strong>Notes:</strong> ${escapeHtml(session.notes)}</p>` : ""}
         <ol>${activities}</ol>
       </section>
@@ -3113,7 +2999,7 @@ function buildHtmlExportDocument() {
     <h2>Paramètres</h2>
     <p><strong>Mode:</strong> ${escapeHtml(labelForLocationMode(state.meta.modeDelivery))}</p>
     <p><strong>Taille du groupe:</strong> ${escapeHtml(state.meta.sizeClass || "-")}</p>
-    <p><strong>Concepteur(s):</strong> ${escapeHtml(state.meta.designers || "-")}</p>
+    <p><strong>Concepteur(s)/Formateur(s):</strong> ${escapeHtml(state.meta.designers || "-")}</p>
     <p><strong>Temps d'apprentissage:</strong> ${escapeHtml(
       formatPedagogicalTime(
         state.meta.learningDays,
@@ -3474,6 +3360,7 @@ function buildStateFromCsv(csvText) {
       session = {
         id: nextId(),
         title: sessionTitle,
+        objectives: "",
         notes: sessionNotes,
         notesExpanded: false,
         activities: []
@@ -3787,6 +3674,7 @@ function render() {
     const card = frag.querySelector(".session-card");
     const strip = frag.querySelector(".session-strip");
     const title = frag.querySelector(".session-title");
+    const objectives = frag.querySelector(".session-objectives");
     const activitiesWrap = frag.querySelector(".activities");
     const totalDuration = frag.querySelector(".total-duration");
     const sessionNotes = frag.querySelector(".session-notes");
@@ -3806,6 +3694,13 @@ function render() {
     title.setAttribute("aria-label", `${t("sessionTitleLabel")} ${sessionIndex + 1}`);
     title.addEventListener("input", (e) => {
       session.title = e.target.value;
+      saveState();
+    });
+    objectives.value = session.objectives || "";
+    objectives.setAttribute("aria-label", `${t("sessionObjectivesLabel")} ${sessionIndex + 1}`);
+    objectives.placeholder = t("sessionObjectivesPlaceholder");
+    objectives.addEventListener("input", (e) => {
+      session.objectives = e.target.value;
       saveState();
     });
     deleteSessionBtn.title = t("deleteSession");
@@ -4175,7 +4070,8 @@ function bindTopPanelEvents() {
     renderTopPanel();
   });
   metaSizeClassInput.addEventListener("input", (event) => {
-    state.meta.sizeClass = Math.max(1, Number(event.target.value) || 1);
+    const rawValue = String(event.target.value ?? "").trim();
+    state.meta.sizeClass = rawValue === "" ? "" : Math.max(1, Number(rawValue) || 1);
     saveState();
   });
   metaDesignersInput.addEventListener("input", (event) => {
@@ -4209,6 +4105,7 @@ addSessionBtn.addEventListener("click", () => {
   state.sessions.push({
     id: nextId(),
     title: defaultSessionTitle(state.sessions.length + 1),
+    objectives: "",
     notes: "",
     notesExpanded: false,
     activities: []
