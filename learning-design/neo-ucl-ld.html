@@ -6,13 +6,16 @@
     <title>Learning Designer - Prototype</title>
     <style>
 :root {
-  --bg: #d8d8d8;
-  --panel: #ececec;
-  --panel-2: #e2e2e2;
-  --line: #c3c3c3;
-  --text: #2b2b2b;
+  --bg: #eef3f8;
+  --panel: #ffffff;
+  --panel-2: #f6f8fb;
+  --line: #d4dde8;
+  --text: #1f2937;
+  --muted: #5e6b7c;
   --primary: #145bb4;
   --focus: #0a58ca;
+  --shadow-soft: 0 12px 32px rgba(19, 39, 68, 0.08);
+  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.08);
   --read: #5cc9de;
   --investigate: #f78282;
   --practice: #bd93e6;
@@ -31,7 +34,9 @@ html,
 body {
   margin: 0;
   height: 100%;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at top left, rgba(20, 91, 180, 0.08), transparent 30%),
+    linear-gradient(180deg, #f7fafd 0%, var(--bg) 100%);
   color: var(--text);
   font-family: "Trebuchet MS", "Lucida Grande", "Segoe UI", sans-serif;
 }
@@ -87,17 +92,18 @@ select:focus-visible,
 }
 
 .top-panel {
-  border-bottom: 1px solid #c7c7c7;
-  background: #f0f0f0;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-soft);
 }
 
 .top-brand {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  background: #f8f8f8;
-  border-bottom: 1px solid #d8d8d8;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 247, 252, 0.98));
+  border-bottom: 1px solid var(--line);
 }
 
 .brand-left {
@@ -108,24 +114,26 @@ select:focus-visible,
 
 .brand-title {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
-  font-weight: 600;
-  color: #30343b;
+  font-weight: 700;
+  color: #253245;
 }
 
 .top-panel-toggle {
-  border: 1px solid #aeb6bf;
-  border-radius: 6px;
-  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 12px;
   font-size: 13px;
-  background: linear-gradient(#fdfdfd, #e4e7eb);
+  background: #fff;
+  color: #2d3a4d;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
   cursor: pointer;
 }
 
 .top-panel-body {
-  padding: 8px 8px 10px;
-  background: #efefef;
+  padding: 16px 18px 18px;
+  background: linear-gradient(180deg, rgba(247, 250, 253, 0.94), rgba(241, 245, 250, 0.94));
 }
 
 .top-panel.collapsed .top-panel-body {
@@ -145,18 +153,21 @@ select:focus-visible,
 
 .top-tab {
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 999px;
   background: transparent;
-  padding: 6px 14px;
+  padding: 8px 14px;
   font-size: 15px;
-  color: #2f3338;
+  color: #415067;
   cursor: pointer;
 }
 
 .top-tab.active {
-  background: #145bb4;
-  border-color: #104f9c;
+  background: rgba(20, 91, 180, 0.12);
+  border-color: rgba(20, 91, 180, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(20, 91, 180, 0.08);
+  font-weight: 700;
   color: #fff;
+  color: #124f9c;
 }
 
 .panel-grid {
@@ -197,12 +208,13 @@ select:focus-visible,
 .panel-select,
 .panel-textarea {
   width: 100%;
-  border: 1px solid #bfc5cb;
-  border-radius: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   font-size: 14px;
-  padding: 6px 8px;
-  background: #f8f8f8;
-  color: #2f2f2f;
+  padding: 9px 10px;
+  background: #fff;
+  color: var(--text);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
 .panel-textarea {
@@ -294,11 +306,12 @@ select:focus-visible,
 }
 
 .time-unit {
-  border: 1px solid #bfc5cb;
-  border-radius: 6px;
-  background: #dde1e6;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #edf2f8;
   font-size: 14px;
-  padding: 6px 8px;
+  padding: 9px 10px;
+  color: var(--muted);
 }
 
 .analysis-wrap {
@@ -514,20 +527,40 @@ select:focus-visible,
 
 .modal {
   width: min(420px, 92vw);
-  border: 1px solid #b8b8b8;
-  border-radius: 8px;
-  background: #f1f1f1;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  display: grid;
+  gap: 10px;
 }
 
 .modal-title {
-  margin: 0 0 10px;
+  margin: 0;
   font-size: 18px;
+  line-height: 1.15;
+}
+
+.modal label {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #334155;
+}
+
+.modal .panel-select {
+  min-height: 48px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 12px;
+  line-height: 1.2;
 }
 
 .modal-actions {
-  margin-top: 12px;
+  margin-top: 8px;
   display: flex;
   gap: 8px;
   justify-content: flex-end;
@@ -538,31 +571,69 @@ select:focus-visible,
   gap: 12px;
   align-items: center;
   justify-content: space-between;
-  padding: 6px;
-  border-bottom: 1px solid #b3b3b3;
-  background: linear-gradient(#f6f6f6, #d9d9d9);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
 }
 
 .toolbar-left,
 .toolbar-right {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.toolbar-right {
+  justify-content: flex-end;
+}
+
+.toolbar .btn,
+.toolbar .panel-select,
+.save-status {
+  min-height: 40px;
+}
+
+.save-status {
+  display: grid;
+  align-content: center;
+  gap: 1px;
+  min-width: 220px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfdff, #f2f6fb);
+  color: #2d3b50;
+  line-height: 1.05;
+}
+
+.save-status-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.save-status-value {
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .layout-toggle {
   display: inline-flex;
-  border: 1px solid #aeb4bd;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   overflow: hidden;
-  background: #d7dce2;
+  background: #f3f6fa;
 }
 
 .layout-toggle-btn {
   border: 0;
-  border-right: 1px solid #b7bdc6;
+  border-right: 1px solid var(--line);
   background: transparent;
-  color: #3a404a;
+  color: #475569;
   width: 46px;
   height: 36px;
   display: inline-flex;
@@ -576,32 +647,38 @@ select:focus-visible,
 }
 
 .layout-toggle-btn[aria-pressed="true"] {
-  background: linear-gradient(#f4f6f8, #d4d9df);
-  color: #2f353f;
-  box-shadow: inset 0 1px 0 #ffffff;
+  background: #fff;
+  color: #1d4f91;
+  box-shadow: inset 0 0 0 1px rgba(20, 91, 180, 0.12);
 }
 
 .layout-toggle-btn:hover {
-  background: #cfd6de;
+  background: #e8eef6;
 }
 
 .layout-toggle-btn[aria-pressed="true"]:hover {
-  background: linear-gradient(#eff2f5, #cfd5dc);
+  background: #fff;
 }
 
 .btn {
-  border: 1px solid #ababab;
-  border-radius: 5px;
-  background: linear-gradient(#fdfdfd, #dddddd);
-  color: #2d2d2d;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: #2d3a4d;
   font-size: 14px;
-  padding: 8px 12px;
+  padding: 9px 13px;
   cursor: pointer;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.toolbar .panel-select {
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .btn:hover {
-  filter: brightness(0.98);
+  background: #f5f8fc;
 }
 
 .btn:active {
@@ -609,30 +686,32 @@ select:focus-visible,
 }
 
 .btn-primary {
-  background: linear-gradient(#2274da, #0f57b6);
+  background: linear-gradient(180deg, #2a7be1, #135cb9);
   border-color: #0d4f9e;
   color: #fff;
   font-weight: 600;
+  box-shadow: 0 10px 20px rgba(20, 91, 180, 0.22);
 }
 
 .btn-light {
-  background: linear-gradient(#f5f5f5, #e7e7e7);
+  background: #f4f7fb;
 }
 
 main {
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  background: transparent;
 }
 
 .board {
   display: flex;
-  gap: 4px;
+  gap: 14px;
   flex-direction: row;
   align-items: stretch;
   height: 100%;
   min-height: 0;
-  padding: 8px 6px 10px;
+  padding: 18px 14px 20px;
 }
 
 .board.layout-columns {
@@ -649,16 +728,17 @@ main {
   overflow-x: hidden;
   overflow-y: scroll;
   scrollbar-gutter: stable;
-  gap: 10px;
-  padding: 10px clamp(18px, 4vw, 72px) 14px;
+  gap: 14px;
+  padding: 18px clamp(18px, 4vw, 72px) 20px;
 }
 
 .session-card {
   display: flex;
   flex-direction: column;
-  border: 2px solid #666;
-  border-radius: 10px;
-  background: linear-gradient(#f2f2f2, #dedede);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
 
@@ -678,26 +758,26 @@ main {
 
 .session-header {
   position: relative;
-  border-bottom: 1px solid #bbb;
-  background: #f7f7f7;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-2);
 }
 
 .session-strip {
-  height: 28px;
-  border-bottom: 1px solid #bbb;
+  height: 14px;
+  border-bottom: 1px solid var(--line);
 }
 
 .delete-session-btn {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: -7px;
+  right: -7px;
   border-radius: 999px;
 }
 
 .session-title-wrap {
   display: grid;
-  gap: 5px;
-  padding: 5px 7px 7px;
+  gap: 8px;
+  padding: 10px 12px 12px;
 }
 
 .session-title,
@@ -706,31 +786,33 @@ main {
 .session-notes-input,
 .activity-notes-input {
   width: 100%;
-  border: 1px solid #c8c8c8;
-  border-radius: 4px;
-  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 10px;
   resize: vertical;
   font: inherit;
   font-size: 13px;
-  background: #efefef;
+  background: #fff;
 }
 
 .activities {
   flex: 1 1 auto;
-  padding: 0 5px 7px;
+  padding: 0 12px 12px;
   overflow-y: auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
 }
 
 .activity-card {
-  border-left: 10px solid #999;
-  border-radius: 4px;
-  background: #e6e6e6;
-  box-shadow: inset 0 0 0 1px #cfcfcf;
-  padding: 5px;
+  border-left: 8px solid #999;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfdff, #f3f6fa);
+  box-shadow:
+    inset 0 0 0 1px rgba(212, 221, 232, 0.9),
+    0 4px 14px rgba(15, 23, 42, 0.04);
+  padding: 10px;
 }
 
 .session-card,
@@ -779,64 +861,55 @@ main {
 
 .activity-controls {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 5px;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
   margin-bottom: 0;
   flex: 0 0 auto;
 }
 
 .activity-toolbar {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  margin-bottom: 5px;
-  padding-bottom: 1px;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .activity-duration {
-  border: 1px solid #b9b9b9;
-  border-radius: 4px;
-  background: #f4f4f4;
-  padding: 6px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  padding: 0;
   font: inherit;
+  font-weight: 700;
+  text-align: center;
+  color: #233249;
 }
 
 .choice-btn {
-  border: 1px solid #c5ccd8;
-  border-radius: 8px;
-  background: #eceff4;
-  padding: 0;
-  width: 32px;
-  height: 32px;
+  border: 1px solid #cad5e2;
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px 10px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   cursor: pointer;
-  color: #455064;
+  color: #314255;
   max-width: none;
 }
 
 .choice-btn:hover {
-  background: #e1e7f1;
+  background: #f3f7fc;
 }
 
 .choice-btn.open {
   border-color: #7f8cf8;
-  background: #e8ebff;
-  color: #4a52d8;
-  width: auto;
-  padding: 0 8px;
-  gap: 6px;
-}
-
-.choice-btn.open::after {
-  content: attr(data-group-title);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
+  background: #eef2ff;
+  color: #3946b5;
 }
 
 .choice-btn svg {
@@ -852,7 +925,11 @@ main {
 }
 
 .choice-btn .choice-label {
-  display: none;
+  display: inline;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .choice-menu {
@@ -910,41 +987,69 @@ main {
 }
 
 .activity-duration {
-  width: 56px;
+  width: 52px;
 }
 
 .mini-label {
   display: inline-flex;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
-  font-size: 12px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #cad5e2;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  color: #314255;
 }
 
 .activity-actions {
   display: inline-flex;
   gap: 3px;
+  margin-left: auto;
+  align-self: flex-end;
 }
 
 .activity-params {
   display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 5px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
   margin-bottom: 0;
   flex: 0 0 auto;
 }
 
 .activity-param {
-  display: inline-flex;
+  display: grid;
+  gap: 4px;
   flex: 0 0 auto;
 }
 
+.activity-param-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.activity-param-duration {
+  cursor: default;
+}
+
+.duration-symbol,
+.duration-unit-inline {
+  color: var(--muted);
+  font-weight: 600;
+}
+
 .icon-btn {
-  border: 1px solid #b6b6b6;
-  background: #f4f4f4;
-  border-radius: 5px;
-  width: 26px;
-  height: 24px;
+  border: 1px solid #cfdae6;
+  background: #fff;
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   cursor: pointer;
   line-height: 1;
@@ -966,6 +1071,7 @@ main {
 .delete-btn svg {
   width: 14px;
   height: 14px;
+  display: block;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.9;
@@ -977,9 +1083,10 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 6px 5px;
-  border-top: 1px solid #b9b9b9;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+  background: rgba(246, 248, 251, 0.8);
 }
 
 .session-card .btn {
@@ -997,17 +1104,17 @@ main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #b7b7b7;
-  border-radius: 7px;
-  background: #efefef;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
   min-width: 70px;
-  padding: 5px 8px;
+  padding: 7px 10px;
   font-size: 13px;
   font-weight: 600;
 }
 
 .session-notes {
-  padding: 0 5px 7px;
+  padding: 0 12px 12px;
 }
 
 .hidden {
@@ -1068,7 +1175,7 @@ main {
 
   .toolbar-right {
     width: 100%;
-    overflow-x: auto;
+    justify-content: flex-start;
     padding-bottom: 4px;
   }
 
@@ -1094,7 +1201,12 @@ main {
   }
 
   .activity-toolbar {
-    overflow-x: auto;
+    gap: 8px;
+  }
+
+  .save-status {
+    width: 100%;
+    min-width: 0;
   }
 }
 
@@ -1311,8 +1423,12 @@ main {
       <div class="toolbar-right">
         <button id="new-design-btn" class="btn">Nouveau</button>
         <button id="import-design-btn" class="btn">Importer</button>
-        <button id="export-design-btn" class="btn">Exporter</button>
-        <button id="save-btn" class="btn">Sauvegarder</button>
+        <div id="save-status" class="save-status" role="status" aria-live="polite" aria-atomic="true">
+          <span id="save-status-label" class="save-status-label">Autosauvegarde locale</span>
+          <span id="save-status-value" class="save-status-value">Modifications enregistrées automatiquement</span>
+        </div>
+        <button id="save-btn" class="btn btn-light">Enregistrer</button>
+        <button id="export-design-btn" class="btn btn-primary">Exporter</button>
         <label for="lang-select" class="sr-only">Langue de l’interface</label>
         <select id="lang-select" class="panel-select" style="width:auto;min-width:96px;">
           <option value="fr">Français</option>
@@ -1369,19 +1485,41 @@ main {
       <div class="activity-card">
         <div class="activity-toolbar">
           <div class="activity-controls">
-            <button class="choice-btn activity-type-btn" type="button"></button>
-            <label class="mini-label">
-              <span class="sr-only activity-duration-sr-label">Durée en minutes</span>
-              ⏱
-              <input class="activity-duration" type="number" min="1" />
+            <span class="activity-param">
+              <span class="activity-param-label activity-type-label">Type</span>
+              <button class="choice-btn activity-type-btn" type="button"></button>
+            </span>
+            <label class="activity-param activity-param-duration">
+              <span class="activity-param-label activity-duration-label">Durée</span>
+              <span class="mini-label">
+                <span class="sr-only activity-duration-sr-label">Durée en minutes</span>
+                <span class="duration-symbol" aria-hidden="true">⏱</span>
+                <input class="activity-duration" type="number" min="1" />
+                <span class="duration-unit-inline" aria-hidden="true">min</span>
+              </span>
             </label>
-            <button class="choice-btn activity-group-mode-btn" type="button"></button>
+            <span class="activity-param">
+              <span class="activity-param-label activity-group-label">Groupe</span>
+              <button class="choice-btn activity-group-mode-btn" type="button"></button>
+            </span>
           </div>
           <div class="activity-params">
-            <span class="activity-param"><button class="choice-btn activity-trainer-mode-btn" type="button"></button></span>
-            <span class="activity-param"><button class="choice-btn activity-sync-mode-btn" type="button"></button></span>
-            <span class="activity-param"><button class="choice-btn activity-location-mode-btn" type="button"></button></span>
-            <span class="activity-param"><button class="choice-btn activity-evaluation-mode-btn" type="button"></button></span>
+            <span class="activity-param">
+              <span class="activity-param-label activity-trainer-label">Formateur</span>
+              <button class="choice-btn activity-trainer-mode-btn" type="button"></button>
+            </span>
+            <span class="activity-param">
+              <span class="activity-param-label activity-sync-label">Rythme</span>
+              <button class="choice-btn activity-sync-mode-btn" type="button"></button>
+            </span>
+            <span class="activity-param">
+              <span class="activity-param-label activity-location-label">Modalité</span>
+              <button class="choice-btn activity-location-mode-btn" type="button"></button>
+            </span>
+            <span class="activity-param">
+              <span class="activity-param-label activity-evaluation-label">Évaluation</span>
+              <button class="choice-btn activity-evaluation-mode-btn" type="button"></button>
+            </span>
           </div>
           <div class="activity-actions">
             <button class="icon-btn delete-btn delete-activity-btn" title="Supprimer" aria-label="Supprimer">
@@ -1612,6 +1750,8 @@ const importDesignBtn = document.getElementById("import-design-btn");
 const exportDesignBtn = document.getElementById("export-design-btn");
 const infoBtn = document.getElementById("info-btn");
 const saveBtn = document.getElementById("save-btn");
+const saveStatusLabel = document.getElementById("save-status-label");
+const saveStatusValue = document.getElementById("save-status-value");
 const importFileInput = document.getElementById("import-file-input");
 const langSelect = document.getElementById("lang-select");
 const srStatus = document.getElementById("sr-status");
@@ -1674,6 +1814,7 @@ let state = loadState();
 let dragState = null;
 let activeModalBackdrop = null;
 let previousFocusedElement = null;
+let lastSavedAt = null;
 
 const I18N = {
   fr: {
@@ -1690,8 +1831,12 @@ const I18N = {
     new: "Nouveau",
     import: "Importer",
     export: "Exporter",
-    save: "Sauvegarder",
-    saved: "Exporté",
+    save: "Enregistrer",
+    saved: "Enregistré",
+    savedLocal: "Enregistré localement.",
+    autosaveLabel: "Autosauvegarde locale",
+    autosaveReady: "Modifications enregistrées automatiquement",
+    autosaveSavedAt: "Dernier enregistrement :",
     info: "Information",
     toolbarRegion: "Actions du design",
     analysisTitle: "Expérience d’apprentissage",
@@ -1830,7 +1975,11 @@ const I18N = {
     import: "Import",
     export: "Export",
     save: "Save",
-    saved: "Exported",
+    saved: "Saved",
+    savedLocal: "Saved locally.",
+    autosaveLabel: "Local autosave",
+    autosaveReady: "Changes are saved automatically",
+    autosaveSavedAt: "Last saved:",
     info: "About",
     toolbarRegion: "Design actions",
     analysisTitle: "Learning Experience",
@@ -2006,6 +2155,23 @@ function shortLabel(label) {
     .filter(Boolean)[0] || String(label || "");
 }
 
+function formatSavedTime(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+  const locale = currentLang() === "en" ? "en-GB" : "fr-BE";
+  return new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date);
+}
+
+function updateSaveStatus() {
+  if (!saveStatusLabel || !saveStatusValue) return;
+  saveStatusLabel.textContent = t("autosaveLabel");
+  saveStatusValue.textContent = lastSavedAt
+    ? `${t("autosaveSavedAt")} ${formatSavedTime(lastSavedAt)}`
+    : t("autosaveReady");
+}
+
 function ensureMarkdownToolbars(root = document) {
   root.querySelectorAll(".expandable-field").forEach((wrapper) => {
     if (wrapper.querySelector(".markdown-toolbar")) return;
@@ -2142,6 +2308,7 @@ function applyLocalizedUI() {
   importDesignBtn.textContent = t("import");
   exportDesignBtn.textContent = t("export");
   saveBtn.textContent = t("save");
+  saveBtn.setAttribute("aria-label", t("save"));
   infoBtn.textContent = t("info");
   infoBtn.setAttribute("aria-haspopup", "dialog");
   importDesignBtn.setAttribute("aria-haspopup", "dialog");
@@ -2171,6 +2338,7 @@ function applyLocalizedUI() {
   document.getElementById("info-modal-p4").innerHTML = t("infoP4");
   infoModalCloseBtn.textContent = t("close");
   document.querySelector("label[for='lang-select']").textContent = t("uiLanguage");
+  updateSaveStatus();
   document.querySelectorAll(".duration-unit").forEach((unit) => {
     unit.textContent = "min";
   });
@@ -2292,6 +2460,8 @@ function createNewDesignState() {
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    lastSavedAt = new Date();
+    updateSaveStatus();
   } catch (error) {
     console.error("Impossible de sauvegarder l'état local.", error);
     announce(currentLang() === "en" ? "Local save failed." : "Échec de la sauvegarde locale.");
@@ -2348,10 +2518,11 @@ function getOption(options, value) {
 
 function setChoiceButton(button, options, value) {
   const option = getOption(options, value);
+  const groupTitle = button.dataset.groupTitle || "";
   button.dataset.value = option.value;
-  button.innerHTML = `${option.icon}<span class="choice-label">${option.short}</span>`;
-  button.title = option.label;
-  button.setAttribute("aria-label", option.label);
+  button.innerHTML = `${option.icon}<span class="choice-label">${option.label}</span>`;
+  button.title = groupTitle ? `${groupTitle}: ${option.label}` : option.label;
+  button.setAttribute("aria-label", groupTitle ? `${groupTitle}: ${option.label}` : option.label);
   button.setAttribute("aria-haspopup", "listbox");
   button.setAttribute("aria-expanded", "false");
 }
@@ -4105,6 +4276,13 @@ function render() {
       const syncModeBtn = activityFrag.querySelector(".activity-sync-mode-btn");
       const locationModeBtn = activityFrag.querySelector(".activity-location-mode-btn");
       const evaluationModeBtn = activityFrag.querySelector(".activity-evaluation-mode-btn");
+      const typeLabel = activityFrag.querySelector(".activity-type-label");
+      const durationLabel = activityFrag.querySelector(".activity-duration-label");
+      const groupLabel = activityFrag.querySelector(".activity-group-label");
+      const trainerLabel = activityFrag.querySelector(".activity-trainer-label");
+      const syncLabel = activityFrag.querySelector(".activity-sync-label");
+      const locationLabel = activityFrag.querySelector(".activity-location-label");
+      const evaluationLabel = activityFrag.querySelector(".activity-evaluation-label");
       const description = activityFrag.querySelector(".activity-description");
       const activityNotes = activityFrag.querySelector(".activity-notes");
       const activityNotesInput = activityFrag.querySelector(".activity-notes-input");
@@ -4117,27 +4295,28 @@ function render() {
       activityCard.tabIndex = 0;
       activityCard.setAttribute("role", "group");
       activityCard.setAttribute("aria-label", `${t("activityLabel")} ${activityIndex + 1}. ${t("activityMoveHint")}`);
-      setChoiceButton(typeBtn, ACTIVITY_TYPE_OPTIONS, activity.type);
       typeBtn.dataset.groupTitle = t("groupTitleType");
-      typeBtn.title = `${t("groupTitleType")}: ${getOption(ACTIVITY_TYPE_OPTIONS, activity.type).label}`;
-      durationInput.value = activity.duration;
-      durationInput.setAttribute("inputmode", "numeric");
-      durationInput.setAttribute("aria-label", `${t("activityDurationLabel")} ${activityIndex + 1}`);
-      setChoiceButton(groupModeBtn, GROUP_MODE_OPTIONS, activity.groupMode);
-      setChoiceButton(trainerModeBtn, TRAINER_OPTIONS, activity.teacherPresence);
-      setChoiceButton(syncModeBtn, SYNC_OPTIONS, activity.syncMode);
-      setChoiceButton(locationModeBtn, LOCATION_OPTIONS, activity.locationMode);
-      setChoiceButton(evaluationModeBtn, EVAL_OPTIONS, activity.evaluationMode);
       groupModeBtn.dataset.groupTitle = t("groupTitleGroup");
       trainerModeBtn.dataset.groupTitle = t("groupTitleTrainer");
       syncModeBtn.dataset.groupTitle = t("groupTitlePacing");
       locationModeBtn.dataset.groupTitle = t("groupTitleMode");
       evaluationModeBtn.dataset.groupTitle = t("groupTitleEvaluation");
-      groupModeBtn.title = `${t("groupTitleGroup")}: ${getOption(GROUP_MODE_OPTIONS, activity.groupMode).label}`;
-      trainerModeBtn.title = `${t("groupTitleTrainer")}: ${getOption(TRAINER_OPTIONS, activity.teacherPresence).label}`;
-      syncModeBtn.title = `${t("groupTitlePacing")}: ${getOption(SYNC_OPTIONS, activity.syncMode).label}`;
-      locationModeBtn.title = `${t("groupTitleMode")}: ${getOption(LOCATION_OPTIONS, activity.locationMode).label}`;
-      evaluationModeBtn.title = `${t("groupTitleEvaluation")}: ${getOption(EVAL_OPTIONS, activity.evaluationMode).label}`;
+      setChoiceButton(typeBtn, ACTIVITY_TYPE_OPTIONS, activity.type);
+      setChoiceButton(groupModeBtn, GROUP_MODE_OPTIONS, activity.groupMode);
+      setChoiceButton(trainerModeBtn, TRAINER_OPTIONS, activity.teacherPresence);
+      setChoiceButton(syncModeBtn, SYNC_OPTIONS, activity.syncMode);
+      setChoiceButton(locationModeBtn, LOCATION_OPTIONS, activity.locationMode);
+      setChoiceButton(evaluationModeBtn, EVAL_OPTIONS, activity.evaluationMode);
+      typeLabel.textContent = t("groupTitleType");
+      durationLabel.textContent = currentLang() === "en" ? "Duration" : "Durée";
+      groupLabel.textContent = t("groupTitleGroup");
+      trainerLabel.textContent = t("groupTitleTrainer");
+      syncLabel.textContent = t("groupTitlePacing");
+      locationLabel.textContent = t("groupTitleMode");
+      evaluationLabel.textContent = t("groupTitleEvaluation");
+      durationInput.value = activity.duration;
+      durationInput.setAttribute("inputmode", "numeric");
+      durationInput.setAttribute("aria-label", `${t("activityDurationLabel")} ${activityIndex + 1}`);
       description.value = activity.description;
       description.setAttribute("aria-label", `${t("activityDescriptionLabel")} ${activityIndex + 1}`);
       activityNotesInput.value = activity.notes || "";
@@ -4474,12 +4653,7 @@ newDesignBtn.addEventListener("click", () => {
 
 saveBtn.addEventListener("click", () => {
   saveState();
-  exportDesign();
-  saveBtn.textContent = t("saved");
-  setTimeout(() => {
-    saveBtn.textContent = t("save");
-  }, 1100);
-  announce(t("saved"));
+  announce(t("savedLocal"));
 });
 
 function exportDesign(format = "json") {
