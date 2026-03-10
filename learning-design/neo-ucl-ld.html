@@ -1207,8 +1207,12 @@ main {
               <input id="meta-size-class" class="panel-input" type="number" min="1" />
             </div>
             <div class="form-row">
-              <label id="label-meta-designers" for="meta-designers">Concepteur(s)/Formateur(s)</label>
+              <label id="label-meta-designers" for="meta-designers">Concepteur(s)</label>
               <input id="meta-designers" class="panel-input" type="text" />
+            </div>
+            <div class="form-row">
+              <label id="label-meta-trainers" for="meta-trainers">Formateur(s)</label>
+              <input id="meta-trainers" class="panel-input" type="text" />
             </div>
             <div class="form-row">
               <label id="label-meta-personas" for="meta-personas">Personas (profils)</label>
@@ -1557,6 +1561,7 @@ const DEFAULT_META = {
   modeDelivery: "",
   sizeClass: "",
   designers: "",
+  trainers: "",
   description: "",
   command: "",
   personas: "",
@@ -1575,6 +1580,7 @@ const NEW_DESIGN_META = {
   modeDelivery: "",
   sizeClass: "",
   designers: "",
+  trainers: "",
   description: "",
   command: "",
   personas: "",
@@ -1627,6 +1633,7 @@ const metaDeliverySelect = document.getElementById("meta-delivery");
 const metaDayHoursInput = document.getElementById("meta-day-hours");
 const metaSizeClassInput = document.getElementById("meta-size-class");
 const metaDesignersInput = document.getElementById("meta-designers");
+const metaTrainersInput = document.getElementById("meta-trainers");
 const metaDescriptionInput = document.getElementById("meta-description");
 const metaCommandInput = document.getElementById("meta-command");
 const metaPersonasInput = document.getElementById("meta-personas");
@@ -1696,7 +1703,8 @@ const I18N = {
     metaCommandLabel: "Commande institutionnelle",
     metaDeliveryLabel: "Mode",
     metaSizeLabel: "Taille du groupe",
-    metaDesignersLabel: "Concepteur(s)/Formateur(s)",
+    metaDesignersLabel: "Concepteur(s)",
+    metaTrainersLabel: "Formateur(s)",
     metaPersonasLabel: "Personas (profils)",
     metaSlidersLabel: "Curseurs de la formation",
     unitDays: "jours",
@@ -1834,7 +1842,8 @@ const I18N = {
     metaCommandLabel: "Institutional brief",
     metaDeliveryLabel: "Mode",
     metaSizeLabel: "Group size",
-    metaDesignersLabel: "Designer(s)/Trainer(s)",
+    metaDesignersLabel: "Designer(s)",
+    metaTrainersLabel: "Trainer(s)",
     metaPersonasLabel: "Personas (profiles)",
     metaSlidersLabel: "Training sliders",
     unitDays: "days",
@@ -2103,6 +2112,7 @@ function applyLocalizedUI() {
   document.getElementById("label-meta-delivery").textContent = t("metaDeliveryLabel");
   document.getElementById("label-meta-size-class").textContent = t("metaSizeLabel");
   document.getElementById("label-meta-designers").textContent = t("metaDesignersLabel");
+  document.getElementById("label-meta-trainers").textContent = t("metaTrainersLabel");
   document.getElementById("label-meta-personas").textContent = t("metaPersonasLabel");
   document.getElementById("label-meta-sliders").textContent = t("metaSlidersLabel");
   document.getElementById("unit-learning-days").textContent = t("unitDays");
@@ -2185,11 +2195,22 @@ function applyLocalizedUI() {
 
 function hydrateState(parsed, fallback = defaultState()) {
   if (!parsed || !Array.isArray(parsed.sessions)) return fallback;
+  const parsedMeta = parsed.meta || {};
 
   const hydrated = {
     allNotesExpanded: Boolean(parsed.allNotesExpanded),
     topPanelCollapsed: Boolean(parsed.topPanelCollapsed),
-    meta: { ...DEFAULT_META, ...(parsed.meta || {}) },
+    meta: {
+      ...DEFAULT_META,
+      ...parsedMeta,
+      designers:
+        typeof parsedMeta.designers === "string"
+          ? parsedMeta.designers
+          : typeof parsedMeta.author === "string"
+            ? parsedMeta.author
+            : "",
+      trainers: typeof parsedMeta.trainers === "string" ? parsedMeta.trainers : ""
+    },
     sessions: parsed.sessions.map((session, sessionIndex) => ({
       id: session?.id || nextId(),
       title: typeof session?.title === "string" ? session.title : defaultSessionTitle(sessionIndex + 1),
@@ -2887,6 +2908,7 @@ function renderTopPanel() {
   metaDayHoursInput.value = getDayHours();
   metaSizeClassInput.value = state.meta.sizeClass;
   metaDesignersInput.value = state.meta.designers;
+  metaTrainersInput.value = state.meta.trainers;
   metaDescriptionInput.value = state.meta.description;
   metaCommandInput.value = state.meta.command;
   metaPersonasInput.value = state.meta.personas;
@@ -3010,7 +3032,8 @@ function buildMarkdownExport() {
   const lines = [`# ${state.meta.name || "Design Learning"}`, "", "## Paramètres", ""];
   lines.push(`- Mode: ${labelForLocationMode(state.meta.modeDelivery)}`);
   lines.push(`- Taille du groupe: ${state.meta.sizeClass || "-"}`);
-  lines.push(`- Concepteur(s)/Formateur(s): ${state.meta.designers || "-"}`);
+  lines.push(`- Concepteur(s): ${state.meta.designers || "-"}`);
+  lines.push(`- Formateur(s): ${state.meta.trainers || "-"}`);
   lines.push(
     `- Temps d'apprentissage: ${formatPedagogicalTime(
       state.meta.learningDays,
@@ -3110,7 +3133,8 @@ function buildHtmlExportDocument() {
     <h2>Paramètres</h2>
     <p><strong>Mode:</strong> ${escapeHtml(labelForLocationMode(state.meta.modeDelivery))}</p>
     <p><strong>Taille du groupe:</strong> ${escapeHtml(state.meta.sizeClass || "-")}</p>
-    <p><strong>Concepteur(s)/Formateur(s):</strong> ${escapeHtml(state.meta.designers || "-")}</p>
+    <p><strong>Concepteur(s):</strong> ${escapeHtml(state.meta.designers || "-")}</p>
+    <p><strong>Formateur(s):</strong> ${escapeHtml(state.meta.trainers || "-")}</p>
     <p><strong>Temps d'apprentissage:</strong> ${escapeHtml(
       formatPedagogicalTime(
         state.meta.learningDays,
@@ -3210,6 +3234,7 @@ function buildSpreadsheetRows() {
     "design_mode",
     "design_group_size",
     "design_designers",
+    "design_trainers",
     "design_learning_time",
     "design_designed_time",
     "design_day_hours",
@@ -3242,6 +3267,7 @@ function buildSpreadsheetRows() {
           labelForLocationMode(state.meta.modeDelivery),
           state.meta.sizeClass || "",
           state.meta.designers || "",
+          state.meta.trainers || "",
           metaLearningTime,
           metaDesignedTime,
           getDayHours(),
@@ -3275,6 +3301,7 @@ function buildSpreadsheetRows() {
           labelForLocationMode(state.meta.modeDelivery),
           state.meta.sizeClass || "",
           state.meta.designers || "",
+          state.meta.trainers || "",
           metaLearningTime,
           metaDesignedTime,
           getDayHours(),
@@ -3486,6 +3513,7 @@ function buildStateFromCsv(csvText) {
       imported.meta.modeDelivery = lookupValue(read("design_mode"), CSV_LOCATION_LOOKUP, "onsite");
       imported.meta.sizeClass = read("design_group_size").trim();
       imported.meta.designers = read("design_designers");
+      imported.meta.trainers = read("design_trainers");
       imported.meta.dayHours = dayHours;
       imported.meta.description = read("design_description");
       imported.meta.command = read("design_institutional_brief");
@@ -4366,6 +4394,10 @@ function bindTopPanelEvents() {
   });
   metaDesignersInput.addEventListener("input", (event) => {
     state.meta.designers = event.target.value;
+    saveState();
+  });
+  metaTrainersInput.addEventListener("input", (event) => {
+    state.meta.trainers = event.target.value;
     saveState();
   });
   metaDescriptionInput.addEventListener("input", (event) => {
