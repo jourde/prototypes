@@ -27,10 +27,23 @@
         box-sizing: border-box;
       }
 
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
       body {
         margin: 0;
         min-height: 100vh;
         font-family: var(--font-body);
+        line-height: 1.5;
         color: var(--text);
         background: var(--bg);
       }
@@ -39,6 +52,34 @@
       input,
       textarea {
         font: inherit;
+        line-height: 1.4;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      :focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        z-index: 1000;
+        padding: 10px 14px;
+        border: 1px solid #1d4ed8;
+        border-radius: var(--radius-sm);
+        background: #ffffff;
+        color: #111827;
+        text-decoration: none;
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
       }
 
       .app-shell {
@@ -54,7 +95,7 @@
 
       .topbar {
         display: grid;
-        grid-template-columns: minmax(220px, 320px) 1fr;
+        grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
         gap: 18px;
         padding: 20px;
         border-radius: var(--radius);
@@ -83,7 +124,7 @@
 
       .toolbar {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 14px;
         align-items: center;
       }
@@ -112,6 +153,7 @@
       }
 
       .file-picker {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -124,10 +166,16 @@
 
       .file-picker input {
         position: absolute;
-        width: 1px;
-        height: 1px;
+        inset: 0;
+        width: 100%;
+        height: 100%;
         opacity: 0;
-        pointer-events: none;
+        cursor: pointer;
+      }
+
+      .file-picker:focus-within {
+        border-color: #1d4ed8;
+        box-shadow: inset 0 0 0 1px #1d4ed8;
       }
 
       .meta-label {
@@ -142,6 +190,7 @@
       .file-meta strong,
       .stats span {
         display: block;
+        overflow-wrap: anywhere;
       }
 
       .stats {
@@ -170,6 +219,8 @@
 
       .preview-toggle input {
         margin-top: 3px;
+        inline-size: 1rem;
+        block-size: 1rem;
       }
 
       .preview-hint {
@@ -179,6 +230,7 @@
       }
 
       button {
+        min-height: 44px;
         border: 1px solid var(--button-secondary-border);
         border-radius: var(--radius-sm);
         padding: 12px 16px;
@@ -207,7 +259,7 @@
 
       .workspace {
         display: grid;
-        grid-template-columns: minmax(320px, 0.95fr) minmax(320px, 1.05fr);
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
         gap: 20px;
         margin-top: 20px;
         align-items: start;
@@ -236,6 +288,7 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        flex-wrap: wrap;
         gap: 16px;
       }
 
@@ -280,11 +333,18 @@
 
       .search-bar input {
         width: 100%;
+        min-height: 44px;
         border: 1px solid var(--border);
         border-radius: var(--radius-sm);
         padding: 12px 16px;
         color: var(--text);
         background: var(--surface);
+      }
+
+      .search-bar input::placeholder,
+      .editor-card textarea::placeholder {
+        color: #6b7280;
+        opacity: 1;
       }
 
       .search-status {
@@ -342,6 +402,11 @@
         padding: 14px;
         color: var(--text);
         background: var(--surface);
+      }
+
+      .editor-card textarea,
+      .search-bar input {
+        max-width: 100%;
       }
 
       .editor-card .snippet {
@@ -403,10 +468,6 @@
           grid-template-columns: 1fr;
         }
 
-        .toolbar {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-
         .workspace {
           grid-template-columns: 1fr;
         }
@@ -455,14 +516,16 @@
     </style>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
     <div class="app-shell">
-      <header class="topbar">
+      <header class="topbar" aria-labelledby="page-title">
         <div class="brand">
           <p class="eyebrow">Browser-only editor</p>
-          <h1>HTML Text Extraction</h1>
+          <h1 id="page-title">HTML Text Extraction</h1>
         </div>
 
-        <div class="toolbar">
+        <div class="toolbar" aria-label="File and preview controls">
           <label class="file-picker" for="file-input">
             <span>Upload HTML</span>
             <input id="file-input" type="file" accept=".htm,.html,text/html" />
@@ -483,7 +546,7 @@
               <input id="script-preview-toggle" type="checkbox" />
               <span>Interactive SPA preview</span>
             </label>
-            <p class="preview-hint">
+            <p id="preview-hint" class="preview-hint">
               Enables uploaded JavaScript inside the preview iframe so slide decks and SPAs can
               navigate beyond their first screen.
             </p>
@@ -496,57 +559,69 @@
         </div>
       </header>
 
-      <main class="workspace">
-        <section class="panel editor-panel">
+      <main id="main-content" class="workspace">
+        <section class="panel editor-panel" aria-labelledby="editor-heading">
           <div class="panel-heading">
             <div class="panel-heading-row">
               <div>
-                <h2>Editable text</h2>
+                <h2 id="editor-heading">Editable text</h2>
                 <p>Only safe body text blocks are exposed. Mixed-content blocks are skipped.</p>
               </div>
             </div>
           </div>
 
-          <div id="status-message" class="status-card">
+          <div id="status-message" class="status-card" role="status" aria-live="polite">
             Upload an HTML file to extract editable text blocks.
           </div>
 
-          <div id="skip-summary" class="skip-summary" hidden></div>
+          <div id="skip-summary" class="skip-summary" role="status" aria-live="polite" hidden></div>
 
-          <div class="search-bar">
+          <div class="search-bar" role="search" aria-labelledby="editor-heading">
+            <label class="sr-only" for="search-input">Search extracted fields</label>
+            <span id="search-help" class="sr-only">
+              Search matches field titles, source paths, original text, and current text.
+            </span>
             <input
               id="search-input"
               type="search"
               placeholder="Search extracted fields"
-              aria-label="Search extracted fields"
+              aria-controls="editor-list"
+              aria-describedby="search-help search-status"
             />
             <button id="clear-search-button" type="button">Clear</button>
           </div>
 
-          <div id="search-status" class="search-status" hidden></div>
+          <div id="search-status" class="search-status" role="status" aria-live="polite" hidden></div>
 
-          <div id="editor-list" class="editor-list" aria-live="polite"></div>
+          <div id="editor-list" class="editor-list" role="list"></div>
         </section>
 
-        <section id="preview-panel" class="panel preview-panel">
+        <section id="preview-panel" class="panel preview-panel" aria-labelledby="preview-heading">
           <div class="panel-heading">
             <div class="panel-heading-row">
               <div>
-                <h2>Live preview</h2>
+                <h2 id="preview-heading">Live preview</h2>
                 <p id="preview-mode-message">Preview runs in a sandboxed iframe with scripts disabled.</p>
               </div>
-              <button id="toggle-preview-button" class="panel-toggle" type="button" aria-expanded="true">
+              <button
+                id="toggle-preview-button"
+                class="panel-toggle"
+                type="button"
+                aria-expanded="true"
+                aria-controls="preview-canvas"
+              >
                 Collapse
               </button>
             </div>
           </div>
 
-          <div class="preview-canvas">
+          <div id="preview-canvas" class="preview-canvas">
             <iframe
               id="preview-frame"
               class="preview-frame"
               title="Edited HTML preview"
               sandbox=""
+              loading="lazy"
             ></iframe>
           </div>
         </section>
@@ -580,6 +655,27 @@
 
       const SKIPPED_TAGS = new Set(["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT"]);
       const NON_EDITABLE_SCRIPT_KEYS = new Set(["headBg", "headColor", "color", "bg", "background"]);
+      const BLOCKISH_TAGS = new Set([
+        "DIV",
+        "P",
+        "LI",
+        "TD",
+        "TH",
+        "BLOCKQUOTE",
+        "FIGCAPTION",
+        "CAPTION",
+        "DT",
+        "DD",
+        "SUMMARY",
+        "LABEL",
+        "BUTTON",
+        "H1",
+        "H2",
+        "H3",
+        "H4",
+        "H5",
+        "H6",
+      ]);
       const DECK_PREVIEW_SCALE = 0.99;
 
       const state = {
@@ -617,6 +713,8 @@
         previewFrame: document.getElementById("preview-frame"),
       };
 
+      elements.scriptPreviewToggle.setAttribute("aria-describedby", "preview-hint");
+
       elements.fileInput.addEventListener("change", handleFileSelection);
       elements.scriptPreviewToggle.addEventListener("change", updatePreview);
       elements.searchInput.addEventListener("input", handleSearchInput);
@@ -635,8 +733,22 @@
           return;
         }
 
-        const fileText = await file.text();
-        loadHtmlFile(fileText, file.name);
+        try {
+          const fileText = await file.text();
+          loadHtmlFile(fileText, file.name);
+        } catch (error) {
+          state.fileName = "";
+          state.originalDoc = null;
+          state.workingDoc = null;
+          state.editableSegments = [];
+          state.contentScripts = [];
+          state.hasInteractiveScripts = false;
+          state.previewLayout = "default";
+          state.searchQuery = "";
+          state.skippedReasons = new Map();
+          renderEmptyState();
+          elements.statusMessage.textContent = "The selected file could not be read as HTML.";
+        }
       }
 
       function loadHtmlFile(html, fileName) {
@@ -693,8 +805,34 @@
       }
 
       function extractDomEditableSegments(originalDoc, workingDoc) {
+        const directBlockExtraction = extractDirectBlockSegments(originalDoc, workingDoc);
+        const compositeExtraction = extractCompositeContainerSegments(
+          originalDoc,
+          workingDoc,
+          directBlockExtraction.editableSegments.length,
+          directBlockExtraction.coveredNodePaths,
+        );
+        const textNodeExtraction = extractTextNodeSegments(
+          originalDoc,
+          workingDoc,
+          directBlockExtraction.editableSegments.length + compositeExtraction.editableSegments.length,
+          compositeExtraction.coveredNodePaths,
+        );
+
+        return {
+          editableSegments: [
+            ...directBlockExtraction.editableSegments,
+            ...compositeExtraction.editableSegments,
+            ...textNodeExtraction.editableSegments,
+          ],
+          skippedReasons: directBlockExtraction.skippedReasons,
+        };
+      }
+
+      function extractDirectBlockSegments(originalDoc, workingDoc) {
         const editableSegments = [];
         const skippedReasons = new Map();
+        const coveredNodePaths = new Set();
         const elementsToInspect = originalDoc.body ? Array.from(originalDoc.body.querySelectorAll("*")) : [];
 
         elementsToInspect.forEach((element) => {
@@ -714,7 +852,6 @@
           }
 
           if (containsDisallowedChildren(element)) {
-            recordSkip(skippedReasons, "Contains nested elements or mixed inline markup");
             return;
           }
 
@@ -739,10 +876,208 @@
             currentText: normalizedText,
           });
 
+          getEditableTextNodes(element).forEach((node) => coveredNodePaths.add(getNodePath(node)));
           syncElementText(mirror, normalizedText);
         });
 
-        return { editableSegments, skippedReasons };
+        return { editableSegments, skippedReasons, coveredNodePaths };
+      }
+
+      function extractCompositeContainerSegments(originalDoc, workingDoc, startingIndex, baseCoveredNodePaths) {
+        const editableSegments = [];
+        const coveredNodePaths = new Set(baseCoveredNodePaths);
+        const elementsToInspect = originalDoc.body ? Array.from(originalDoc.body.querySelectorAll("*")) : [];
+
+        elementsToInspect.forEach((element) => {
+          if (!element.parentElement || isHiddenElement(element)) {
+            return;
+          }
+
+          const skippedSubtreeReason = getSkippedSubtreeReason(element);
+          if (skippedSubtreeReason) {
+            return;
+          }
+
+          const composite = collectCompositeSlots(element);
+          if (!composite) {
+            return;
+          }
+
+          const hasCoveredSlot = composite.coveragePaths.some((path) => coveredNodePaths.has(path));
+          if (hasCoveredSlot) {
+            return;
+          }
+
+          const mirror = resolvePath(workingDoc, getDomPath(element));
+          if (!mirror) {
+            return;
+          }
+
+          editableSegments.push({
+            id: `segment-${startingIndex + editableSegments.length + 1}`,
+            sourceType: "dom-composite",
+            tagName: element.tagName,
+            domPath: getDomPath(element),
+            originalText: composite.text,
+            currentText: buildCompositeCurrentText(composite.slots, workingDoc),
+            compositeSlots: composite.slots,
+            title: buildCompositeSegmentTitle(element),
+            locationLabel: buildCompositeSegmentLocation(element),
+          });
+
+          composite.coveragePaths.forEach((path) => coveredNodePaths.add(path));
+        });
+
+        return { editableSegments, coveredNodePaths };
+      }
+
+      function extractTextNodeSegments(originalDoc, workingDoc, startingIndex, coveredNodePaths) {
+        const editableSegments = [];
+        const walker = originalDoc.createTreeWalker(originalDoc.body, NodeFilter.SHOW_TEXT);
+        let currentNode = walker.nextNode();
+
+        while (currentNode) {
+          const parent = currentNode.parentElement;
+          const textParts = splitEditableTextNodeValue(currentNode.textContent || "");
+
+          if (!parent || !textParts || coveredNodePaths.has(getNodePath(currentNode))) {
+            currentNode = walker.nextNode();
+            continue;
+          }
+
+          const skippedSubtreeReason = getSkippedSubtreeReason(parent);
+          if (skippedSubtreeReason || isHiddenElement(parent)) {
+            currentNode = walker.nextNode();
+            continue;
+          }
+
+          const nodePath = getNodePath(currentNode);
+          const mirrorNode = resolveNodePath(workingDoc, nodePath);
+          if (!mirrorNode || mirrorNode.nodeType !== Node.TEXT_NODE) {
+            currentNode = walker.nextNode();
+            continue;
+          }
+
+          editableSegments.push({
+            id: `segment-${startingIndex + editableSegments.length + 1}`,
+            sourceType: "dom-text-node",
+            tagName: parent.tagName,
+            domPath: getDomPath(parent),
+            nodePath,
+            originalText: textParts.text,
+            currentText: splitEditableTextNodeValue(mirrorNode.textContent || "")?.text || textParts.text,
+            textPrefix: textParts.prefix,
+            textSuffix: textParts.suffix,
+            title: buildDomTextSegmentTitle(currentNode),
+            locationLabel: buildDomTextSegmentLocation(currentNode),
+          });
+
+          currentNode = walker.nextNode();
+        }
+
+        return { editableSegments };
+      }
+
+      function collectCompositeSlots(element) {
+        const slots = [];
+        const coveragePaths = [];
+        const state = { pendingSeparator: "" };
+        let invalid = false;
+
+        walkCompositeNode(element, element, state, slots, coveragePaths, (reason) => {
+          if (reason === "inline-mixed") {
+            invalid = true;
+          }
+        });
+
+        if (invalid || slots.length < 2 || slots.length > 5) {
+          return null;
+        }
+
+        const totalLength = slots.reduce((sum, slot) => sum + slot.text.length, 0);
+        if (totalLength > 420) {
+          return null;
+        }
+
+        return {
+          slots,
+          coveragePaths,
+          text: slots.map((slot) => slot.text).join("\n"),
+        };
+      }
+
+      function walkCompositeNode(root, node, state, slots, coveragePaths, markInvalid) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const textParts = splitEditableTextNodeValue(node.textContent || "");
+          if (!textParts || isDecorativeCompositeText(textParts.text, node.parentElement)) {
+            return;
+          }
+
+          const separator = slots.length === 0 ? "start" : state.pendingSeparator;
+          if (slots.length > 0 && !separator) {
+            markInvalid("inline-mixed");
+            return;
+          }
+
+          const nodePath = getNodePath(node);
+          slots.push({
+            slotType: "text-node",
+            text: textParts.text,
+            nodePath,
+            prefix: textParts.prefix,
+            suffix: textParts.suffix,
+          });
+          coveragePaths.push(nodePath);
+          state.pendingSeparator = "";
+          return;
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE || isHiddenElement(node) || SKIPPED_TAGS.has(node.tagName)) {
+          return;
+        }
+
+        if (node.tagName === "BR") {
+          if (slots.length) {
+            state.pendingSeparator = state.pendingSeparator || "break";
+          }
+          return;
+        }
+
+        if (node !== root && node !== node.ownerDocument.body && isTerminalCompositeLeaf(node)) {
+          const text = extractEditableText(node);
+          if (!text || isDecorativeCompositeText(text, node)) {
+            return;
+          }
+
+          const separator = slots.length === 0 ? "start" : state.pendingSeparator || (isBlockish(node) ? "block" : "");
+          if (slots.length > 0 && !separator) {
+            markInvalid("inline-mixed");
+            return;
+          }
+
+          const domPath = getDomPath(node);
+          slots.push({
+            slotType: "leaf-element",
+            text,
+            domPath,
+          });
+          getEditableTextNodes(node).forEach((child) => coveragePaths.push(getNodePath(child)));
+          state.pendingSeparator = isBlockish(node) ? "block" : "";
+          return;
+        }
+
+        const blockish = isBlockish(node);
+        if (blockish && slots.length) {
+          state.pendingSeparator = state.pendingSeparator || "block";
+        }
+
+        Array.from(node.childNodes).forEach((child) => {
+          walkCompositeNode(root, child, state, slots, coveragePaths, markInvalid);
+        });
+
+        if (blockish && slots.length) {
+          state.pendingSeparator = "block";
+        }
       }
 
       function extractContentScriptSegments(originalDoc, workingDoc, startingIndex) {
@@ -973,6 +1308,56 @@
         return false;
       }
 
+      function getEditableTextNodes(element) {
+        return Array.from(element.childNodes).filter((child) => {
+          return child.nodeType === Node.TEXT_NODE && Boolean(splitEditableTextNodeValue(child.textContent || ""));
+        });
+      }
+
+      function isTerminalCompositeLeaf(element) {
+        if (!element || SAFE_TAGS.has(element.tagName)) {
+          return false;
+        }
+
+        return Array.from(element.childNodes).every((child) => {
+          return (
+            child.nodeType === Node.TEXT_NODE ||
+            (child.nodeType === Node.ELEMENT_NODE && child.tagName === "BR")
+          );
+        }) && Boolean(extractEditableText(element));
+      }
+
+      function isBlockish(element) {
+        return BLOCKISH_TAGS.has(element.tagName);
+      }
+
+      function isDecorativeCompositeText(text, element) {
+        const normalized = normalizeText(text || "");
+        if (!normalized || !element) {
+          return false;
+        }
+
+        const identifier = `${element.className || ""} ${element.id || ""}`.toLowerCase();
+        return (
+          /^(?:\d{1,2}|[A-Z])$/.test(normalized) &&
+          /(num|index|counter|badge|step|letter)/.test(identifier)
+        );
+      }
+
+      function splitEditableTextNodeValue(text) {
+        const source = String(text || "");
+        const match = source.match(/^(\s*)([\s\S]*?)(\s*)$/);
+        if (!match || !match[2].trim()) {
+          return null;
+        }
+
+        return {
+          prefix: match[1],
+          text: normalizeText(match[2]),
+          suffix: match[3],
+        };
+      }
+
       function normalizeText(text) {
         return text
           .replace(/\r\n/g, "\n")
@@ -1015,6 +1400,19 @@
         return segments.join(">");
       }
 
+      function getNodePath(node) {
+        const segments = [];
+        let current = node;
+
+        while (current && current.parentNode) {
+          const index = Array.prototype.indexOf.call(current.parentNode.childNodes, current);
+          segments.unshift(String(index));
+          current = current.parentNode;
+        }
+
+        return segments.join(">");
+      }
+
       function resolvePath(doc, domPath) {
         const parts = domPath.split(">");
         let current = doc.documentElement;
@@ -1024,6 +1422,22 @@
           const index = Number.parseInt(indexText, 10);
           const matches = Array.from(current.children).filter((child) => child.tagName === tagName);
           current = matches[index];
+
+          if (!current) {
+            return null;
+          }
+        }
+
+        return current;
+      }
+
+      function resolveNodePath(doc, nodePath) {
+        const parts = nodePath.split(">");
+        let current = doc;
+
+        for (const part of parts) {
+          const index = Number.parseInt(part, 10);
+          current = current && current.childNodes ? current.childNodes[index] : null;
 
           if (!current) {
             return null;
@@ -1058,6 +1472,125 @@
         }
 
         element.textContent = value;
+      }
+
+      function syncTextNodeText(node, value, prefix, suffix) {
+        node.textContent = `${prefix || ""}${value}${suffix || ""}`;
+      }
+
+      function buildCompositeCurrentText(slots, workingDoc) {
+        return slots
+          .map((slot) => {
+            if (slot.slotType === "text-node") {
+              const targetNode = resolveNodePath(workingDoc, slot.nodePath);
+              return splitEditableTextNodeValue(targetNode && targetNode.textContent ? targetNode.textContent : "")?.text || "";
+            }
+
+            const targetElement = resolvePath(workingDoc, slot.domPath);
+            return targetElement ? extractEditableText(targetElement) : "";
+          })
+          .join("\n");
+      }
+
+      function splitCompositeValue(value, slotCount) {
+        const lines = value.replace(/\r\n/g, "\n").split("\n");
+        const parts = [];
+
+        for (let index = 0; index < slotCount; index += 1) {
+          if (index === slotCount - 1) {
+            parts.push(lines.slice(index).join("\n"));
+            continue;
+          }
+
+          parts.push(lines[index] || "");
+        }
+
+        return parts;
+      }
+
+      function buildDomTextSegmentTitle(node) {
+        const parent = node.parentElement;
+        if (!parent) {
+          return "Text node";
+        }
+
+        const slide = parent.closest(".slide");
+        const heading = slide ? slide.querySelector(".slide-heading, .divider-title, h1") : null;
+        const headingText = heading ? normalizeText(heading.textContent || "") : "";
+
+        if (headingText) {
+          return `${parent.tagName} in ${truncate(headingText, 48)}`;
+        }
+
+        if (parent.id) {
+          return `Text in #${parent.id}`;
+        }
+
+        return `Text in ${parent.tagName}`;
+      }
+
+      function buildCompositeSegmentTitle(element) {
+        const slide = element.closest(".slide");
+        const heading = slide ? slide.querySelector(".slide-heading, .divider-title, h1") : null;
+        const headingText = heading ? normalizeText(heading.textContent || "") : "";
+        const label = buildElementLabel(element);
+
+        if (headingText) {
+          return `${label} in ${truncate(headingText, 48)}`;
+        }
+
+        return label;
+      }
+
+      function buildDomTextSegmentLocation(node) {
+        const parent = node.parentElement;
+        if (!parent) {
+          return "";
+        }
+
+        const slide = parent.closest(".slide");
+        const locationParts = [];
+
+        if (slide && slide.id) {
+          locationParts.push(slide.id.toUpperCase());
+        }
+
+        locationParts.push(getDomPath(parent));
+        return locationParts.join(" -> ");
+      }
+
+      function buildCompositeSegmentLocation(element) {
+        const slide = element.closest(".slide");
+        const locationParts = [];
+
+        if (slide && slide.id) {
+          locationParts.push(slide.id.toUpperCase());
+        }
+
+        locationParts.push(getDomPath(element));
+        return locationParts.join(" -> ");
+      }
+
+      function buildElementLabel(element) {
+        if (!element) {
+          return "Composite text";
+        }
+
+        if (element.classList && element.classList.length) {
+          return formatClassLabel(element.classList[0]);
+        }
+
+        if (element.id) {
+          return `#${element.id}`;
+        }
+
+        return `${element.tagName} group`;
+      }
+
+      function formatClassLabel(value) {
+        return value
+          .replace(/[-_]+/g, " ")
+          .replace(/\b\w/g, (char) => char.toUpperCase());
       }
 
       function renderState() {
@@ -1099,6 +1632,9 @@
         elements.previewPanel.classList.remove("collapsed");
         elements.togglePreviewButton.textContent = "Collapse";
         elements.togglePreviewButton.setAttribute("aria-expanded", "true");
+        elements.previewCanvas.hidden = false;
+        elements.previewCanvas.setAttribute("aria-hidden", "false");
+        elements.previewFrame.removeAttribute("tabindex");
         elements.previewFrame.setAttribute("sandbox", "");
         elements.previewFrame.srcdoc = `
           <!DOCTYPE html>
@@ -1118,7 +1654,7 @@
 
         if (!state.editableSegments.length) {
           elements.statusMessage.textContent =
-            "No safe text blocks were found. Blocks with nested inline markup are intentionally skipped.";
+            "No editable visible text was found in this HTML file.";
           return;
         }
 
@@ -1134,7 +1670,7 @@
         }
 
         elements.statusMessage.textContent =
-          "Editing updates only the extracted body text blocks and preserves the original document structure.";
+          "Editing updates extracted visible text while preserving the original document structure.";
       }
 
       function renderSkipSummary() {
@@ -1155,6 +1691,15 @@
         elements.previewPanel.classList.toggle("collapsed", state.previewCollapsed);
         elements.togglePreviewButton.textContent = state.previewCollapsed ? "Expand" : "Collapse";
         elements.togglePreviewButton.setAttribute("aria-expanded", String(!state.previewCollapsed));
+        elements.previewCanvas.hidden = state.previewCollapsed;
+        elements.previewCanvas.setAttribute("aria-hidden", String(state.previewCollapsed));
+
+        if (state.previewCollapsed) {
+          elements.previewFrame.setAttribute("tabindex", "-1");
+          return;
+        }
+
+        elements.previewFrame.removeAttribute("tabindex");
       }
 
       function renderEditorList() {
@@ -1177,15 +1722,22 @@
         filteredSegments.forEach((segment) => {
           const card = document.createElement("article");
           card.className = "editor-card";
+          card.setAttribute("role", "listitem");
 
           const header = document.createElement("header");
           const title = document.createElement("h3");
+          const titleId = `segment-title-${segment.id}`;
+          const pathId = `segment-path-${segment.id}`;
+          const snippetId = `segment-snippet-${segment.id}`;
+          const textareaId = `segment-editor-${segment.id}`;
+          title.id = titleId;
           title.innerHTML = highlightSearchText(
             segment.title || `${segment.tagName} block`,
             state.searchQuery,
           );
           const path = document.createElement("span");
           path.className = "path";
+          path.id = pathId;
           path.innerHTML = highlightSearchText(
             segment.locationLabel ? `${segment.locationLabel} -> ${segment.domPath}` : segment.domPath,
             state.searchQuery,
@@ -1193,14 +1745,17 @@
           header.append(title, path);
 
           const textarea = document.createElement("textarea");
+          textarea.id = textareaId;
           textarea.value = segment.currentText;
-          textarea.setAttribute("aria-label", `${segment.tagName} text editor`);
+          textarea.setAttribute("aria-labelledby", titleId);
+          textarea.setAttribute("aria-describedby", `${pathId} ${snippetId}`);
           textarea.addEventListener("input", (event) => {
             updateSegment(segment.id, event.target.value);
           });
 
           const snippet = document.createElement("p");
           snippet.className = "snippet";
+          snippet.id = snippetId;
           snippet.innerHTML = `Original: ${highlightSearchText(
             truncate(segment.originalText, 120),
             state.searchQuery,
@@ -1290,6 +1845,7 @@
         state.searchQuery = "";
         elements.searchInput.value = "";
         renderState();
+        elements.searchInput.focus();
       }
 
       function togglePreviewPanel() {
@@ -1308,6 +1864,41 @@
 
         if (segment.sourceType === "content-script") {
           updateContentScriptSegment(segment, value);
+          updatePreview();
+          return;
+        }
+
+        if (segment.sourceType === "dom-composite") {
+          const nextParts = splitCompositeValue(value, segment.compositeSlots.length);
+
+          segment.compositeSlots.forEach((slot, index) => {
+            const nextValue = nextParts[index] || "";
+
+            if (slot.slotType === "text-node") {
+              const targetNode = resolveNodePath(state.workingDoc, slot.nodePath);
+              if (targetNode && targetNode.nodeType === Node.TEXT_NODE) {
+                syncTextNodeText(targetNode, nextValue, slot.prefix, slot.suffix);
+              }
+              return;
+            }
+
+            const targetElement = resolvePath(state.workingDoc, slot.domPath);
+            if (targetElement) {
+              syncElementText(targetElement, nextValue);
+            }
+          });
+
+          updatePreview();
+          return;
+        }
+
+        if (segment.sourceType === "dom-text-node") {
+          const targetNode = resolveNodePath(state.workingDoc, segment.nodePath);
+          if (!targetNode || targetNode.nodeType !== Node.TEXT_NODE) {
+            return;
+          }
+
+          syncTextNodeText(targetNode, value, segment.textPrefix, segment.textSuffix);
           updatePreview();
           return;
         }
