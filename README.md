@@ -6,4 +6,4 @@ Applications web monopage (_Single Page Applications)_ codées de manière conve
 - [Personas - interface de conception de personas - Prototype adapté au contexte de l'académie de Guyane](https://jourde.github.io/prototypes/learning-design/persona-guyane.html)
 - [Concepteur d'apprentissage - interface directement inspirée de l'UCL Learning Designer](https://jourde.github.io/prototypes/learning-design/neo-ucl-ld.html) est également disponible.
 ## Varia
-- [Editeur HTML](https://jourde.github.io/prototypes/varia/html-editor.html): extraction et édition de texte HTML avec aperçu en direct.
+- [Editeur HTML](https://jourde.github.io/prototypes/varia/html-text-content-editor.html): extraction et édition de texte HTML avec aperçu en direct.
