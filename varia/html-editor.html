@@ -3,17 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HTML Text Extraction Editor</title>
+    <title>HTML Text Editor</title>
     <style>
       :root {
         color-scheme: light;
-        --bg: #f5f5f4;
+        --bg: #f3f2ef;
         --surface: #ffffff;
         --surface-strong: #fafaf9;
         --surface-muted: #f0f0ef;
         --border: #dbdbd7;
         --text: #18181b;
         --muted: #6b7280;
+        --accent: #1f4e79;
+        --shadow: 0 10px 30px rgba(24, 24, 27, 0.05);
         --button-primary: #18181b;
         --button-secondary: #ffffff;
         --button-secondary-border: #c9c9c4;
@@ -45,7 +47,8 @@
         font-family: var(--font-body);
         line-height: 1.5;
         color: var(--text);
-        background: var(--bg);
+        background:
+          linear-gradient(180deg, #f7f7f5 0%, #f1f0ec 100%);
       }
 
       button,
@@ -91,14 +94,24 @@
       .panel {
         background: var(--surface);
         border: 1px solid var(--border);
+        box-shadow: var(--shadow);
       }
 
       .topbar {
         display: grid;
-        grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+        grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
         gap: 18px;
-        padding: 20px;
+        padding: 16px 18px;
         border-radius: var(--radius);
+        align-items: center;
+      }
+
+      .brand {
+        display: grid;
+        align-content: center;
+        gap: 6px;
+        min-width: 0;
+        padding-right: 8px;
       }
 
       .brand h1,
@@ -110,23 +123,31 @@
       }
 
       .brand h1 {
-        font-size: clamp(1.55rem, 2.8vw, 2.2rem);
+        max-width: 12ch;
+        line-height: 0.95;
+        font-size: clamp(1.3rem, 1.8vw, 1.85rem);
+        text-wrap: nowrap;
       }
 
       .eyebrow {
-        margin: 0 0 8px;
+        margin: 0;
         color: var(--muted);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        font-size: 0.67rem;
         font-weight: 600;
       }
 
       .toolbar {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 14px;
-        align-items: center;
+        grid-template-columns:
+          minmax(150px, 1.05fr)
+          minmax(175px, 1.05fr)
+          minmax(125px, 0.8fr)
+          minmax(220px, 1.35fr)
+          minmax(200px, 1fr);
+        gap: 10px;
+        align-items: stretch;
       }
 
       .file-picker,
@@ -146,8 +167,8 @@
       .stats,
       .preview-options,
       .actions {
-        min-height: 84px;
-        padding: 14px 16px;
+        min-height: 64px;
+        padding: 10px 12px;
         background: var(--surface);
         border: 1px solid var(--border);
       }
@@ -159,7 +180,7 @@
         justify-content: center;
         text-align: center;
         color: var(--text);
-        background: var(--surface-muted);
+        background: #f3f5f7;
         cursor: pointer;
         font-weight: 600;
       }
@@ -174,17 +195,17 @@
       }
 
       .file-picker:focus-within {
-        border-color: #1d4ed8;
-        box-shadow: inset 0 0 0 1px #1d4ed8;
+        border-color: var(--accent);
+        box-shadow: inset 0 0 0 1px var(--accent);
       }
 
       .meta-label {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         color: var(--muted);
-        font-size: 0.82rem;
+        font-size: 0.68rem;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.08em;
       }
 
       .file-meta strong,
@@ -195,45 +216,60 @@
 
       .stats {
         display: grid;
-        gap: 8px;
+        gap: 6px;
         align-content: center;
       }
 
       .actions {
         display: grid;
-        gap: 10px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        align-content: center;
+        background: #fcfcfb;
       }
 
       .preview-options {
         display: grid;
+        min-height: auto;
+        padding: 10px 12px;
         gap: 6px;
-        align-content: center;
+        align-content: start;
+        align-self: start;
+        background: #fcfcfb;
       }
 
       .preview-toggle {
         display: flex;
-        gap: 10px;
-        align-items: flex-start;
+        gap: 8px;
+        align-items: center;
         color: var(--text);
       }
 
       .preview-toggle input {
-        margin-top: 3px;
         inline-size: 1rem;
         block-size: 1rem;
+        margin: 0;
+        flex-shrink: 0;
+      }
+
+      .preview-toggle span {
+        font-weight: 600;
+        font-size: 0.92rem;
       }
 
       .preview-hint {
         color: var(--muted);
-        font-size: 0.82rem;
-        line-height: 1.4;
+        max-width: 38ch;
+        font-size: 0.68rem;
+        line-height: 1.35;
+        margin: 0;
       }
 
       button {
-        min-height: 44px;
+        min-height: 36px;
         border: 1px solid var(--button-secondary-border);
         border-radius: var(--radius-sm);
-        padding: 12px 16px;
+        padding: 8px 12px;
         font-weight: 600;
         background: var(--button-primary);
         color: #ffffff;
@@ -267,7 +303,7 @@
 
       .panel {
         min-height: 72vh;
-        padding: 22px;
+        padding: 20px;
         border-radius: var(--radius);
       }
 
@@ -308,7 +344,7 @@
       .status-card,
       .skip-summary {
         margin-bottom: 16px;
-        padding: 15px 16px;
+        padding: 13px 14px;
         border: 1px solid var(--border);
         background: var(--surface-strong);
         color: var(--muted);
@@ -329,6 +365,11 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 10px;
         margin-bottom: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        padding: 4px 0 8px;
+        background: linear-gradient(180deg, var(--surface) 78%, rgba(255, 255, 255, 0));
       }
 
       .search-bar input {
@@ -370,7 +411,7 @@
       }
 
       .editor-card {
-        padding: 16px;
+        padding: 14px;
         background: var(--surface);
         border: 1px solid var(--border);
       }
@@ -463,9 +504,23 @@
         min-height: auto;
       }
 
-      @media (max-width: 1100px) {
+      @media (max-width: 1320px) {
         .topbar {
           grid-template-columns: 1fr;
+        }
+
+        .brand {
+          padding-right: 0;
+        }
+
+        .toolbar {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 1100px) {
+        .topbar {
+          gap: 14px;
         }
 
         .workspace {
@@ -500,12 +555,29 @@
           padding: 16px;
         }
 
+        .brand {
+          gap: 8px;
+        }
+
+        .brand h1 {
+          max-width: none;
+          font-size: clamp(1.35rem, 6vw, 1.7rem);
+          text-wrap: balance;
+        }
+
         .toolbar {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .actions {
           grid-template-columns: 1fr;
         }
 
         .search-bar {
           grid-template-columns: 1fr;
+          position: static;
+          padding: 0;
+          background: transparent;
         }
 
         .editor-card header {
@@ -521,8 +593,8 @@
     <div class="app-shell">
       <header class="topbar" aria-labelledby="page-title">
         <div class="brand">
-          <p class="eyebrow">Browser-only editor</p>
-          <h1 id="page-title">HTML Text Extraction</h1>
+          <p class="eyebrow">Local app</p>
+          <h1 id="page-title">HTML Text Review<br />Editor</h1>
         </div>
 
         <div class="toolbar" aria-label="File and preview controls">
@@ -621,7 +693,6 @@
               class="preview-frame"
               title="Edited HTML preview"
               sandbox=""
-              loading="lazy"
             ></iframe>
           </div>
         </section>
@@ -677,6 +748,7 @@
         "H6",
       ]);
       const DECK_PREVIEW_SCALE = 0.99;
+      const PREVIEW_NAVIGATION_MESSAGE = "html-editor-preview-target";
 
       const state = {
         fileName: "",
@@ -687,6 +759,13 @@
         hasInteractiveScripts: false,
         previewLayout: "default",
         previewCollapsed: false,
+        activeSegmentId: "",
+        previewRefreshTimer: null,
+        pendingPreviewHtml: "",
+        pendingPreviewSandbox: "",
+        pendingPreviewTarget: null,
+        lastPreviewHtml: "",
+        lastPreviewSandbox: "",
         searchQuery: "",
         skippedReasons: new Map(),
       };
@@ -716,11 +795,11 @@
       elements.scriptPreviewToggle.setAttribute("aria-describedby", "preview-hint");
 
       elements.fileInput.addEventListener("change", handleFileSelection);
-      elements.scriptPreviewToggle.addEventListener("change", updatePreview);
+      elements.scriptPreviewToggle.addEventListener("change", () => updatePreview(true));
       elements.searchInput.addEventListener("input", handleSearchInput);
       elements.clearSearchButton.addEventListener("click", clearSearch);
       elements.togglePreviewButton.addEventListener("click", togglePreviewPanel);
-      elements.previewFrame.addEventListener("load", syncPreviewScale);
+      elements.previewFrame.addEventListener("load", handlePreviewFrameLoad);
       window.addEventListener("resize", syncPreviewScale);
       elements.resetButton.addEventListener("click", resetEdits);
       elements.exportButton.addEventListener("click", exportHtml);
@@ -764,13 +843,14 @@
         state.contentScripts = extraction.contentScripts;
         state.hasInteractiveScripts = hasInteractivePreviewScripts(workingDoc);
         state.previewLayout = looksLikeDeckDocument(workingDoc) ? "deck" : "default";
+        state.activeSegmentId = "";
         state.skippedReasons = extraction.skippedReasons;
         state.searchQuery = "";
 
         elements.scriptPreviewToggle.checked = state.hasInteractiveScripts;
         elements.searchInput.value = "";
         renderState();
-        updatePreview();
+        updatePreview(true);
       }
 
       function hasInteractivePreviewScripts(doc) {
@@ -874,6 +954,8 @@
             domPath,
             originalText: normalizedText,
             currentText: normalizedText,
+            previewSlideId: getNearestSlideId(element),
+            previewDomPath: domPath,
           });
 
           getEditableTextNodes(element).forEach((node) => coveredNodePaths.add(getNodePath(node)));
@@ -923,6 +1005,8 @@
             compositeSlots: composite.slots,
             title: buildCompositeSegmentTitle(element),
             locationLabel: buildCompositeSegmentLocation(element),
+            previewSlideId: getNearestSlideId(element),
+            previewDomPath: getDomPath(element),
           });
 
           composite.coveragePaths.forEach((path) => coveredNodePaths.add(path));
@@ -970,6 +1054,8 @@
             textSuffix: textParts.suffix,
             title: buildDomTextSegmentTitle(currentNode),
             locationLabel: buildDomTextSegmentLocation(currentNode),
+            previewSlideId: getNearestSlideId(parent),
+            previewDomPath: getDomPath(parent),
           });
 
           currentNode = walker.nextNode();
@@ -1167,6 +1253,8 @@
             contentPath: [...pathParts],
             title: buildContentSegmentTitle(pathParts),
             locationLabel: `script#${scriptId}`,
+            previewSlideId: getContentScriptPreviewSlideId(pathParts),
+            previewDomPath: "",
           });
           return;
         }
@@ -1246,6 +1334,18 @@
 
       function getValueAtPath(value, pathParts) {
         return pathParts.reduce((current, part) => (current == null ? current : current[part]), value);
+      }
+
+      function getContentScriptPreviewSlideId(pathParts) {
+        if (pathParts[0] === "notes" && typeof pathParts[1] === "number") {
+          return `s${pathParts[1] + 1}`;
+        }
+
+        if (pathParts[0] === "scenarios") {
+          return "s13";
+        }
+
+        return "";
       }
 
       function setValueAtPath(value, pathParts, nextValue) {
@@ -1398,6 +1498,11 @@
         }
 
         return segments.join(">");
+      }
+
+      function getNearestSlideId(element) {
+        const slide = element && typeof element.closest === "function" ? element.closest(".slide") : null;
+        return slide && slide.id ? slide.id : "";
       }
 
       function getNodePath(node) {
@@ -1635,7 +1740,17 @@
         elements.previewCanvas.hidden = false;
         elements.previewCanvas.setAttribute("aria-hidden", "false");
         elements.previewFrame.removeAttribute("tabindex");
-        elements.previewFrame.setAttribute("sandbox", "");
+        elements.previewFrame.setAttribute("sandbox", "allow-same-origin");
+        state.activeSegmentId = "";
+        state.pendingPreviewHtml = "";
+        state.pendingPreviewSandbox = "";
+        state.pendingPreviewTarget = null;
+        state.lastPreviewHtml = "";
+        state.lastPreviewSandbox = "";
+        if (state.previewRefreshTimer) {
+          window.clearTimeout(state.previewRefreshTimer);
+          state.previewRefreshTimer = null;
+        }
         elements.previewFrame.srcdoc = `
           <!DOCTYPE html>
           <html lang="en">
@@ -1749,6 +1864,9 @@
           textarea.value = segment.currentText;
           textarea.setAttribute("aria-labelledby", titleId);
           textarea.setAttribute("aria-describedby", `${pathId} ${snippetId}`);
+          textarea.addEventListener("focus", () => {
+            setActiveSegment(segment.id);
+          });
           textarea.addEventListener("input", (event) => {
             updateSegment(segment.id, event.target.value);
           });
@@ -1851,7 +1969,12 @@
       function togglePreviewPanel() {
         state.previewCollapsed = !state.previewCollapsed;
         renderPreviewPanelState();
+        if (state.previewCollapsed) {
+          return;
+        }
+
         syncPreviewScale();
+        syncActivePreviewTarget();
       }
 
       function updateSegment(segmentId, value) {
@@ -1861,6 +1984,8 @@
         }
 
         segment.currentText = value;
+        state.activeSegmentId = segment.id;
+        state.pendingPreviewTarget = getSegmentPreviewTarget(segment);
 
         if (segment.sourceType === "content-script") {
           updateContentScriptSegment(segment, value);
@@ -1936,6 +2061,8 @@
           return;
         }
 
+        state.activeSegmentId = "";
+        state.pendingPreviewTarget = null;
         const html = serializeDocument(state.originalDoc);
         loadHtmlFile(html, state.fileName);
       }
@@ -1953,7 +2080,7 @@
         URL.revokeObjectURL(link.href);
       }
 
-      function updatePreview() {
+      function updatePreview(immediate = false) {
         if (!state.workingDoc) {
           renderEmptyState();
           return;
@@ -1961,14 +2088,256 @@
 
         const interactivePreview = elements.scriptPreviewToggle.checked;
         const useDeckPreview = interactivePreview && state.previewLayout === "deck";
+        const sandboxValue = interactivePreview ? "allow-scripts" : "allow-same-origin";
+        const previewHtml = buildPreviewHtml(state.workingDoc, interactivePreview);
         elements.previewModeMessage.textContent = interactivePreview
           ? "Preview runs in a sandboxed iframe with uploaded scripts enabled for interactive SPAs."
           : "Preview runs in a sandboxed iframe with scripts disabled.";
-        elements.previewFrame.setAttribute("sandbox", interactivePreview ? "allow-scripts" : "");
         elements.previewCanvas.classList.toggle("deck-mode", useDeckPreview);
         elements.previewFrame.classList.toggle("deck-preview", useDeckPreview);
-        elements.previewFrame.srcdoc = serializeDocument(state.workingDoc);
+        state.pendingPreviewHtml = previewHtml;
+        state.pendingPreviewSandbox = sandboxValue;
+        state.pendingPreviewTarget = getSegmentPreviewTargetById(state.activeSegmentId);
+
+        if (state.previewRefreshTimer) {
+          window.clearTimeout(state.previewRefreshTimer);
+          state.previewRefreshTimer = null;
+        }
+
+        if (immediate) {
+          commitPreviewUpdate();
+          return;
+        }
+
+        state.previewRefreshTimer = window.setTimeout(commitPreviewUpdate, 120);
+      }
+
+      function commitPreviewUpdate() {
+        if (state.previewRefreshTimer) {
+          window.clearTimeout(state.previewRefreshTimer);
+          state.previewRefreshTimer = null;
+        }
+
+        if (!state.pendingPreviewHtml) {
+          return;
+        }
+
+        if (
+          state.pendingPreviewHtml === state.lastPreviewHtml &&
+          state.pendingPreviewSandbox === state.lastPreviewSandbox
+        ) {
+          syncPreviewScale();
+          return;
+        }
+
+        state.lastPreviewHtml = state.pendingPreviewHtml;
+        state.lastPreviewSandbox = state.pendingPreviewSandbox;
+        elements.previewFrame.setAttribute("sandbox", state.pendingPreviewSandbox);
+        elements.previewFrame.srcdoc = state.pendingPreviewHtml;
         syncPreviewScale();
+      }
+
+      function buildPreviewHtml(doc, interactivePreview) {
+        const html = serializeDocument(doc);
+        if (!interactivePreview) {
+          return html;
+        }
+
+        const bridgeScript = `
+<script>
+(() => {
+  const messageType = ${JSON.stringify(PREVIEW_NAVIGATION_MESSAGE)};
+
+  function resolvePath(domPath) {
+    if (!domPath) {
+      return null;
+    }
+
+    const parts = domPath.split(">");
+    let current = document.documentElement;
+
+    for (const part of parts) {
+      const [tagName, indexText] = part.split(":");
+      const index = Number.parseInt(indexText, 10);
+      const matches = Array.from(current.children).filter((child) => child.tagName === tagName);
+      current = matches[index];
+
+      if (!current) {
+        return null;
+      }
+    }
+
+    return current;
+  }
+
+  function activateSlide(slideId) {
+    if (!slideId) {
+      return null;
+    }
+
+    const match = /^s(\\d+)$/i.exec(slideId);
+    if (match && typeof window.goTo === "function") {
+      window.goTo(Number.parseInt(match[1], 10) - 1);
+    }
+
+    const target = document.getElementById(slideId);
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    if (!target || !slides.length) {
+      return target;
+    }
+
+    slides.forEach((slide) => {
+      const active = slide === target;
+      slide.classList.remove("anim-in");
+      slide.classList.toggle("active", active);
+      if (active) {
+        slide.removeAttribute("aria-hidden");
+      } else {
+        slide.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    return target;
+  }
+
+  function navigate(target) {
+    if (!target || target.type !== messageType) {
+      return;
+    }
+
+    const slide = activateSlide(target.slideId);
+    const element = resolvePath(target.domPath);
+    const scrollTarget = element || slide;
+    if (scrollTarget && typeof scrollTarget.scrollIntoView === "function") {
+      scrollTarget.scrollIntoView({ block: "center", inline: "nearest" });
+    }
+  }
+
+  window.addEventListener("message", (event) => {
+    navigate(event.data);
+  });
+})();
+<\/script>
+`;
+
+        if (html.includes("</body>")) {
+          return html.replace("</body>", `${bridgeScript}</body>`);
+        }
+
+        if (html.includes("</html>")) {
+          return html.replace("</html>", `${bridgeScript}</html>`);
+        }
+
+        return `${html}${bridgeScript}`;
+      }
+
+      function handlePreviewFrameLoad() {
+        syncPreviewScale();
+        syncActivePreviewTarget();
+      }
+
+      function setActiveSegment(segmentId) {
+        state.activeSegmentId = segmentId;
+        state.pendingPreviewTarget = getSegmentPreviewTargetById(segmentId);
+        syncActivePreviewTarget();
+      }
+
+      function getSegmentPreviewTargetById(segmentId) {
+        if (!segmentId) {
+          return null;
+        }
+
+        const segment = state.editableSegments.find((item) => item.id === segmentId);
+        return getSegmentPreviewTarget(segment);
+      }
+
+      function getSegmentPreviewTarget(segment) {
+        if (!segment) {
+          return null;
+        }
+
+        if (segment.previewSlideId || segment.previewDomPath) {
+          return {
+            slideId: segment.previewSlideId || "",
+            domPath: segment.previewDomPath || "",
+          };
+        }
+
+        return null;
+      }
+
+      function syncActivePreviewTarget() {
+        if (state.previewCollapsed || !state.pendingPreviewTarget) {
+          return;
+        }
+
+        if (elements.scriptPreviewToggle.checked) {
+          postPreviewNavigationMessage(state.pendingPreviewTarget);
+          return;
+        }
+
+        applyStaticPreviewNavigation(state.pendingPreviewTarget);
+      }
+
+      function postPreviewNavigationMessage(target) {
+        const frameWindow = elements.previewFrame.contentWindow;
+        if (!frameWindow || !target) {
+          return;
+        }
+
+        frameWindow.postMessage(
+          {
+            type: PREVIEW_NAVIGATION_MESSAGE,
+            slideId: target.slideId || "",
+            domPath: target.domPath || "",
+          },
+          "*",
+        );
+      }
+
+      function applyStaticPreviewNavigation(target) {
+        const doc = elements.previewFrame.contentDocument;
+        if (!doc || !target) {
+          return;
+        }
+
+        let scrollTarget = null;
+
+        if (target.slideId) {
+          scrollTarget = activateStaticSlide(doc, target.slideId);
+        }
+
+        if (target.domPath) {
+          const element = resolvePath(doc, target.domPath);
+          if (element) {
+            scrollTarget = element;
+          }
+        }
+
+        if (scrollTarget && typeof scrollTarget.scrollIntoView === "function") {
+          scrollTarget.scrollIntoView({ block: "center", inline: "nearest" });
+        }
+      }
+
+      function activateStaticSlide(doc, slideId) {
+        const target = doc.getElementById(slideId);
+        const slides = Array.from(doc.querySelectorAll(".slide"));
+        if (!target || !slides.length) {
+          return target;
+        }
+
+        slides.forEach((slide) => {
+          const active = slide === target;
+          slide.classList.remove("anim-in");
+          slide.classList.toggle("active", active);
+          if (active) {
+            slide.removeAttribute("aria-hidden");
+          } else {
+            slide.setAttribute("aria-hidden", "true");
+          }
+        });
+
+        return target;
       }
 
       function syncPreviewScale() {
