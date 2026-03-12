@@ -292,6 +292,14 @@
         font-size: 0.92rem;
       }
 
+      .search-highlight {
+        padding: 0 0.18em;
+        border-radius: 0.28em;
+        background: #ffd56a;
+        color: #2c241c;
+        box-shadow: inset 0 -1px 0 rgba(146, 68, 34, 0.18);
+      }
+
       .empty-search {
         padding: 18px;
         border: 1px dashed rgba(83, 55, 23, 0.24);
@@ -1171,12 +1179,16 @@
 
           const header = document.createElement("header");
           const title = document.createElement("h3");
-          title.textContent = segment.title || `${segment.tagName} block`;
+          title.innerHTML = highlightSearchText(
+            segment.title || `${segment.tagName} block`,
+            state.searchQuery,
+          );
           const path = document.createElement("span");
           path.className = "path";
-          path.textContent = segment.locationLabel
-            ? `${segment.locationLabel} -> ${segment.domPath}`
-            : segment.domPath;
+          path.innerHTML = highlightSearchText(
+            segment.locationLabel ? `${segment.locationLabel} -> ${segment.domPath}` : segment.domPath,
+            state.searchQuery,
+          );
           header.append(title, path);
 
           const textarea = document.createElement("textarea");
@@ -1188,7 +1200,10 @@
 
           const snippet = document.createElement("p");
           snippet.className = "snippet";
-          snippet.textContent = `Original: ${truncate(segment.originalText, 120)}`;
+          snippet.innerHTML = `Original: ${highlightSearchText(
+            truncate(segment.originalText, 120),
+            state.searchQuery,
+          )}`;
 
           card.append(header, textarea, snippet);
           elements.editorList.appendChild(card);
@@ -1225,6 +1240,44 @@
 
           return haystack.includes(query);
         });
+      }
+
+      function highlightSearchText(text, query) {
+        const source = String(text || "");
+        const needle = String(query || "").trim();
+        if (!needle) {
+          return escapeHtml(source);
+        }
+
+        const lowerSource = source.toLowerCase();
+        const lowerNeedle = needle.toLowerCase();
+        let startIndex = 0;
+        let highlighted = "";
+
+        while (startIndex < source.length) {
+          const matchIndex = lowerSource.indexOf(lowerNeedle, startIndex);
+          if (matchIndex === -1) {
+            highlighted += escapeHtml(source.slice(startIndex));
+            break;
+          }
+
+          highlighted += escapeHtml(source.slice(startIndex, matchIndex));
+          highlighted += `<mark class="search-highlight">${escapeHtml(
+            source.slice(matchIndex, matchIndex + needle.length),
+          )}</mark>`;
+          startIndex = matchIndex + needle.length;
+        }
+
+        return highlighted;
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
       }
 
       function handleSearchInput(event) {
