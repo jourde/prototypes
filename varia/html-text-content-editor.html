@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML Text Editor</title>
     <style>
       :root {
@@ -654,19 +653,19 @@
       <header class="topbar" aria-labelledby="page-title">
         <div class="brand">
           <p class="eyebrow">Local app</p>
-          <h1 id="page-title">HTML Text Review<br />Editor</h1>
+          <h1 id="page-title">HTML Text Review<br>Editor</h1>
         </div>
 
         <div class="toolbar" aria-label="File and preview controls">
           <div class="toolbar-main">
             <label class="file-picker" for="file-input">
               <span>Upload HTML</span>
-              <input id="file-input" type="file" accept=".htm,.html,text/html" />
+              <input id="file-input" type="file" accept=".htm,.html,text/html">
             </label>
 
             <div class="actions">
-              <button id="reset-button" type="button" disabled>Reset</button>
-              <button id="export-button" type="button" disabled>Export HTML</button>
+              <button id="reset-button" type="button" disabled="">Reset</button>
+              <button id="export-button" type="button" disabled="">Export HTML</button>
             </div>
           </div>
 
@@ -683,13 +682,11 @@
 
             <div class="preview-options">
               <label class="preview-toggle" for="script-preview-toggle">
-                <input id="script-preview-toggle" type="checkbox" />
+                <input id="script-preview-toggle" type="checkbox">
                 <span>Interactive SPA preview</span>
               </label>
-              <p id="preview-hint" class="preview-hint">
-                Enables uploaded JavaScript inside the preview iframe so slide decks and SPAs can
-                navigate beyond their first screen.
-              </p>
+              <p id="preview-hint" class="preview-hint">Enables uploaded JavaScript inside the preview iframe so slide decks and SPAs can
+navigate beyond their first screen.</p>
             </div>
           </div>
         </div>
@@ -710,24 +707,18 @@
             Upload an HTML file to extract editable text blocks.
           </div>
 
-          <div id="skip-summary" class="skip-summary" role="status" aria-live="polite" hidden></div>
+          <div id="skip-summary" class="skip-summary" role="status" aria-live="polite" hidden=""></div>
 
           <div class="search-bar" role="search" aria-labelledby="editor-heading">
             <label class="sr-only" for="search-input">Search extracted fields</label>
             <span id="search-help" class="sr-only">
               Search matches field titles, source paths, original text, and current text.
             </span>
-            <input
-              id="search-input"
-              type="search"
-              placeholder="Search extracted fields"
-              aria-controls="editor-list"
-              aria-describedby="search-help search-status"
-            />
+            <input id="search-input" type="search" placeholder="Search extracted fields" aria-controls="editor-list" aria-describedby="search-help search-status">
             <button id="clear-search-button" type="button">Clear</button>
           </div>
 
-          <div id="search-status" class="search-status" role="status" aria-live="polite" hidden></div>
+          <div id="search-status" class="search-status" role="status" aria-live="polite" hidden=""></div>
 
           <div id="editor-list" class="editor-list" role="list"></div>
         </section>
@@ -739,32 +730,19 @@
                 <h2 id="preview-heading">Live preview</h2>
                 <p id="preview-mode-message">Preview runs in a sandboxed iframe with scripts disabled.</p>
               </div>
-              <button
-                id="toggle-preview-button"
-                class="panel-toggle"
-                type="button"
-                aria-expanded="true"
-                aria-controls="preview-canvas"
-              >
-                Collapse
-              </button>
+              <button id="toggle-preview-button" class="panel-toggle" type="button" aria-expanded="true" aria-controls="preview-canvas">Collapse</button>
             </div>
           </div>
 
           <div id="preview-canvas" class="preview-canvas">
-            <iframe
-              id="preview-frame"
-              class="preview-frame"
-              title="Edited HTML preview"
-              sandbox=""
-            ></iframe>
+            <iframe id="preview-frame" class="preview-frame" title="Edited HTML preview" sandbox=""></iframe>
           </div>
         </section>
       </main>
 
       <footer class="app-footer">
         <p>
-          Created by François Jourde (2026) | MIT licence, code available on
+          Created by François Jourde (2026) | MIT licence | code available on
           <a href="https://github.com/jourde">GitHub</a> | all data is processed locally in the
           user’s browser.
         </p>
@@ -2457,5 +2435,6 @@
         return `${text.slice(0, maxLength - 1)}…`;
       }
     </script>
-  </body>
-</html>
+  
+
+</body></html>
