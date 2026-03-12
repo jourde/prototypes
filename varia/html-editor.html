@@ -330,6 +330,25 @@
         align-items: start;
       }
 
+      .app-footer {
+        margin-top: 16px;
+        padding: 12px 2px 0;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      .app-footer p {
+        margin: 0;
+      }
+
+      .app-footer a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 0.16em;
+      }
+
       .panel {
         min-height: 72vh;
         padding: 20px;
@@ -742,6 +761,14 @@
           </div>
         </section>
       </main>
+
+      <footer class="app-footer">
+        <p>
+          Created by François Jourde (2026) | MIT licence, code available on
+          <a href="https://github.com/jourde">GitHub</a> | all data is processed locally in the
+          user’s browser.
+        </p>
+      </footer>
     </div>
 
     <script>
