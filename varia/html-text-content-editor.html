@@ -329,6 +329,11 @@
         align-items: start;
       }
 
+      .workspace > * {
+        min-width: 0;
+        max-width: 100%;
+      }
+
       .app-footer {
         margin-top: 16px;
         padding: 12px 2px 0;
@@ -349,9 +354,12 @@
       }
 
       .panel {
+        width: 100%;
+        min-width: 0;
         min-height: 72vh;
         padding: 20px;
         border-radius: var(--radius);
+        overflow: hidden;
       }
 
       .preview-panel {
@@ -405,6 +413,7 @@
       .editor-list {
         display: grid;
         gap: 14px;
+        min-width: 0;
       }
 
       .search-bar {
@@ -461,6 +470,7 @@
         padding: 14px;
         background: var(--surface);
         border: 1px solid var(--border);
+        min-width: 0;
       }
 
       .editor-card header {
@@ -506,6 +516,8 @@
       .preview-canvas {
         position: relative;
         display: flex;
+        width: 100%;
+        max-width: 100%;
         justify-content: center;
         align-items: center;
         overflow: hidden;
@@ -566,7 +578,7 @@
         }
       }
 
-      @media (max-width: 1100px) {
+      @media (max-width: 1240px) {
         .topbar {
           gap: 14px;
         }
