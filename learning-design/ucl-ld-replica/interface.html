@@ -576,6 +576,264 @@ select:focus-visible,
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
+/* Partition musicale (Musical timeline view) */
+.partition-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: var(--surface-light);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.partition-controls-label {
+  color: var(--text-body);
+  font-weight: 600;
+}
+
+.partition-config-btn {
+  background: var(--hover-bg);
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.partition-config-btn:hover {
+  background: var(--hover-bg-mid);
+}
+
+.partition-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0;
+}
+
+.partition-session {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.partition-session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-left: 128px;
+  margin-bottom: 6px;
+}
+
+.partition-session-title {
+  font-weight: 600;
+  color: var(--text-body);
+  font-size: 13px;
+}
+
+.partition-session-total {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.partition-line {
+  display: flex;
+  align-items: stretch;
+  height: 36px;
+  gap: 0;
+}
+
+.partition-line-label {
+  width: 120px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-body);
+  border-right: 2px solid var(--line);
+  text-align: right;
+}
+
+.partition-line-track {
+  flex: 1;
+  position: relative;
+  border-bottom: 2px solid var(--line);
+}
+
+.partition-block {
+  position: absolute;
+  bottom: 4px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: filter var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(15,23,42,0.10);
+  padding: 0 6px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.partition-block:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+  z-index: 10;
+}
+
+.partition-block-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.partition-block-duration {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.82);
+  white-space: nowrap;
+}
+
+.partition-scale {
+  display: flex;
+  width: calc(100% - 120px);
+  margin-left: 128px;
+  margin-top: 4px;
+  padding: 0 8px;
+  font-size: 10px;
+  color: var(--muted);
+  justify-content: space-between;
+}
+
+.partition-scale-mark {
+  position: relative;
+  text-align: center;
+  flex: 1;
+}
+
+/* Responsive partition */
+@media (max-width: 900px) {
+  .partition-line-label {
+    width: 100px;
+    font-size: 11px;
+    padding-right: 8px;
+  }
+  .partition-session-header {
+    padding-left: 108px;
+  }
+  .partition-scale {
+    width: calc(100% - 100px);
+    margin-left: 108px;
+  }
+  .partition-block-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 720px) {
+  .partition-line-label {
+    width: 80px;
+    font-size: 10px;
+    padding-right: 4px;
+  }
+  .partition-session-header {
+    padding-left: 88px;
+  }
+  .partition-scale {
+    width: calc(100% - 80px);
+    margin-left: 88px;
+  }
+  .partition-block {
+    height: 24px;
+    border-radius: 3px;
+  }
+  .partition-block-label {
+    font-size: 9px;
+  }
+  .partition-block-duration {
+    display: none;
+  }
+}
+
+/* Partition config modal rows */
+.partition-config-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--surface-light);
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+.partition-config-row-label {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-body);
+}
+
+.partition-config-row-type {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--hover-bg-mid);
+  padding: 2px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.partition-config-row-btns {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.partition-config-row-btns button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel);
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.partition-config-row-btns button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.partition-config-row-btns button:not(:disabled):hover {
+  background: var(--hover-bg-mid);
+}
+
+.partition-config-row-btns button.del:not(:disabled):hover {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.partition-config-row-btns input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1684,6 +1942,7 @@ main {
           <div class="top-tabs" role="tablist" aria-label="Vues du panneau supérieur">
             <button id="top-tab-settings" class="top-tab" type="button" role="tab" aria-selected="false" aria-controls="timeline-view">Paramètres</button>
             <button id="top-tab-analysis" class="top-tab active" type="button" role="tab" aria-selected="true" aria-controls="analysis-view">Analyse</button>
+            <button id="top-tab-chronology" class="top-tab" type="button" role="tab" aria-selected="false" aria-controls="chronology-view">Chronologie</button>
           </div>
           <button id="top-panel-toggle-btn" class="top-panel-toggle" type="button">Replier le panneau</button>
         </div>
@@ -1817,6 +2076,12 @@ main {
           <div class="analysis-group-section">
             <div id="analysis-group-bar" class="analysis-group-bar"></div>
             <div id="analysis-group-legend" class="analysis-legend"></div>
+          </div>
+        </div>
+        <div id="chronology-view" class="analysis-view hidden" role="tabpanel" aria-labelledby="top-tab-chronology">
+          <h2 id="chronology-title" class="analysis-title">Chronologie des activités</h2>
+          <div id="chronology-container">
+            <!-- Partition sessions will be rendered here -->
           </div>
         </div>
       </div>
@@ -2006,6 +2271,33 @@ main {
       </div>
     </div>
 
+    <!-- Partition config modal -->
+    <div id="partition-config-modal-backdrop" class="modal-backdrop hidden"
+         role="dialog" aria-modal="true" aria-hidden="true"
+         aria-labelledby="partition-config-modal-title">
+      <div class="modal" style="width:min(520px,92vw);max-height:85vh;overflow-y:auto;">
+        <h2 id="partition-config-modal-title" class="modal-title">Configurer les lignes</h2>
+        <p id="partition-config-modal-desc" style="font-size:13px;color:var(--muted);margin:0 0 4px;">
+          Choisissez les lignes à afficher et leur ordre dans la partition.
+        </p>
+        <div id="partition-config-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);">
+          <p id="partition-add-section-label" style="font-size:12px;font-weight:600;color:var(--muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:0.04em;">
+            Ajouter une ligne
+          </p>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="partition-add-type" class="panel-select" style="flex:1;min-width:130px;"></select>
+            <select id="partition-add-value" class="panel-select" style="flex:1;min-width:130px;"></select>
+            <button id="partition-add-line-btn" class="btn btn-light" type="button" style="white-space:nowrap;">+ Ajouter</button>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="partition-config-cancel-btn" class="btn btn-light" type="button">Annuler</button>
+          <button id="partition-config-save-btn" class="btn btn-primary" type="button">Valider</button>
+        </div>
+      </div>
+    </div>
+
     <script>
 (() => {
 "use strict";
@@ -2093,6 +2385,12 @@ const LOCATION_OPTIONS = [
   { value: "onsite", label: "Présentiel", short: "Prés.", icon: ICONS.onsite },
   { value: "online", label: "Distanciel", short: "Dist.", icon: ICONS.online },
   { value: "hybrid", label: "Hybride", short: "Hybrid.", icon: ICONS.hybrid }
+];
+const PARTITION_TYPE_OPTIONS = [
+  { type: "locationMode",    labelKey: "partitionTypeLocation", options: LOCATION_OPTIONS },
+  { type: "groupMode",       labelKey: "partitionTypeGroup",    options: GROUP_MODE_OPTIONS },
+  { type: "syncMode",        labelKey: "partitionTypeSync",     options: SYNC_OPTIONS },
+  { type: "teacherPresence", labelKey: "partitionTypePresence", options: TRAINER_OPTIONS },
 ];
 const EVAL_OPTIONS = [
   { value: "none", label: "Aucune", short: "Aucune", icon: ICONS.none },
@@ -2469,7 +2767,12 @@ const defaultState = () => ({
   allNotesExpanded: false,
   topPanelCollapsed: false,
   meta: { ...DEFAULT_META },
-  sessions: []
+  sessions: [],
+  partitionLineConfig: [
+    { type: 'locationMode', label: 'Présentiel', value: 'onsite', visible: true },
+    { type: 'locationMode', label: 'Distanciel', value: 'online', visible: true },
+    { type: 'locationMode', label: 'Hybride', value: 'hybrid', visible: true }
+  ]
 });
 
 const board = document.getElementById("board");
@@ -2498,8 +2801,12 @@ const topPanel = document.getElementById("top-panel");
 const topPanelToggleBtn = document.getElementById("top-panel-toggle-btn");
 const topTabSettings = document.getElementById("top-tab-settings");
 const topTabAnalysis = document.getElementById("top-tab-analysis");
+const topTabChronology = document.getElementById("top-tab-chronology");
 const timelineView = document.getElementById("timeline-view");
 const analysisView = document.getElementById("analysis-view");
+const chronologyView = document.getElementById("chronology-view");
+const partitionConfigModalBackdrop = document.getElementById("partition-config-modal-backdrop");
+let partitionConfigDraft = [];
 const metaNameInput = document.getElementById("meta-name");
 const metaLearningDaysInput = document.getElementById("meta-learning-days");
 const metaLearningHoursInput = document.getElementById("meta-learning-hours");
@@ -2600,6 +2907,7 @@ const I18N = {
     exportTitle: "Exporter le design",
     format: "Format",
     cancel: "Annuler",
+    validate: "Valider",
     close: "Fermer",
     boardRegion: "Séquences de séances",
     sessionNotes: "Notes",
@@ -2708,7 +3016,26 @@ const I18N = {
     learningMinutesLabel: "Minutes d'apprentissage",
     designedDaysLabel: "Jours conçus",
     designedHoursLabel: "Heures conçues",
-    designedMinutesLabel: "Minutes conçues"
+    designedMinutesLabel: "Minutes conçues",
+    tabChronology: "Chronologie",
+    chronologyTitle: "Chronologie des activités",
+    partitionLinesLabel: "Lignes affichées",
+    partitionConfigure: "✎ Configurer",
+    partitionConfigTitle: "Configurer les lignes",
+    partitionConfigDesc: "Choisissez les lignes à afficher et leur ordre dans la partition.",
+    partitionAddLineSection: "Ajouter une ligne",
+    partitionAdd: "+ Ajouter",
+    partitionMoveUp: "Monter",
+    partitionMoveDown: "Descendre",
+    partitionShowHide: "Afficher/masquer",
+    partitionDeleteLine: "Supprimer cette ligne",
+    partitionShowPrefix: "Afficher",
+    partitionTypeLocation: "Localisation",
+    partitionTypeGroup: "Mode groupe",
+    partitionTypeSync: "Synchronicité",
+    partitionTypePresence: "Présence formateur",
+    partitionTotal: "Total",
+    partitionSession: "Session"
   },
   en: {
     docTitle: "Learning Design Interface - Prototype",
@@ -2755,6 +3082,7 @@ const I18N = {
     exportTitle: "Export design",
     format: "Format",
     cancel: "Cancel",
+    validate: "Validate",
     close: "Close",
     boardRegion: "Sequence board",
     sessionNotes: "Notes",
@@ -2863,7 +3191,26 @@ const I18N = {
     learningMinutesLabel: "Learning minutes",
     designedDaysLabel: "Designed days",
     designedHoursLabel: "Designed hours",
-    designedMinutesLabel: "Designed minutes"
+    designedMinutesLabel: "Designed minutes",
+    tabChronology: "Timeline",
+    chronologyTitle: "Activity Timeline",
+    partitionLinesLabel: "Displayed lines",
+    partitionConfigure: "✎ Configure",
+    partitionConfigTitle: "Configure lines",
+    partitionConfigDesc: "Choose the lines to display and their order in the partition.",
+    partitionAddLineSection: "Add a line",
+    partitionAdd: "+ Add",
+    partitionMoveUp: "Move up",
+    partitionMoveDown: "Move down",
+    partitionShowHide: "Show/hide",
+    partitionDeleteLine: "Delete this line",
+    partitionShowPrefix: "Show",
+    partitionTypeLocation: "Location",
+    partitionTypeGroup: "Group mode",
+    partitionTypeSync: "Synchronicity",
+    partitionTypePresence: "Trainer presence",
+    partitionTotal: "Total",
+    partitionSession: "Session"
   }
 };
 
@@ -3030,6 +3377,20 @@ function applyLocalizedUI() {
   appTitle.textContent = t("appTitle");
   topTabSettings.textContent = t("tabSettings");
   topTabAnalysis.textContent = t("tabAnalysis");
+  topTabChronology.textContent = t("tabChronology");
+  document.getElementById("chronology-title").textContent = t("chronologyTitle");
+  const partCfgTitle = document.getElementById("partition-config-modal-title");
+  if (partCfgTitle) partCfgTitle.textContent = t("partitionConfigTitle");
+  const partCfgDesc = document.getElementById("partition-config-modal-desc");
+  if (partCfgDesc) partCfgDesc.textContent = t("partitionConfigDesc");
+  const partAddSection = document.getElementById("partition-add-section-label");
+  if (partAddSection) partAddSection.textContent = t("partitionAddLineSection");
+  const partCfgCancel = document.getElementById("partition-config-cancel-btn");
+  if (partCfgCancel) partCfgCancel.textContent = t("cancel");
+  const partCfgSave = document.getElementById("partition-config-save-btn");
+  if (partCfgSave) partCfgSave.textContent = t("validate");
+  const partAddBtn = document.getElementById("partition-add-line-btn");
+  if (partAddBtn) partAddBtn.textContent = t("partitionAdd");
   document.getElementById("analysis-title").textContent = t("analysisTitle");
   document.getElementById("label-meta-name").textContent = t("metaNameLabel");
   document.getElementById("label-meta-learning").textContent = t("metaLearningLabel");
@@ -3142,6 +3503,13 @@ function hydrateState(parsed, fallback = defaultState()) {
             : "",
       trainers: typeof parsedMeta.trainers === "string" ? parsedMeta.trainers : ""
     },
+    partitionLineConfig: Array.isArray(parsed.partitionLineConfig)
+      ? parsed.partitionLineConfig
+      : [
+          { type: 'locationMode', label: 'Présentiel', value: 'onsite', visible: true },
+          { type: 'locationMode', label: 'Distanciel', value: 'online', visible: true },
+          { type: 'locationMode', label: 'Hybride', value: 'hybrid', visible: true }
+        ],
     sessions: parsed.sessions.map((session, sessionIndex) => ({
       id: session?.id || nextId(),
       title: typeof session?.title === "string" ? session.title : defaultSessionTitle(sessionIndex + 1),
@@ -3217,7 +3585,12 @@ function createNewDesignState() {
     allNotesExpanded: false,
     topPanelCollapsed: false,
     meta: { ...NEW_DESIGN_META },
-    sessions: []
+    sessions: [],
+    partitionLineConfig: [
+      { type: 'locationMode', label: 'Présentiel', value: 'onsite', visible: true },
+      { type: 'locationMode', label: 'Distanciel', value: 'online', visible: true },
+      { type: 'locationMode', label: 'Hybride', value: 'hybrid', visible: true }
+    ]
   };
 }
 
@@ -4094,6 +4467,129 @@ function renderAnalysisPanel() {
   renderLegend(analysisGroupLegend, groupData);
 }
 
+function renderPartitionView() {
+  const container = document.getElementById('chronology-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // Create and render partition controls panel
+  const controlsDiv = document.createElement('div');
+  controlsDiv.className = 'partition-controls';
+  controlsDiv.innerHTML = `
+    <span class="partition-controls-label">${t("partitionLinesLabel")} :</span>
+    <button class="partition-config-btn" id="partition-edit-btn">${t("partitionConfigure")}</button>
+  `;
+  container.appendChild(controlsDiv);
+
+  // Wire up the config button
+  document.getElementById('partition-edit-btn')?.addEventListener('click', openPartitionConfigModal);
+
+  // Render partition for each session
+  state.sessions.forEach((session, sessionIndex) => {
+    const sessionDiv = document.createElement('div');
+    sessionDiv.className = 'partition-session';
+
+    // Session header with title and total duration
+    const header = document.createElement('div');
+    header.className = 'partition-session-header';
+
+    const title = document.createElement('div');
+    title.className = 'partition-session-title';
+    title.textContent = session.title || `${t("partitionSession")} ${sessionIndex + 1}`;
+
+    const total = document.createElement('div');
+    total.className = 'partition-session-total';
+    const totalDuration = session.activities.reduce((sum, a) => sum + (Number(a.duration) || 0), 0);
+    total.textContent = `${t("partitionTotal")}: ${totalDuration} min`;
+
+    header.appendChild(title);
+    header.appendChild(total);
+    sessionDiv.appendChild(header);
+
+    // Calculate cumulative durations and positions for all activities
+    const activityPositions = [];
+    let cumulativeDuration = 0;
+    session.activities.forEach((activity) => {
+      const duration = Number(activity.duration) || 0;
+      const startPercent = totalDuration > 0 ? (cumulativeDuration / totalDuration) * 100 : 0;
+      const widthPercent = totalDuration > 0 ? (duration / totalDuration) * 100 : 0;
+      activityPositions.push({ activity, startPercent, widthPercent });
+      cumulativeDuration += duration;
+    });
+
+    // Render partition lines (one per visible modalite config)
+    state.partitionLineConfig.filter(line => line.visible).forEach((lineConfig) => {
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'partition-line';
+
+      // Line label (modalite name)
+      const label = document.createElement('div');
+      label.className = 'partition-line-label';
+      label.textContent = lineConfig.label;
+      lineDiv.appendChild(label);
+
+      // Track container for blocks (relative positioning)
+      const track = document.createElement('div');
+      track.className = 'partition-line-track';
+
+      // Add activity blocks that match this line's modalite
+      activityPositions.forEach(({ activity, startPercent, widthPercent }) => {
+        // Check if activity matches this line configuration
+        const matchesLine = (() => {
+          if (lineConfig.type === 'locationMode') return activity.locationMode === lineConfig.value;
+          if (lineConfig.type === 'groupMode') return activity.groupMode === lineConfig.value;
+          if (lineConfig.type === 'syncMode') return activity.syncMode === lineConfig.value;
+          if (lineConfig.type === 'teacherPresence') return activity.teacherPresence === lineConfig.value;
+          return false;
+        })();
+
+        if (matchesLine && widthPercent > 0) {
+          const block = document.createElement('div');
+          block.className = 'partition-block';
+          block.style.left = startPercent + '%';
+          block.style.width = widthPercent + '%';
+          block.style.backgroundColor = colorForType(activity.type);
+
+          // Type label (abbreviated)
+          const typeLabel = document.createElement('div');
+          typeLabel.className = 'partition-block-label';
+          const abbreviation = labelForType(activity.type).substring(0, 3).toUpperCase();
+          typeLabel.textContent = abbreviation;
+
+          // Duration label
+          const durationLabel = document.createElement('div');
+          durationLabel.className = 'partition-block-duration';
+          durationLabel.textContent = `${activity.duration}m`;
+
+          block.appendChild(typeLabel);
+          block.appendChild(durationLabel);
+
+          // Optional: Add hover tooltip with activity details
+          block.title = `${labelForType(activity.type)} - ${activity.duration}m`;
+
+          track.appendChild(block);
+        }
+      });
+
+      lineDiv.appendChild(track);
+      sessionDiv.appendChild(lineDiv);
+    });
+
+    // Percentage scale (0%, 25%, 50%, 75%, 100%)
+    const scale = document.createElement('div');
+    scale.className = 'partition-scale';
+    [0, 25, 50, 75, 100].forEach(pct => {
+      const mark = document.createElement('div');
+      mark.className = 'partition-scale-mark';
+      mark.textContent = pct + '%';
+      scale.appendChild(mark);
+    });
+    sessionDiv.appendChild(scale);
+
+    container.appendChild(sessionDiv);
+  });
+}
+
 function renderTopPanel() {
   topPanel.classList.toggle("collapsed", state.topPanelCollapsed);
   topPanelToggleBtn.textContent = state.topPanelCollapsed ? t("expandPanel") : t("collapsePanel");
@@ -4115,15 +4611,22 @@ function renderTopPanel() {
   const panelExpanded = !state.topPanelCollapsed;
   topTabSettings.classList.toggle("active", panelExpanded && state.meta.activeTab === "settings");
   topTabAnalysis.classList.toggle("active", panelExpanded && state.meta.activeTab === "analysis");
+  topTabChronology.classList.toggle("active", panelExpanded && state.meta.activeTab === "chronology");
   topTabSettings.setAttribute("aria-selected", state.meta.activeTab === "settings" ? "true" : "false");
   topTabAnalysis.setAttribute("aria-selected", state.meta.activeTab === "analysis" ? "true" : "false");
+  topTabChronology.setAttribute("aria-selected", state.meta.activeTab === "chronology" ? "true" : "false");
   topTabSettings.tabIndex = state.meta.activeTab === "settings" ? 0 : -1;
   topTabAnalysis.tabIndex = state.meta.activeTab === "analysis" ? 0 : -1;
+  topTabChronology.tabIndex = state.meta.activeTab === "chronology" ? 0 : -1;
+  const settingsActive = state.meta.activeTab === "settings";
   const analysisActive = state.meta.activeTab === "analysis";
-  timelineView.classList.toggle("hidden", analysisActive);
+  const chronologyActive = state.meta.activeTab === "chronology";
+  timelineView.classList.toggle("hidden", !settingsActive);
   analysisView.classList.toggle("hidden", !analysisActive);
-  timelineView.setAttribute("aria-hidden", analysisActive ? "true" : "false");
+  chronologyView.classList.toggle("hidden", !chronologyActive);
+  timelineView.setAttribute("aria-hidden", settingsActive ? "false" : "true");
   analysisView.setAttribute("aria-hidden", analysisActive ? "false" : "true");
+  chronologyView.setAttribute("aria-hidden", chronologyActive ? "false" : "true");
 
   const designed = splitMinutesToPedagogicalTime(totalDesignedMinutes(), getDayHours());
   metaDesignedDaysInput.value = designed.days;
@@ -5201,6 +5704,7 @@ function render() {
   closeToolPicker();
   applyLocalizedUI();
   renderTopPanel();
+  renderPartitionView();
   const boardLayout = getBoardLayout();
   const isListLayout = boardLayout === "list";
   const sessionMoveHint = isListLayout ? t("sessionMoveHintList") : t("sessionMoveHintColumns");
@@ -5234,6 +5738,7 @@ function render() {
     title.addEventListener("input", (e) => {
       session.title = e.target.value;
       saveState();
+      renderPartitionView();
     });
     objectives.value = session.objectives || "";
     objectives.setAttribute("aria-label", `${t("sessionObjectivesLabel")} ${sessionIndex + 1}`);
@@ -5440,6 +5945,7 @@ function render() {
         saveState();
         totalDuration.textContent = String(totalSessionMinutes(session));
         renderTopPanel();
+        renderPartitionView();
       });
 
       bindChoiceControl(groupModeBtn, GROUP_MODE_OPTIONS, () => activity.groupMode, (nextValue) => {
@@ -5447,6 +5953,7 @@ function render() {
           saveState();
           renderTopPanel();
           setChoiceButton(groupModeBtn, GROUP_MODE_OPTIONS, activity.groupMode);
+          renderPartitionView();
       });
 
       bindChoiceControl(trainerModeBtn, TRAINER_OPTIONS, () => activity.teacherPresence, (nextValue) => {
@@ -5454,6 +5961,7 @@ function render() {
           saveState();
           renderTopPanel();
           setChoiceButton(trainerModeBtn, TRAINER_OPTIONS, activity.teacherPresence);
+          renderPartitionView();
       });
 
       bindChoiceControl(syncModeBtn, SYNC_OPTIONS, () => activity.syncMode, (nextValue) => {
@@ -5461,6 +5969,7 @@ function render() {
           saveState();
           renderTopPanel();
           setChoiceButton(syncModeBtn, SYNC_OPTIONS, activity.syncMode);
+          renderPartitionView();
       });
 
       bindChoiceControl(
@@ -5472,6 +5981,7 @@ function render() {
           saveState();
           renderTopPanel();
           setChoiceButton(locationModeBtn, LOCATION_OPTIONS, activity.locationMode);
+          renderPartitionView();
         }
       );
 
@@ -5601,6 +6111,13 @@ function bindTopPanelEvents() {
     state.meta.activeTab = "analysis";
     saveState();
     renderTopPanel();
+  });
+
+  topTabChronology.addEventListener("click", () => {
+    state.meta.activeTab = "chronology";
+    saveState();
+    renderTopPanel();
+    renderPartitionView();
   });
 
   metaNameInput.addEventListener("input", (event) => {
@@ -5851,6 +6368,148 @@ importFileInput.addEventListener("change", async (e) => {
     delete importFileInput.dataset.format;
   }
 });
+
+// ── Partition config modal ───────────────────────────────────────────────────
+
+function openPartitionConfigModal() {
+  partitionConfigDraft = state.partitionLineConfig.map(line => ({ ...line }));
+  renderPartitionConfigList();
+  renderPartitionAddTypeSelect();
+  openModal(partitionConfigModalBackdrop, "#partition-config-cancel-btn");
+}
+
+function closePartitionConfigModal() {
+  closeModal(partitionConfigModalBackdrop);
+}
+
+function renderPartitionConfigList() {
+  const list = document.getElementById("partition-config-list");
+  if (!list) return;
+  list.innerHTML = "";
+
+  partitionConfigDraft.forEach((line, index) => {
+    const row = document.createElement("div");
+    row.className = "partition-config-row";
+
+    const upBtn = document.createElement("button");
+    upBtn.type = "button";
+    upBtn.textContent = "▲";
+    upBtn.title = t("partitionMoveUp");
+    upBtn.disabled = index === 0;
+    upBtn.addEventListener("click", () => {
+      [partitionConfigDraft[index - 1], partitionConfigDraft[index]] =
+        [partitionConfigDraft[index], partitionConfigDraft[index - 1]];
+      renderPartitionConfigList();
+    });
+
+    const downBtn = document.createElement("button");
+    downBtn.type = "button";
+    downBtn.textContent = "▼";
+    downBtn.title = t("partitionMoveDown");
+    downBtn.disabled = index === partitionConfigDraft.length - 1;
+    downBtn.addEventListener("click", () => {
+      [partitionConfigDraft[index], partitionConfigDraft[index + 1]] =
+        [partitionConfigDraft[index + 1], partitionConfigDraft[index]];
+      renderPartitionConfigList();
+    });
+
+    const label = document.createElement("span");
+    label.className = "partition-config-row-label";
+    label.textContent = line.label;
+
+    const typeBadge = document.createElement("span");
+    typeBadge.className = "partition-config-row-type";
+    const typeOption = PARTITION_TYPE_OPTIONS.find(t => t.type === line.type);
+    typeBadge.textContent = typeOption ? t(typeOption.labelKey) : line.type;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = line.visible;
+    checkbox.title = t("partitionShowHide");
+    checkbox.setAttribute("aria-label", `${t("partitionShowPrefix")} ${line.label}`);
+    checkbox.addEventListener("change", () => {
+      partitionConfigDraft[index].visible = checkbox.checked;
+    });
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.textContent = "✕";
+    delBtn.className = "del";
+    delBtn.title = t("partitionDeleteLine");
+    delBtn.addEventListener("click", () => {
+      partitionConfigDraft.splice(index, 1);
+      renderPartitionConfigList();
+    });
+
+    const btnGroup = document.createElement("div");
+    btnGroup.className = "partition-config-row-btns";
+    btnGroup.append(upBtn, downBtn, checkbox, delBtn);
+
+    row.append(label, typeBadge, btnGroup);
+    list.appendChild(row);
+  });
+}
+
+function renderPartitionAddTypeSelect() {
+  const typeSelect = document.getElementById("partition-add-type");
+  const valueSelect = document.getElementById("partition-add-value");
+  if (!typeSelect || !valueSelect) return;
+
+  typeSelect.innerHTML = PARTITION_TYPE_OPTIONS
+    .map(opt => `<option value="${opt.type}">${t(opt.labelKey)}</option>`)
+    .join("");
+
+  updatePartitionAddValueSelect();
+
+  // Remove previous listener to avoid stacking
+  typeSelect.replaceWith(typeSelect.cloneNode(true));
+  const freshTypeSelect = document.getElementById("partition-add-type");
+  freshTypeSelect.addEventListener("change", updatePartitionAddValueSelect);
+}
+
+function updatePartitionAddValueSelect() {
+  const typeSelect = document.getElementById("partition-add-type");
+  const valueSelect = document.getElementById("partition-add-value");
+  if (!typeSelect || !valueSelect) return;
+  const selectedType = PARTITION_TYPE_OPTIONS.find(t => t.type === typeSelect.value);
+  valueSelect.innerHTML = (selectedType ? selectedType.options : [])
+    .map(opt => `<option value="${opt.value}">${opt.label}</option>`)
+    .join("");
+}
+
+function addPartitionLine() {
+  const typeSelect = document.getElementById("partition-add-type");
+  const valueSelect = document.getElementById("partition-add-value");
+  if (!typeSelect || !valueSelect) return;
+  const selectedType = PARTITION_TYPE_OPTIONS.find(t => t.type === typeSelect.value);
+  const selectedOption = (selectedType ? selectedType.options : []).find(opt => opt.value === valueSelect.value);
+  if (!selectedOption) return;
+  const exists = partitionConfigDraft.some(l => l.type === typeSelect.value && l.value === valueSelect.value);
+  if (exists) return;
+  partitionConfigDraft.push({
+    type: typeSelect.value,
+    label: selectedOption.label,
+    value: selectedOption.value,
+    visible: true
+  });
+  renderPartitionConfigList();
+}
+
+function savePartitionConfig() {
+  state.partitionLineConfig = partitionConfigDraft.map(line => ({ ...line }));
+  saveState();
+  renderPartitionView();
+  closePartitionConfigModal();
+}
+
+document.getElementById("partition-config-cancel-btn")?.addEventListener("click", closePartitionConfigModal);
+document.getElementById("partition-config-save-btn")?.addEventListener("click", savePartitionConfig);
+document.getElementById("partition-add-line-btn")?.addEventListener("click", addPartitionLine);
+partitionConfigModalBackdrop?.addEventListener("click", (e) => {
+  if (e.target === partitionConfigModalBackdrop) closePartitionConfigModal();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 setupAutoSave();
 setupExpandableFields();
