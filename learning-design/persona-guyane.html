@@ -1284,7 +1284,10 @@ Cet outil est un <strong>prototype non officiel</strong> : n’hésitez pas à p
                     // Text/Select/Textarea
                     const simpleInput = el.querySelector('input[type="text"], select, textarea');
                     if (simpleInput) {
-                        const val = simpleInput.value.trim();
+                        // For selects, use the displayed text rather than the internal value
+                        const val = simpleInput.tagName === 'SELECT'
+                            ? (simpleInput.selectedIndex > 0 ? simpleInput.options[simpleInput.selectedIndex].text.trim() : '')
+                            : simpleInput.value.trim();
                         if (val && val !== 'Sélectionner...') {
                             if (label === '') {
                                 text += `${val}\n`;
