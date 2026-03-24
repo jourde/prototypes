@@ -632,10 +632,7 @@
                     <button class="btn btn-outline" onclick="saveData()" data-tooltip="Sauvegarder (JSON)">
                         <span class="material-icons">save</span>
                     </button>
-                    <button class="btn btn-outline" onclick="exportMarkdown()" data-tooltip="Exporter Profil (Markdown)">
-                        <span class="material-icons">integration_instructions</span>
-                    </button>
-                    <button class="btn btn-outline" onclick="openSynthesisModal()" data-tooltip="Afficher la synthèse (copier en texte ou Markdown)">
+                    <button class="btn btn-outline" onclick="openSynthesisModal()" data-tooltip="Synthèse et export">
                         <span class="material-icons">visibility</span>
                     </button>
                 </div>
@@ -1021,8 +1018,7 @@ Le bloc <strong>IMPORT & EXPORT</strong> couvre <em>tous les personas</em> de la
 <ul style=”margin-top: 5px; margin-bottom: 10px;”>
     <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>upload_file</span> Charger</strong> : recharge un fichier <code>.json</code> précédemment sauvegardé (un ou plusieurs personas).</li>
     <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>save</span> Sauvegarder</strong> : exporte tous les personas dans un fichier <code>.json</code> pour reprendre la session plus tard.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>integration_instructions</span> Markdown (profils)</strong> : génère un fichier texte structuré avec un profil synthétique par persona — utile pour copier-coller dans un assistant IA.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>visibility</span> Synthèse</strong> : affiche tous les profils dans une fenêtre, avec des boutons pour copier en <strong>texte brut</strong> ou en <strong>Markdown</strong>.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>visibility</span> Synthèse et export</strong> : affiche tous les profils dans une fenêtre, avec des boutons pour copier en <strong>texte brut</strong>, copier en <strong>Markdown</strong>, <strong>télécharger un fichier .md</strong> ou <strong>télécharger un fichier Word (.doc)</strong>.</li>
 </ul>
 </p>
 
@@ -1113,20 +1109,24 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
     <div id="synthesisModal" class="modal" data-html2canvas-ignore="true">
         <div class="modal-content" style="max-width: 720px;">
             <span class="close-btn" onclick="closeSynthesisModal()">&times;</span>
-            <h2 id="synthesisModalTitle" style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Synthèse du persona</h2>
+            <h2 id="synthesisModalTitle" style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Synthèse</h2>
             <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">
                 Relisez et copiez la synthèse ci-dessous pour la coller dans un outil tiers (assistant IA, document, email…).
             </div>
             <textarea id="synthesisContent" readonly
                 style="width: 100%; height: 350px; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; line-height: 1.5; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; color: #0f172a; resize: vertical; box-sizing: border-box;"></textarea>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px;">
-                <button class="btn btn-primary" onclick="copyAsText()">
-                    <span class="material-icons" style="vertical-align: middle; font-size: 18px;">content_copy</span>
-                    Copier en texte
-                </button>
-                <button class="btn btn-outline" onclick="copyAsMarkdown()">
+                <button class="btn btn-primary" onclick="copyAsMarkdown()">
                     <span class="material-icons" style="vertical-align: middle; font-size: 18px;">code</span>
                     Copier en Markdown
+                </button>
+                <button class="btn btn-outline" onclick="exportSynthesisMarkdown()">
+                    <span class="material-icons" style="vertical-align: middle; font-size: 18px;">download</span>
+                    Exporter en Markdown
+                </button>
+                <button class="btn btn-outline" onclick="exportSynthesisWord()">
+                    <span class="material-icons" style="vertical-align: middle; font-size: 18px;">description</span>
+                    Exporter en Word
                 </button>
                 <span id="synthesisCopiedFeedback" style="display: none; color: #059669; font-weight: 600; font-size: 0.9rem;">✓ Copié !</span>
                 <button class="btn btn-reset" onclick="closeSynthesisModal()" style="margin-left: auto;">
@@ -1837,8 +1837,8 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
             updatePersonaBar();
 
             const title = personaStore.length === 1
-                ? `Synthèse du persona : ${personaStore[0].fields['name'] || 'Persona'}`
-                : `Synthèse des ${personaStore.length} personas`;
+                ? `Synthèse : ${personaStore[0].fields['name'] || 'Persona'}`
+                : `Synthèse (${personaStore.length} personas)`;
             document.getElementById('synthesisModalTitle').textContent = title;
             document.getElementById('synthesisContent').value = allMd;
             document.getElementById('synthesisCopiedFeedback').style.display = 'none';
@@ -1877,6 +1877,45 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
         function copyAsText() {
             const md = document.getElementById('synthesisContent').value;
             navigator.clipboard.writeText(markdownToPlainText(md)).then(showCopiedFeedback);
+        }
+
+        function exportSynthesisMarkdown() {
+            const md = document.getElementById('synthesisContent').value;
+            const label = personaStore.length === 1
+                ? `Persona_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
+                : `Personas_Guyane_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
+            downloadTextFile(md, `${label}.md`, 'text/markdown');
+        }
+
+        function markdownToHtml(md) {
+            return md
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/^> \*\*(.+?)\*\*$/gm, '<blockquote><strong>$1</strong></blockquote>')
+                .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+                .replace(/^  - (.+)$/gm, '<li style="margin-left:20px">$1</li>')
+                .replace(/^- \*\*(.+?)\*\* : (.+)$/gm, '<li><strong>$1</strong> : $2</li>')
+                .replace(/^- \*\*(.+?)\*\* :$/gm, '<li><strong>$1</strong> :</li>')
+                .replace(/^- (.+)$/gm, '<li>$1</li>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^---$/gm, '<hr>')
+                .replace(/\n{2,}/g, '<br><br>');
+        }
+
+        function exportSynthesisWord() {
+            const md = document.getElementById('synthesisContent').value;
+            const label = personaStore.length === 1
+                ? `Persona_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
+                : `Personas_Guyane_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
+            const html = markdownToHtml(md);
+            const wordContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='UTF-8'><style>
+body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;margin:2cm;}
+h2{color:#1e40af;font-size:14pt;margin-top:16pt;}
+blockquote{border-left:3px solid #2563eb;margin-left:0;padding-left:12px;color:#475569;}
+li{margin-bottom:4px;}
+hr{border:none;border-top:1px solid #e2e8f0;margin:12pt 0;}
+</style></head><body>${html}</body></html>`;
+            downloadTextFile(wordContent, `${label}.doc`, 'application/vnd.ms-word;charset=utf-8');
         }
 
         // Modal Logic
