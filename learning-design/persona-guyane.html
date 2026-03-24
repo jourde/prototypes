@@ -702,6 +702,27 @@
                     <input type="text" placeholder="Ex: Julie" id="name">
                 </div>
                 <div class="form-group">
+                    <label>Fonction</label>
+                    <select id="fonction">
+                        <option value="">Sélectionner...</option>
+                        <option value="Personnel de direction">Personnel de direction</option>
+                        <option value="Personnel d'inspection">Personnel d'inspection</option>
+                        <option value="Conseiller pédagogique de circonscription">Conseiller pédagogique de circonscription</option>
+                        <option value="Conseiller pédagogique départemental">Conseiller pédagogique départemental</option>
+                        <option value="Enseignant 1D">Enseignant 1D</option>
+                        <option value="Enseignant 2D">Enseignant 2D</option>
+                        <option value="Conseiller pédagogique d'éducation (CPE)">Conseiller pédagogique d'éducation (CPE)</option>
+                        <option value="Assistant d'Éducation (AED / PEC)">Assistant d'Éducation (AED / PEC)</option>
+                        <option value="Accompagnant d'élève en situation d'handicap (AESH)">Accompagnant d'élève en situation d'handicap (AESH)</option>
+                        <option value="Personnels administratifs, techniques, sociaux et de santé (ATSS)">Personnels administratifs, techniques, sociaux et de santé (ATSS)</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fonction autre</label>
+                    <input type="text" placeholder="Préciser la fonction..." id="fonctionAutre">
+                </div>
+                <div class="form-group">
                     <label>Niveau d'enseignement</label>
                     <select id="level">
                         <option value="">Sélectionner...</option>
@@ -742,12 +763,18 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label>Spécialité</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="bilingue"> Enseignant 1D classe bilingue</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>Ancienneté sur le territoire</label>
                         <select id="seniority">
                             <option value="">Sélectionner...</option>
                             <option value="Arrivant">Arrive tout juste (< 1 an)</option>
                             <option value="Installé">1 à 3 ans</option>
-                            <option value="Ancien">Plus de 3 ans / Natif</option>
+                            <option value="Ancien">Plus de 3 ans</option>
                         </select>
                     </div>
                 </div>
@@ -767,7 +794,16 @@
                 <!-- Base -->
                 <div class="form-group">
                     <label>Type d'établissement</label>
-                    <input type="text" placeholder="Ex: École de quartier..." id="schoolType">
+                    <select id="schoolType">
+                        <option value="">Sélectionner...</option>
+                        <option value="École maternelle publique (EMPU)">École maternelle publique (EMPU)</option>
+                        <option value="École élémentaire publique (EEPU)">École élémentaire publique (EEPU)</option>
+                        <option value="École primaire publique (EPPU)">École primaire publique (EPPU)</option>
+                        <option value="Collège">Collège</option>
+                        <option value="Lycée général">Lycée général</option>
+                        <option value="Lycée général et technique (LGT)">Lycée général et technique (LGT)</option>
+                        <option value="Lycée professionnel (LPO)">Lycée professionnel (LPO)</option>
+                    </select>
                 </div>
                 <div class="suggestions-panel">
                     <div class="form-group">
@@ -793,8 +829,10 @@
                         <select id="location">
                             <option value="">Sélectionner...</option>
                             <option value="Urbain">Zone Urbaine / Littoral (Cayenne, Kourou...)</option>
-                            <option value="Eloigne">Commune éloignée (délai de route : 2h+)</option>
-                            <option value="Isole">Site Isolé (intérieur / hameau reculé) / Accès par fleuve (avion/pirogue)</option>
+                            <option value="EloigneRoute">Commune éloignée (délai de route important depuis Cayenne)</option>
+                            <option value="EloignePiroguAvion">Commune éloignée (pirogue, avion)</option>
+                            <option value="IsoleInterieur">Site isolé (intérieur)</option>
+                            <option value="IsoleFleuve">Site isolé (fleuve)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -879,7 +917,6 @@
                 <div class="guyane-context">
                     <span class="guyane-label">Spécifique Guyane</span>
                     <div class="checkbox-group">
-                        <label class="checkbox-item"><input type="checkbox" id="fls"> FLS</label>
                         <label class="checkbox-item"><input type="checkbox" id="isolation"> Rompre l'isolement géographique</label>
                     </div>
                 </div>
@@ -914,7 +951,6 @@
                     <span class="guyane-label">Spécifique Guyane</span>
                     <div class="checkbox-group">
                         <label class="checkbox-item"><input type="checkbox" id="internet"> Connexion domicile instable/inexistante</label>
-                        <label class="checkbox-item"><input type="checkbox" id="turnover"> Faible motivation</label>
                         <label class="checkbox-item"><input type="checkbox" id="jetlag"> Décalage horaire (si formateur métropole)</label>
                     </div>
                 </div>
@@ -950,9 +986,7 @@
                 <div class="guyane-context">
                     <span class="guyane-label">Spécifique Guyane</span>
                     <div class="checkbox-group">
-                        <label class="checkbox-item"><input type="checkbox" id="offline"> Mode "Hors-ligne" (Téléchargement)</label>
-                        <label class="checkbox-item"><input type="checkbox" id="whatsapp"> WhatsApp (Faible débit / Informalité)</label>
-                        <label class="checkbox-item"><input type="checkbox" id="peer"> Pair-à-pair local (Témoignages crédibles)</label>
+                        <label class="checkbox-item"><input type="checkbox" id="offline"> Mode "Hors-ligne" à considérer (Téléchargement)</label>
                     </div>
                 </div>
             </div>
