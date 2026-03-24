@@ -586,14 +586,10 @@
             <div class="action-group">
                 <span class="action-group-title">Contexte</span>
                 <div class="btn-row">
-                    <label class="switch-label">
-                        <span>Standard</span>
-                        <label class="switch">
-                            <input type="checkbox" id="contextToggle">
-                            <span class="slider"></span>
-                        </label>
-                        <span style="color: var(--guyane-color);">Guyane</span>
-                    </label>
+                    <select id="contextToggle" style="padding: 5px 10px; font-size: 0.85rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border); background: white; color: var(--text-main); cursor: pointer; outline: none;">
+                        <option value="Standard">Standard</option>
+                        <option value="Guyane">Guyane</option>
+                    </select>
                 </div>
             </div>
 
@@ -605,7 +601,7 @@
                     <label class="switch-label">
                         <span>Suggestions</span>
                         <label class="switch">
-                            <input type="checkbox" id="suggestionsToggle">
+                            <input type="checkbox" id="suggestionsToggle" checked>
                             <span class="slider"></span>
                         </label>
                     </label>
@@ -639,23 +635,14 @@
             </div>
 
 
-            <!-- Bloc Améliorations (collecte de suggestions) -->
-            <div class="action-group">
-                <span class="action-group-title">AMÉLIORATIONS</span>
-                <div class="btn-row">
-                    <button class="btn btn-outline" onclick="exportFullMarkdown()" data-tooltip="Exporter Canevas Complet (Markdown)">
-                        <span class="material-icons">list_alt</span>
-                    </button>
-                    <button class="btn btn-outline" onclick="openSuggestionsModal()" data-tooltip="Proposer une amélioration (export local)">
-                        <span class="material-icons">feedback</span>
-                    </button>
-                </div>
-            </div>
             <!-- Bloc Aide -->
             <div class="action-group">
                 <span class="action-group-title">Aide</span>
                 <div class="btn-row">
-<button class="btn btn-outline" onclick="openHelpModal()" data-tooltip="Guide d'utilisation">
+                    <button class="btn btn-outline" onclick="exportFullMarkdown()" data-tooltip="Exporter Canevas Complet (Markdown)">
+                        <span class="material-icons">list_alt</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="openHelpModal()" data-tooltip="Guide d'utilisation">
                         <span class="material-icons">help</span>
                     </button>
                     <button class="btn btn-outline" onclick="openInfoModal()" data-tooltip="À propos">
@@ -1216,11 +1203,7 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
 
         // Toggle logic
         toggle.addEventListener('change', function() {
-            if(this.checked) {
-                body.classList.add('show-context');
-            } else {
-                body.classList.remove('show-context');
-            }
+            body.classList.toggle('show-context', this.value === 'Guyane');
         });
 
         
@@ -1241,7 +1224,7 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
         /** Lit l'état courant du formulaire et le retourne comme objet. */
         function captureCurrentPersonaState() {
             const state = {
-                contextToggle: toggle.checked,
+                contextToggle: toggle.value,
                 suggestionsToggle: suggestionsToggle.checked,
                 fields: {}
             };
@@ -1262,8 +1245,12 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
         /** Applique un état de persona au formulaire sans toucher au store. */
         function applyPersonaState(state) {
             document.getElementById('personaForm').reset();
-            toggle.checked = !!state.contextToggle;
-            body.classList.toggle('show-context', toggle.checked);
+            // Migration : anciens états booléens → valeur texte
+            const ctxValue = typeof state.contextToggle === 'boolean'
+                ? (state.contextToggle ? 'Guyane' : 'Standard')
+                : (state.contextToggle || 'Standard');
+            toggle.value = ctxValue;
+            body.classList.toggle('show-context', ctxValue === 'Guyane');
             suggestionsToggle.checked = !!state.suggestionsToggle;
             body.classList.toggle('show-suggestions', suggestionsToggle.checked);
             for (const [key, value] of Object.entries(state.fields || {})) {
@@ -1311,7 +1298,7 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
 
         function newPersona() {
             personaStore[currentPersonaIndex] = captureCurrentPersonaState();
-            personaStore.push({ contextToggle: false, suggestionsToggle: false, fields: {} });
+            personaStore.push({ contextToggle: 'Standard', suggestionsToggle: true, fields: {} });
             currentPersonaIndex = personaStore.length - 1;
             applyPersonaState(personaStore[currentPersonaIndex]);
             updatePersonaBar();
@@ -1427,7 +1414,7 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
         // Markdown generation - shared core logic
         function generateMarkdownContent() {
             const name = document.getElementById('name').value || 'Persona';
-            const isGuyane = document.getElementById('contextToggle').checked;
+            const isGuyane = document.getElementById('contextToggle').value === 'Guyane';
             let md = `# Profil Persona : ${name}\n`;
             md += isGuyane
                 ? `> Contexte : Éducation nationale / Académie de Guyane\n`
@@ -1639,7 +1626,7 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
 
         function resetForm() {
             if (!confirm('Réinitialiser tous les personas ? Cette action supprime toutes les données non sauvegardées.')) return;
-            personaStore = [{ contextToggle: false, suggestionsToggle: false, fields: {} }];
+            personaStore = [{ contextToggle: 'Standard', suggestionsToggle: true, fields: {} }];
             currentPersonaIndex = 0;
             applyPersonaState(personaStore[0]);
             updatePersonaBar();
@@ -1843,7 +1830,7 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
 
         document.addEventListener('DOMContentLoaded', () => {
             // Initialiser le store avec un persona vide
-            personaStore = [{ contextToggle: false, suggestionsToggle: false, fields: {} }];
+            personaStore = [{ contextToggle: 'Standard', suggestionsToggle: true, fields: {} }];
             currentPersonaIndex = 0;
             updatePersonaBar();
 
