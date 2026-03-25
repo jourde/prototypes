@@ -562,14 +562,23 @@
 
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto; 
+            margin: 15% auto;
             padding: 2rem;
             border: 1px solid #888;
             border-radius: 12px;
-            width: 90%; 
+            width: 90%;
             max-width: 500px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             position: relative;
+        }
+
+        /* Centrage vertical de l'éditeur de contexte */
+        #contextEditorModal {
+            align-items: center;
+            justify-content: center;
+        }
+        #contextEditorModal .modal-content {
+            margin: 0;
         }
 
         .close-btn {
@@ -2072,7 +2081,7 @@ Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne
                 ? JSON.parse(JSON.stringify(activeContext))
                 : { name: '', sections: {} };
             renderContextEditor();
-            document.getElementById('contextEditorModal').style.display = 'block';
+            document.getElementById('contextEditorModal').style.display = 'flex';
         }
 
         function closeContextEditorModal() {
