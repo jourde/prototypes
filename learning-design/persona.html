@@ -2281,6 +2281,12 @@ Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne
             input.value = '';
         }
 
+        // Empêcher le navigateur de restaurer la position de défilement
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.addEventListener('load', () => { window.scrollTo(0, 0); });
+
         document.addEventListener('DOMContentLoaded', () => {
             // Initialiser le store avec un persona vide
             personaStore = [{ contextToggle: 'Standard', suggestionsToggle: true, fields: {} }];
