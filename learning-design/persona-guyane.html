@@ -409,8 +409,8 @@
         }
 
         /* Context Specific Styling */
-        .guyane-context {
-            display: none; /* Hidden by default */
+        .context-section {
+            display: none;
             background-color: var(--guyane-bg);
             border-left: 4px solid var(--guyane-border);
             padding: 10px;
@@ -429,9 +429,79 @@
             font-weight: 700;
         }
 
-        body.show-context .guyane-context {
+        body.show-context .context-section {
             display: block;
         }
+
+        /* Context Editor Styles */
+        .editor-section {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .editor-section-title {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .editor-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 12px;
+            border-top: 1px solid var(--border);
+        }
+        .editor-item-body { flex: 1; }
+        .editor-item-type {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--guyane-color);
+            margin-bottom: 4px;
+        }
+        .editor-item input[type="text"], .editor-item textarea {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            box-sizing: border-box;
+        }
+        .editor-option-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 4px;
+            align-items: center;
+        }
+        .editor-option-row input { margin-bottom: 0; }
+        .editor-add-btns {
+            padding: 8px 12px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            border-top: 1px dashed var(--border);
+            background: #fafafa;
+        }
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.78rem;
+        }
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+        .btn-danger:hover { background: #fef2f2; }
 
         /* Suggestions Toggle */
         .btn-toggle-suggestions {
@@ -588,8 +658,18 @@
                 <div class="btn-row">
                     <select id="contextToggle" style="padding: 5px 10px; font-size: 0.85rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border); background: white; color: var(--text-main); cursor: pointer; outline: none;">
                         <option value="Standard">Standard</option>
-                        <option value="Guyane">Guyane</option>
+                        <option value="Académie de Guyane">Académie de Guyane</option>
                     </select>
+                    <button class="btn btn-outline" onclick="openContextEditorModal()" data-tooltip="Éditer le contexte actif">
+                        <span class="material-icons">tune</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="exportContextJSON()" data-tooltip="Exporter le contexte (JSON)">
+                        <span class="material-icons">download</span>
+                    </button>
+                    <label class="btn btn-outline" style="cursor:pointer; margin:0;" data-tooltip="Importer un contexte (JSON)">
+                        <span class="material-icons">upload_file</span>
+                        <input type="file" id="contextFileInput" accept=".json" style="display:none;" onchange="importContextJSON(this)">
+                    </label>
                 </div>
             </div>
 
@@ -679,7 +759,7 @@
         <form id="personaForm">
 
             <!-- 1. IDENTITÉ -->
-            <div class="card">
+            <div class="card" data-section="identite">
                 <h2><span class="material-icons">badge</span> Identité</h2>
                 <div class="card-desc">Profil administratif et personnel.</div>
                 
@@ -739,36 +819,10 @@
                     <input type="text" placeholder="Ex: 5 ans, Débutant..." id="experience">
                 </div>
 
-                <!-- Context Guyane -->
-                <div class="guyane-context">
-                    <span class="guyane-label">Spécifique Guyane</span>
-                    <div class="form-group">
-                        <label>Origine & Mobilité</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item"><input type="radio" name="origin" value="Muté"> Mutation depuis Métropole/DOM</label>
-                            <label class="checkbox-item"><input type="radio" name="origin" value="Local"> Recrutement local</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Spécialité</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item"><input type="checkbox" id="bilingue"> Enseignant 1D classe bilingue</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Ancienneté sur le territoire</label>
-                        <select id="seniority">
-                            <option value="">Sélectionner...</option>
-                            <option value="Arrivant">Arrive tout juste (< 1 an)</option>
-                            <option value="Installé">1 à 3 ans</option>
-                            <option value="Ancien">Plus de 3 ans</option>
-                        </select>
-                    </div>
-                </div>
             </div>
 
             <!-- 2. CONTEXTE D'EXERCICE -->
-            <div class="card">
+            <div class="card" data-section="localisation">
                 <h2><span class="material-icons">place</span> Localisation & classe</h2>
                 <div class="card-desc">Environnement et conditions d'exercice.</div>
                 
@@ -808,33 +862,10 @@
                     </div>
                 </div>
 
-                <!-- Context Guyane -->
-                <div class="guyane-context">
-                    <span class="guyane-label">Spécifique Guyane</span>
-                    <div class="form-group">
-                        <label>Localisation & Isolement</label>
-                        <select id="location">
-                            <option value="">Sélectionner...</option>
-                            <option value="Urbain">Zone Urbaine / Littoral (Cayenne, Kourou...)</option>
-                            <option value="EloigneRoute">Commune éloignée (délai de route important depuis Cayenne)</option>
-                            <option value="EloignePiroguAvion">Commune éloignée (pirogue, avion)</option>
-                            <option value="IsoleInterieur">Site isolé (intérieur)</option>
-                            <option value="IsoleFleuve">Site isolé (fleuve)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Réalités Terrain</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item"><input type="checkbox" id="allophone"> Élèves allophones / Plurilinguisme fort</label>
-                            <label class="checkbox-item"><input type="checkbox" id="heat"> Ventilation HS / Chaleur extrême</label>
-                            <label class="checkbox-item"><input type="checkbox" id="power"> Coupures électricité / Net HS</label>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- 3. COMPÉTENCES NUMÉRIQUES -->
-            <div class="card">
+            <div class="card" data-section="numerique">
                 <h2><span class="material-icons">devices</span> Numérique</h2>
                 <div class="card-desc">Équipement et compétences technologiques.</div>
                 
@@ -862,19 +893,10 @@
                     </div>
                 </div>
 
-                <!-- Context Guyane -->
-                <div class="guyane-context">
-                    <span class="guyane-label">Spécifique Guyane</span>
-                    <div class="checkbox-group">
-                        <label class="checkbox-item"><input type="checkbox" id="systemD"> Solutions de contournement numériques (ressources hors ligne, partage de connexion)</label>
-                        <label class="checkbox-item"><input type="checkbox" id="fracture"> Fracture numérique (matériel)</label>
-                        <label class="checkbox-item"><input type="checkbox" id="fracture_skills"> Fracture numérique (Compétences insuffisantes)</label>
-                    </div>
-                </div>
             </div>
 
             <!-- 4. MOTIVATIONS -->
-            <div class="card">
+            <div class="card" data-section="motivations">
                 <h2><span class="material-icons">psychology</span> Motivations</h2>
                 <div class="card-desc">Besoins et attentes vis-à-vis de la formation.</div>
                 
@@ -900,17 +922,10 @@
                     </div>
                 </div>
 
-                <!-- Context Guyane -->
-                <div class="guyane-context">
-                    <span class="guyane-label">Spécifique Guyane</span>
-                    <div class="checkbox-group">
-                        <label class="checkbox-item"><input type="checkbox" id="isolation"> Rompre l'isolement géographique</label>
-                    </div>
-                </div>
             </div>
 
             <!-- 5. FREINS -->
-            <div class="card">
+            <div class="card" data-section="freins">
                 <h2><span class="material-icons">warning</span> Freins</h2>
                 <div class="card-desc">Obstacles potentiels à l'apprentissage.</div>
                 
@@ -933,18 +948,10 @@
                     </div>
                 </div>
 
-                <!-- Context Guyane -->
-                <div class="guyane-context">
-                    <span class="guyane-label">Spécifique Guyane</span>
-                    <div class="checkbox-group">
-                        <label class="checkbox-item"><input type="checkbox" id="internet"> Connexion domicile instable/inexistante</label>
-                        <label class="checkbox-item"><input type="checkbox" id="jetlag"> Décalage horaire (si formateur métropole)</label>
-                    </div>
-                </div>
             </div>
 
             <!-- 6. PRÉFÉRENCES (FORMAT) -->
-            <div class="card">
+            <div class="card" data-section="format">
                 <h2><span class="material-icons">headphones</span> Format</h2>
                 <div class="card-desc">Modalités pédagogiques préférées.</div>
                 
@@ -969,13 +976,6 @@
                     </div>
                 </div>
 
-                <!-- Context Guyane -->
-                <div class="guyane-context">
-                    <span class="guyane-label">Spécifique Guyane</span>
-                    <div class="checkbox-group">
-                        <label class="checkbox-item"><input type="checkbox" id="offline"> Mode "Hors-ligne" à considérer (Téléchargement)</label>
-                    </div>
-                </div>
             </div>
 
             <!-- 7. SCÉNARIO TYPE (Full Width) -->
@@ -1019,39 +1019,47 @@ La barre de personas, juste sous l’en-tête, permet de travailler sur plusieur
 </ul>
 </p>
 
-<p><strong>3. Basculer les vues</strong><br>
-Deux interrupteurs pilotent l’affichage pour le persona courant :
+<p><strong>3. Affichage</strong><br>
 <ul style=”margin-top: 5px; margin-bottom: 10px;”>
-    <li><strong>Standard / <span style=”color: #059669; font-weight: bold;”>Guyane</span> :</strong> active les items spécifiques au contexte guyanais (isolement, climat, multilinguisme, etc.).</li>
     <li><strong>Suggestions :</strong> affiche ou masque les listes de cases à cocher dans tous les blocs.</li>
 </ul>
 </p>
 
-<p><strong>4. Renseigner un persona</strong><br>
+<p><strong>4. Contexte</strong><br>
+Le menu déroulant <strong>Contexte</strong> permet d’activer des champs spécifiques à un territoire ou une académie. En mode <em>Standard</em>, seuls les champs communs sont affichés. Le contexte <em>Guyane</em> est intégré par défaut.
+<ul style=”margin-top: 5px; margin-bottom: 10px;”>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>tune</span> Éditer</strong> : ouvre l’éditeur visuel pour créer ou modifier les champs du contexte actif — cases à cocher, menus déroulants, boutons radio — section par section.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>download</span> Exporter</strong> : télécharge le contexte actif en fichier <code>.json</code> pour le partager ou le réutiliser.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>upload_file</span> Importer</strong> : charge un fichier <code>.json</code> de contexte et l’ajoute au menu déroulant.</li>
+</ul>
+</p>
+
+<p><strong>5. Renseigner un persona</strong><br>
 <ul style=”margin-top: 5px; margin-bottom: 10px;”>
     <li><strong>Texte libre :</strong> décrivez les éléments qualitatifs (exemples, anecdotes, précisions de contexte).</li>
     <li><strong>Cases à cocher :</strong> activez l’interrupteur <strong>Suggestions</strong> pour faire apparaître les options prédéfinies, puis cochez ce qui correspond au profil.</li>
 </ul>
 </p>
 
-<p><strong>5. Import & Export</strong><br>
-Le bloc <strong>IMPORT & EXPORT</strong> couvre <em>tous les personas</em> de la session :
+<p><strong>6. Import & Export</strong><br>
+Le bloc <strong>Import & Export</strong> couvre <em>tous les personas</em> de la session :
 <ul style=”margin-top: 5px; margin-bottom: 10px;”>
     <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>upload_file</span> Charger</strong> : recharge un fichier <code>.json</code> précédemment sauvegardé (un ou plusieurs personas).</li>
     <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>save</span> Sauvegarder</strong> : exporte tous les personas dans un fichier <code>.json</code> pour reprendre la session plus tard.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>visibility</span> Synthèse et export</strong> : affiche tous les profils dans une fenêtre, avec des boutons pour copier en <strong>texte brut</strong>, copier en <strong>Markdown</strong>, <strong>télécharger un fichier .md</strong> ou <strong>télécharger un fichier Word (.doc)</strong>.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>visibility</span> Synthèse et export</strong> : affiche tous les profils dans une fenêtre, avec des boutons pour copier en <strong>Markdown</strong>, télécharger en <strong>.md</strong> ou en <strong>Word (.doc)</strong>.</li>
 </ul>
 </p>
 
-<p><strong>6. Améliorations</strong><br>
+<p><strong>7. Aide</strong><br>
 <ul style=”margin-top: 5px; margin-bottom: 10px;”>
     <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>list_alt</span> Canevas complet</strong> : exporte un fichier Markdown exhaustif listant toutes les options (cochées ou non) pour chaque persona — utile pour documenter ou réviser l’ensemble du canevas.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>feedback</span> Proposer une amélioration</strong> : soumettre un retour sur le contenu ou l’ergonomie. Les suggestions sont stockées localement et exportables.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>help</span> Guide</strong> : affiche ce guide d’utilisation.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>info</span> À propos</strong> : informations sur l’outil.</li>
 </ul>
 </p>
 
 <p style=”margin-top: 12px;”><strong>Note</strong><br>
-Cet outil est un <strong>prototype non officiel</strong>. Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne.</p>
+Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne.</p>
             </div>
         </div>
     </div>
@@ -1157,6 +1165,37 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
         </div>
     </div>
 
+<!-- Modal Éditeur de Contexte (Ignored in PDF) -->
+<div id="contextEditorModal" class="modal" data-html2canvas-ignore="true">
+    <div class="modal-content" style="max-width: 760px; max-height: 85vh; overflow-y: auto;">
+        <span class="close-btn" onclick="closeContextEditorModal()">&times;</span>
+        <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Éditeur de contexte</h2>
+        <div class="form-group" style="margin-bottom: 16px;">
+            <label>Nom du contexte</label>
+            <input type="text" id="contextEditorName" placeholder="Ex : Guyane, Martinique, REP+..." style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.9rem; box-sizing:border-box;">
+        </div>
+        <div id="contextEditorSections"></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
+            <button class="btn btn-primary" onclick="applyContextEdit()">
+                <span class="material-icons" style="vertical-align:middle; font-size:18px;">check</span>
+                Appliquer
+            </button>
+            <button class="btn btn-outline" onclick="exportContextJSON()">
+                <span class="material-icons" style="vertical-align:middle; font-size:18px;">download</span>
+                Exporter JSON
+            </button>
+            <label class="btn btn-outline" style="cursor:pointer; margin:0;">
+                <span class="material-icons" style="vertical-align:middle; font-size:18px;">upload_file</span>
+                Importer JSON
+                <input type="file" accept=".json" style="display:none;" onchange="importContextJSON(this)">
+            </label>
+            <button class="btn btn-reset" onclick="closeContextEditorModal()" style="margin-left:auto;">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Info (Ignored in PDF) -->
     <div id="infoModal" class="modal" data-html2canvas-ignore="true">
         <div class="modal-content">
@@ -1203,7 +1242,9 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
 
         // Toggle logic
         toggle.addEventListener('change', function() {
-            body.classList.toggle('show-context', this.value === 'Guyane');
+            const val = this.value;
+            body.classList.toggle('show-context', val !== 'Standard');
+            setActiveContext(val);
         });
 
         
@@ -1247,10 +1288,17 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
             document.getElementById('personaForm').reset();
             // Migration : anciens états booléens → valeur texte
             const ctxValue = typeof state.contextToggle === 'boolean'
-                ? (state.contextToggle ? 'Guyane' : 'Standard')
+                ? (state.contextToggle ? 'Académie de Guyane' : 'Standard')
                 : (state.contextToggle || 'Standard');
+            // Ajouter l'option au select si elle n'existe pas encore
+            if (!Array.from(toggle.options).some(o => o.value === ctxValue)) {
+                const opt = document.createElement('option');
+                opt.value = ctxValue; opt.textContent = ctxValue;
+                toggle.appendChild(opt);
+            }
             toggle.value = ctxValue;
-            body.classList.toggle('show-context', ctxValue === 'Guyane');
+            body.classList.toggle('show-context', ctxValue !== 'Standard');
+            setActiveContext(ctxValue);
             suggestionsToggle.checked = !!state.suggestionsToggle;
             body.classList.toggle('show-suggestions', suggestionsToggle.checked);
             for (const [key, value] of Object.entries(state.fields || {})) {
@@ -1414,11 +1462,12 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
         // Markdown generation - shared core logic
         function generateMarkdownContent() {
             const name = document.getElementById('name').value || 'Persona';
-            const isGuyane = document.getElementById('contextToggle').value === 'Guyane';
+            const ctxName = document.getElementById('contextToggle').value;
+            const isCustomContext = ctxName && ctxName !== 'Standard';
             let md = `# Profil Persona : ${name}\n`;
-            md += isGuyane
-                ? `> Contexte : Éducation nationale / Académie de Guyane\n`
-                : `> Contexte : Éducation nationale\n`;
+            md += isCustomContext
+                ? `> Contexte : ${ctxName}\n`
+                : `> Contexte : Standard\n`;
             md += `> Date : ${new Date().toLocaleDateString()}\n\n`;
 
             // Helper to process a specific DOM element (form-group or checkbox-group)
@@ -1493,14 +1542,14 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
                     if (child.tagName === 'BUTTON') return;
                     if (child.classList.contains('card-desc')) return;
 
-                    if (child.classList.contains('guyane-context')) {
-                        if (isGuyane) {
+                    if (child.classList.contains('context-section')) {
+                        if (isCustomContext) {
                             let contextContent = '';
                             Array.from(child.children).forEach(ctxChild => {
                                 contextContent += processElement(ctxChild);
                             });
                             if (contextContent) {
-                                sectionContent += `\n> **Contexte Guyane**\n${contextContent}`;
+                                sectionContent += `\n> **Contexte ${ctxName}**\n${contextContent}`;
                             }
                         }
                     } else if (child.classList.contains('suggestions-panel')) {
@@ -1592,10 +1641,11 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
                 Array.from(card.children).forEach(child => {
                     if (child.tagName === 'H2' || child.tagName === 'BUTTON') return;
                     if (child.classList.contains('card-desc')) return;
-                    if (child.classList.contains('guyane-context')) {
+                    if (child.classList.contains('context-section')) {
+                        const ctxLabel = document.getElementById('contextToggle').value || 'Contexte';
                         let ctx = '';
                         Array.from(child.children).forEach(c => { ctx += processElementFull(c); });
-                        if (ctx) sectionContent += `\n> **Contexte Guyane**\n${ctx}`;
+                        if (ctx) sectionContent += `\n> **Contexte ${ctxLabel}**\n${ctx}`;
                     } else if (child.classList.contains('suggestions-panel')) {
                         Array.from(child.children).forEach(c => { sectionContent += processElementFull(c); });
                     } else {
@@ -1828,11 +1878,416 @@ Cet outil est un <strong>prototype non officiel</strong>. Toutes les données re
             });
         }
 
+        // ══════════════════════════════════════════════════════
+        // CONTEXT ENGINE — définition, rendu, éditeur, import/export
+        // ══════════════════════════════════════════════════════
+
+        const SECTION_LABELS = {
+            identite:    'Identité',
+            localisation:'Localisation & classe',
+            numerique:   'Numérique',
+            motivations: 'Motivations',
+            freins:      'Freins',
+            format:      'Format'
+        };
+
+        // Définition intégrée du contexte Guyane
+        const GUYANE_CONTEXT = {
+            name: 'Académie de Guyane',
+            sections: {
+                identite: [
+                    { type: 'radio', groupLabel: 'Origine & Mobilité', name: 'origin',
+                      options: [
+                        { value: 'Muté',  label: 'Mutation depuis Métropole/DOM' },
+                        { value: 'Local', label: 'Recrutement local' }
+                      ]
+                    },
+                    { type: 'checkboxes', groupLabel: 'Spécialité',
+                      items: [{ id: 'bilingue', label: 'Enseignant 1D classe bilingue' }]
+                    },
+                    { type: 'select', id: 'seniority', label: 'Ancienneté sur le territoire',
+                      options: [
+                        { value: 'Arrivant', label: 'Arrive tout juste (< 1 an)' },
+                        { value: 'Installé', label: '1 à 3 ans' },
+                        { value: 'Ancien',   label: 'Plus de 3 ans' }
+                      ]
+                    }
+                ],
+                localisation: [
+                    { type: 'select', id: 'location', label: 'Localisation & Isolement',
+                      options: [
+                        { value: 'Urbain',            label: 'Zone Urbaine / Littoral (Cayenne, Kourou...)' },
+                        { value: 'EloigneRoute',       label: 'Commune éloignée (délai de route important depuis Cayenne)' },
+                        { value: 'EloignePiroguAvion', label: 'Commune éloignée (pirogue, avion)' },
+                        { value: 'IsoleInterieur',     label: 'Site isolé (intérieur)' },
+                        { value: 'IsoleFleuve',        label: 'Site isolé (fleuve)' }
+                      ]
+                    },
+                    { type: 'checkboxes', groupLabel: 'Réalités Terrain',
+                      items: [
+                        { id: 'allophone', label: 'Élèves allophones / Plurilinguisme fort' },
+                        { id: 'heat',      label: 'Ventilation HS / Chaleur extrême' },
+                        { id: 'power',     label: 'Coupures électricité / Net HS' }
+                      ]
+                    }
+                ],
+                numerique: [
+                    { type: 'checkboxes',
+                      items: [
+                        { id: 'systemD',       label: 'Solutions de contournement numériques (ressources hors ligne, partage de connexion)' },
+                        { id: 'fracture',      label: 'Fracture numérique (matériel)' },
+                        { id: 'fracture_skills', label: 'Fracture numérique (Compétences insuffisantes)' }
+                      ]
+                    }
+                ],
+                motivations: [
+                    { type: 'checkboxes',
+                      items: [{ id: 'isolation', label: "Rompre l'isolement géographique" }]
+                    }
+                ],
+                freins: [
+                    { type: 'checkboxes',
+                      items: [
+                        { id: 'internet', label: 'Connexion domicile instable/inexistante' },
+                        { id: 'jetlag',   label: 'Décalage horaire (si formateur métropole)' }
+                      ]
+                    }
+                ],
+                format: [
+                    { type: 'checkboxes',
+                      items: [{ id: 'offline', label: 'Mode "Hors-ligne" à considérer (Téléchargement)' }]
+                    }
+                ]
+            }
+        };
+
+        // Contextes chargés (nom → définition)
+        const loadedContexts = { 'Académie de Guyane': GUYANE_CONTEXT };
+        let activeContext = null;
+
+        /** Rend les champs dynamiques d'un contexte dans les cards. */
+        function renderContextSections(ctxDef) {
+            // Nettoyer les anciennes sections dynamiques
+            document.querySelectorAll('.context-section').forEach(el => el.remove());
+            if (!ctxDef) return;
+
+            Object.entries(ctxDef.sections || {}).forEach(([sectionKey, items]) => {
+                const card = document.querySelector(`.card[data-section="${sectionKey}"]`);
+                if (!card || !items || items.length === 0) return;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'context-section';
+
+                const lbl = document.createElement('span');
+                lbl.className = 'guyane-label';
+                lbl.textContent = ctxDef.name || 'Contexte';
+                wrapper.appendChild(lbl);
+
+                items.forEach(item => {
+                    if (item.type === 'checkboxes') {
+                        const fg = document.createElement('div');
+                        fg.className = 'form-group';
+                        if (item.groupLabel) {
+                            const gl = document.createElement('label');
+                            gl.textContent = item.groupLabel;
+                            fg.appendChild(gl);
+                        }
+                        const cg = document.createElement('div');
+                        cg.className = 'checkbox-group';
+                        (item.items || []).forEach(cb => {
+                            const lbEl = document.createElement('label');
+                            lbEl.className = 'checkbox-item';
+                            const inp = document.createElement('input');
+                            inp.type = 'checkbox';
+                            if (cb.id) inp.id = cb.id;
+                            lbEl.appendChild(inp);
+                            lbEl.appendChild(document.createTextNode(' ' + cb.label));
+                            cg.appendChild(lbEl);
+                        });
+                        fg.appendChild(cg);
+                        wrapper.appendChild(fg);
+                    } else if (item.type === 'radio') {
+                        const fg = document.createElement('div');
+                        fg.className = 'form-group';
+                        if (item.groupLabel) {
+                            const gl = document.createElement('label');
+                            gl.textContent = item.groupLabel;
+                            fg.appendChild(gl);
+                        }
+                        const cg = document.createElement('div');
+                        cg.className = 'checkbox-group';
+                        (item.options || []).forEach(opt => {
+                            const lbEl = document.createElement('label');
+                            lbEl.className = 'checkbox-item';
+                            const inp = document.createElement('input');
+                            inp.type = 'radio';
+                            inp.name = item.name || ('radio_' + sectionKey);
+                            inp.value = opt.value;
+                            lbEl.appendChild(inp);
+                            lbEl.appendChild(document.createTextNode(' ' + opt.label));
+                            cg.appendChild(lbEl);
+                        });
+                        fg.appendChild(cg);
+                        wrapper.appendChild(fg);
+                    } else if (item.type === 'select') {
+                        const fg = document.createElement('div');
+                        fg.className = 'form-group';
+                        const gl = document.createElement('label');
+                        gl.textContent = item.label || '';
+                        fg.appendChild(gl);
+                        const sel = document.createElement('select');
+                        if (item.id) sel.id = item.id;
+                        const defOpt = document.createElement('option');
+                        defOpt.value = ''; defOpt.textContent = 'Sélectionner...';
+                        sel.appendChild(defOpt);
+                        (item.options || []).forEach(opt => {
+                            const o = document.createElement('option');
+                            o.value = opt.value; o.textContent = opt.label;
+                            sel.appendChild(o);
+                        });
+                        fg.appendChild(sel);
+                        wrapper.appendChild(fg);
+                    }
+                });
+                card.appendChild(wrapper);
+            });
+        }
+
+        /** Active un contexte par son nom (depuis le dropdown). */
+        function setActiveContext(name) {
+            if (name === 'Standard' || !name) {
+                activeContext = null;
+                renderContextSections(null);
+            } else {
+                activeContext = loadedContexts[name] || null;
+                renderContextSections(activeContext);
+            }
+        }
+
+        // ── Context Editor ─────────────────────────────────
+        let editorContext = null;
+
+        function openContextEditorModal() {
+            editorContext = activeContext
+                ? JSON.parse(JSON.stringify(activeContext))
+                : { name: '', sections: {} };
+            renderContextEditor();
+            document.getElementById('contextEditorModal').style.display = 'block';
+        }
+
+        function closeContextEditorModal() {
+            document.getElementById('contextEditorModal').style.display = 'none';
+        }
+
+        function renderContextEditor() {
+            document.getElementById('contextEditorName').value = editorContext.name || '';
+            const container = document.getElementById('contextEditorSections');
+            container.innerHTML = '';
+
+            Object.entries(SECTION_LABELS).forEach(([sectionKey, sectionLabel]) => {
+                const items = (editorContext.sections || {})[sectionKey] || [];
+                const secDiv = document.createElement('div');
+                secDiv.className = 'editor-section';
+                secDiv.dataset.section = sectionKey;
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'editor-section-title';
+                titleDiv.textContent = sectionLabel;
+                secDiv.appendChild(titleDiv);
+
+                const itemsDiv = document.createElement('div');
+                itemsDiv.id = `editor-items-${sectionKey}`;
+                items.forEach((item, idx) => {
+                    itemsDiv.appendChild(buildEditorItemEl(sectionKey, item, idx));
+                });
+                secDiv.appendChild(itemsDiv);
+
+                const addRow = document.createElement('div');
+                addRow.className = 'editor-add-btns';
+                ['checkboxes', 'select', 'radio'].forEach(type => {
+                    const labels = { checkboxes: '+ Cases à cocher', select: '+ Menu déroulant', radio: '+ Boutons radio' };
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-outline btn-sm';
+                    btn.textContent = labels[type];
+                    btn.onclick = () => addEditorItem(sectionKey, type);
+                    addRow.appendChild(btn);
+                });
+                secDiv.appendChild(addRow);
+                container.appendChild(secDiv);
+            });
+        }
+
+        function buildEditorItemEl(sectionKey, item, idx) {
+            const div = document.createElement('div');
+            div.className = 'editor-item';
+            div.dataset.idx = idx;
+
+            const body = document.createElement('div');
+            body.className = 'editor-item-body';
+
+            const typeLabel = document.createElement('div');
+            typeLabel.className = 'editor-item-type';
+            typeLabel.textContent = { checkboxes: 'Cases à cocher', select: 'Menu déroulant', radio: 'Boutons radio' }[item.type] || item.type;
+            body.appendChild(typeLabel);
+
+            if (item.type === 'checkboxes') {
+                if (item.groupLabel !== undefined) {
+                    const glInp = document.createElement('input');
+                    glInp.type = 'text'; glInp.placeholder = 'Titre du groupe (optionnel)';
+                    glInp.value = item.groupLabel || '';
+                    glInp.oninput = e => { item.groupLabel = e.target.value; };
+                    body.appendChild(glInp);
+                }
+                (item.items || []).forEach((cb, ci) => {
+                    const row = document.createElement('div');
+                    row.className = 'editor-option-row';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.placeholder = 'Libellé de la case'; inp.value = cb.label || '';
+                    inp.oninput = e => { cb.label = e.target.value; };
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'btn-danger'; delBtn.textContent = '✕';
+                    delBtn.onclick = () => { item.items.splice(ci, 1); renderContextEditor(); };
+                    row.appendChild(inp); row.appendChild(delBtn);
+                    body.appendChild(row);
+                });
+                const addCbBtn = document.createElement('button');
+                addCbBtn.className = 'btn btn-outline btn-sm';
+                addCbBtn.style.marginTop = '4px';
+                addCbBtn.textContent = '+ Ajouter une case';
+                addCbBtn.onclick = () => {
+                    if (!item.items) item.items = [];
+                    item.items.push({ id: 'ctx_' + Date.now(), label: '' });
+                    renderContextEditor();
+                };
+                body.appendChild(addCbBtn);
+            } else if (item.type === 'select' || item.type === 'radio') {
+                const labelField = document.createElement('input');
+                labelField.type = 'text';
+                labelField.placeholder = item.type === 'select' ? 'Libellé du menu' : 'Titre du groupe';
+                labelField.value = (item.type === 'select' ? item.label : item.groupLabel) || '';
+                labelField.oninput = e => {
+                    if (item.type === 'select') item.label = e.target.value;
+                    else item.groupLabel = e.target.value;
+                };
+                body.appendChild(labelField);
+                (item.options || []).forEach((opt, oi) => {
+                    const row = document.createElement('div');
+                    row.className = 'editor-option-row';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.placeholder = 'Libellé'; inp.value = opt.label || '';
+                    inp.style.flex = '2';
+                    inp.oninput = e => { opt.label = e.target.value; };
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'btn-danger'; delBtn.textContent = '✕';
+                    delBtn.onclick = () => { item.options.splice(oi, 1); renderContextEditor(); };
+                    row.appendChild(inp); row.appendChild(delBtn);
+                    body.appendChild(row);
+                });
+                const addOptBtn = document.createElement('button');
+                addOptBtn.className = 'btn btn-outline btn-sm';
+                addOptBtn.style.marginTop = '4px';
+                addOptBtn.textContent = '+ Ajouter une option';
+                addOptBtn.onclick = () => {
+                    if (!item.options) item.options = [];
+                    const slug = 'opt_' + Date.now();
+                    item.options.push({ value: slug, label: '' });
+                    renderContextEditor();
+                };
+                body.appendChild(addOptBtn);
+            }
+
+            div.appendChild(body);
+
+            const delItemBtn = document.createElement('button');
+            delItemBtn.className = 'btn-danger';
+            delItemBtn.style.flexShrink = '0';
+            delItemBtn.textContent = '✕ Supprimer';
+            delItemBtn.onclick = () => {
+                const sec = (editorContext.sections || {})[sectionKey] || [];
+                sec.splice(idx, 1);
+                renderContextEditor();
+            };
+            div.appendChild(delItemBtn);
+            return div;
+        }
+
+        function addEditorItem(sectionKey, type) {
+            if (!editorContext.sections) editorContext.sections = {};
+            if (!editorContext.sections[sectionKey]) editorContext.sections[sectionKey] = [];
+            const defaults = {
+                checkboxes: { type: 'checkboxes', groupLabel: '', items: [{ id: 'ctx_' + Date.now(), label: '' }] },
+                select:     { type: 'select', id: 'ctx_sel_' + Date.now(), label: '', options: [] },
+                radio:      { type: 'radio',  name: 'ctx_radio_' + Date.now(), groupLabel: '', options: [] }
+            };
+            editorContext.sections[sectionKey].push(defaults[type]);
+            renderContextEditor();
+        }
+
+        function applyContextEdit() {
+            editorContext.name = document.getElementById('contextEditorName').value.trim() || 'Contexte';
+            const name = editorContext.name;
+            loadedContexts[name] = JSON.parse(JSON.stringify(editorContext));
+
+            // Ajouter l'option au select si absente
+            const sel = document.getElementById('contextToggle');
+            if (!Array.from(sel.options).some(o => o.value === name)) {
+                const opt = document.createElement('option');
+                opt.value = name; opt.textContent = name;
+                sel.appendChild(opt);
+            }
+            sel.value = name;
+            body.classList.add('show-context');
+            setActiveContext(name);
+            closeContextEditorModal();
+        }
+
+        // ── Import / Export JSON ────────────────────────────
+        function exportContextJSON() {
+            const ctx = activeContext || editorContext;
+            if (!ctx) { alert('Aucun contexte actif à exporter.'); return; }
+            const name = (ctx.name || 'contexte').replace(/\s+/g, '_');
+            downloadTextFile(JSON.stringify(ctx, null, 2), `${name}.json`, 'application/json');
+        }
+
+        function importContextJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const ctx = JSON.parse(e.target.result);
+                    if (typeof ctx !== 'object' || ctx === null || typeof ctx.sections !== 'object' || ctx.sections === null) {
+                        alert('Fichier JSON invalide : la propriété "sections" est manquante ou incorrecte.'); return;
+                    }
+                    if (!ctx.name) ctx.name = file.name.replace(/\.json$/i, '') || 'Contexte importé';
+                    loadedContexts[ctx.name] = ctx;
+                    const sel = document.getElementById('contextToggle');
+                    if (!Array.from(sel.options).some(o => o.value === ctx.name)) {
+                        const opt = document.createElement('option');
+                        opt.value = ctx.name; opt.textContent = ctx.name;
+                        sel.appendChild(opt);
+                    }
+                    sel.value = ctx.name;
+                    body.classList.add('show-context');
+                    setActiveContext(ctx.name);
+                    // Si ouvert depuis l'éditeur, rafraîchir
+                    if (document.getElementById('contextEditorModal').style.display === 'block') {
+                        editorContext = JSON.parse(JSON.stringify(ctx));
+                        renderContextEditor();
+                    }
+                } catch(err) { alert('Erreur lors de la lecture du fichier JSON : ' + err.message); }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             // Initialiser le store avec un persona vide
             personaStore = [{ contextToggle: 'Standard', suggestionsToggle: true, fields: {} }];
             currentPersonaIndex = 0;
             updatePersonaBar();
+            // Rendre les sections du contexte actif au démarrage
+            setActiveContext(toggle.value);
 
             // Mettre à jour la barre quand le prénom change
             const nameField = document.getElementById('name');
@@ -1969,6 +2424,10 @@ hr{border:none;border-top:1px solid #e2e8f0;margin:12pt 0;}
             }
             if (event.target == synthesisModal) {
                 synthesisModal.style.display = "none";
+            }
+            const contextEditorModal = document.getElementById('contextEditorModal');
+            if (event.target == contextEditorModal) {
+                contextEditorModal.style.display = "none";
             }
         }
     </script>
