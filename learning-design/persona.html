@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canevas Persona : L'Enseignant en Guyane</title>
+    
+    <!-- Performance: Preconnect to font domains and CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Import des Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Import de html2pdf.js pour l'export PDF. 
+         Performance: Added 'defer' to prevent blocking DOM parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            
+            /* Couleurs spécifiques Guyane */
+            --guyane-color: #059669; /* Un vert émeraude */
+            --guyane-bg: #ecfdf5;
+            --guyane-border: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header & Controls */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            margin-bottom: 0.25rem;
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            max-width: 600px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Styles .controls supprimés car intégrés dans .actions */
+
+        .switch-label {
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            height: 100%; /* Alignement vertical */
+        }
+
+        /* The Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--guyane-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        /* Actions Buttons */
+        .actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .action-group {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            justify-content: space-between;
+        }
+
+        .action-group-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--secondary);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .btn {
+            padding: 8px; /* Plus carré pour les icônes */
+            min-width: 36px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: relative; /* Pour le tooltip */
+        }
+
+        .btn .material-icons {
+            font-size: 20px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline:hover {
+            background: #eff6ff;
+        }
+
+        .btn-reset {
+            background: #ef4444;
+            color: white;
+            border: 1px solid #ef4444;
+        }
+        .btn-reset:hover {
+            background: #dc2626;
+        }
+
+        /* Styles pour les Tooltips (Pop-up explicative) */
+        .btn[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 115%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1e293b;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            pointer-events: none;
+            animation: fadeInTooltip 0.2s ease;
+        }
+
+        .btn[data-tooltip]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 105%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+            z-index: 100;
+            pointer-events: none;
+            animation: fadeInTooltip 0.2s ease;
+        }
+
+        @keyframes fadeInTooltip {
+            from { opacity: 0; transform: translate(-50%, 5px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* App layout */
+        .app-layout {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .content-panel {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 210px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            user-select: none;
+        }
+
+        .nav-item:hover:not(.active) {
+            background: #f8fafc;
+        }
+
+        .nav-item.active {
+            background: #eff6ff;
+            border-left-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .nav-item .material-icons {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            margin-left: auto;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .nav-dot.filled {
+            background: var(--primary);
+        }
+
+        /* Cards : une seule visible à la fois */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            flex-direction: column;
+            gap: 1rem;
+            page-break-inside: avoid;
+            contain: content;
+            display: none;
+        }
+
+        .card.active-section {
+            display: flex;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin: 0 0 0.2rem 0;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-desc {
+            color: var(--secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Material Icons in Titles */
+        .card h2 .material-icons {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 0.8rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--text-sub);
+        }
+
+        input[type="text"], 
+        select, 
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            margin-top: 4px;
+        }
+
+        /* Context Specific Styling */
+        .context-section {
+            display: none;
+            background-color: var(--guyane-bg);
+            border-left: 4px solid var(--guyane-border);
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 0 6px 6px 0;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .guyane-label {
+            color: var(--guyane-color);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 700;
+        }
+
+        body.show-context .context-section {
+            display: block;
+        }
+
+        /* Context Editor Styles */
+        .editor-section {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .editor-section-title {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .editor-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 12px;
+            border-top: 1px solid var(--border);
+        }
+        .editor-item-body { flex: 1; }
+        .editor-item-type {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--guyane-color);
+            margin-bottom: 4px;
+        }
+        .editor-item input[type="text"], .editor-item textarea {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            box-sizing: border-box;
+        }
+        .editor-option-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 4px;
+            align-items: center;
+        }
+        .editor-option-row input { margin-bottom: 0; }
+        .editor-add-btns {
+            padding: 8px 12px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            border-top: 1px dashed var(--border);
+            background: #fafafa;
+        }
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.78rem;
+        }
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+        .btn-danger:hover { background: #fef2f2; }
+
+        /* Suggestions Toggle */
+        .btn-toggle-suggestions {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            width: fit-content;
+        }
+        .btn-toggle-suggestions:hover {
+            text-decoration: underline;
+        }
+        .suggestions-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            border-left: 2px solid var(--border);
+        }
+
+        
+        body.show-suggestions .suggestions-panel {
+            display: block;
+        }
+@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Modal / Popup Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; 
+            padding: 2rem;
+            border: 1px solid #888;
+            border-radius: 12px;
+            width: 90%; 
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+
+        .modal-content p {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+        
+        .modal-footer {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        /* ── Persona Bar ────────────────────────────── */
+        #personaBar {
+            max-width: 1000px;
+            margin: 0 auto 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            flex-wrap: wrap;
+        }
+        .persona-nav-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-size: 1rem;
+            line-height: 1;
+            transition: background 0.15s;
+        }
+        .persona-nav-btn:hover:not(:disabled) { background: #f1f5f9; }
+        .persona-nav-btn:disabled { opacity: 0.3; cursor: default; }
+        #personaBarLabel {
+            font-weight: 700;
+            color: var(--primary-dark);
+            min-width: 160px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+    </style>
+</head>
+<body id="contentToPrint">
+
+    <header>
+        <h1>Canevas de persona pour le personnel de l'éducation nationale française</h1>
+        <div class="subtitle">Prototype pour aider à concevoir des formations adaptées à la réalité terrain.</div>
+        
+        <!-- Added data-html2canvas-ignore to hide during PDF generation -->
+        <div class="actions" data-html2canvas-ignore="true">
+            
+            <!-- Bloc Contexte -->
+            <div class="action-group">
+                <span class="action-group-title">Contexte</span>
+                <div class="btn-row">
+                    <select id="contextToggle" style="padding: 5px 10px; font-size: 0.85rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border); background: white; color: var(--text-main); cursor: pointer; outline: none;">
+                        <option value="Standard">Standard</option>
+                        <option value="Académie de Guyane">Académie de Guyane</option>
+                    </select>
+                    <button class="btn btn-outline" onclick="openContextEditorModal()" data-tooltip="Éditer le contexte actif">
+                        <span class="material-icons">tune</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="exportContextJSON()" data-tooltip="Exporter le contexte (JSON)">
+                        <span class="material-icons">download</span>
+                    </button>
+                    <label class="btn btn-outline" style="cursor:pointer; margin:0;" data-tooltip="Importer un contexte (JSON)">
+                        <span class="material-icons">upload_file</span>
+                        <input type="file" id="contextFileInput" accept=".json" style="display:none;" onchange="importContextJSON(this)">
+                    </label>
+                </div>
+            </div>
+
+            
+            <!-- Bloc Affichage -->
+            <div class="action-group">
+                <span class="action-group-title">Affichage</span>
+                <div class="btn-row">
+                    <label class="switch-label">
+                        <span>Suggestions</span>
+                        <label class="switch">
+                            <input type="checkbox" id="suggestionsToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </label>
+                </div>
+            </div>
+
+<!-- Bloc Gestion -->
+            <div class="action-group">
+                <span class="action-group-title">Gestion</span>
+                <div class="btn-row">
+                    <button class="btn btn-reset" onclick="resetForm()" data-tooltip="Réinitialiser le canevas">
+                        <span class="material-icons">restart_alt</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bloc Import & Export -->
+            <div class="action-group">
+                <span class="action-group-title">IMPORT & EXPORT</span>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()" data-tooltip="Charger une sauvegarde (JSON)">
+                        <span class="material-icons">upload_file</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="saveData()" data-tooltip="Sauvegarder (JSON)">
+                        <span class="material-icons">save</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="openSynthesisModal()" data-tooltip="Synthèse et export">
+                        <span class="material-icons">visibility</span>
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Bloc Aide -->
+            <div class="action-group">
+                <span class="action-group-title">Aide</span>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="exportFullMarkdown()" data-tooltip="Exporter Canevas Complet (Markdown)">
+                        <span class="material-icons">list_alt</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="openHelpModal()" data-tooltip="Guide d'utilisation">
+                        <span class="material-icons">help</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="openInfoModal()" data-tooltip="À propos">
+                        <span class="material-icons">info</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Hidden Input for loading files -->
+            <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="loadData(this)">
+        </div>
+    </header>
+
+    <!-- Persona Bar -->
+    <div id="personaBar" data-html2canvas-ignore="true">
+        <button id="btnPrevPersona" class="persona-nav-btn" onclick="prevPersona()" title="Persona précédent">&#9664;</button>
+        <span id="personaBarLabel">— • 1 / 1</span>
+        <button id="btnNextPersona" class="persona-nav-btn" onclick="nextPersona()" title="Persona suivant">&#9654;</button>
+        <button class="btn btn-outline" onclick="newPersona()" title="Nouveau persona" style="font-size:0.82rem; padding:4px 10px;">
+            <span class="material-icons" style="font-size:16px; vertical-align:middle;">person_add</span> Nouveau
+        </button>
+        <button class="btn btn-outline" onclick="duplicatePersona()" title="Dupliquer ce persona" style="font-size:0.82rem; padding:4px 10px;">
+            <span class="material-icons" style="font-size:16px; vertical-align:middle;">content_copy</span> Dupliquer
+        </button>
+        <button id="btnDeletePersona" class="btn btn-reset" onclick="deletePersona()" title="Supprimer ce persona" style="font-size:0.82rem; padding:4px 10px;">
+            <span class="material-icons" style="font-size:16px; vertical-align:middle;">person_remove</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="app-layout">
+        <nav class="sidebar" id="sectionSidebar"></nav>
+        <div class="content-panel">
+        <form id="personaForm">
+
+            <!-- 1. IDENTITÉ -->
+            <div class="card" data-section="identite">
+                <h2><span class="material-icons">badge</span> Identité</h2>
+                <div class="card-desc">Profil administratif et personnel.</div>
+                
+                <!-- Base -->
+                <div class="form-group">
+                    <label>Prénom</label>
+                    <input type="text" placeholder="Ex: Julie" id="name">
+                </div>
+                <div class="form-group">
+                    <label>Fonction</label>
+                    <select id="fonction">
+                        <option value="">Sélectionner...</option>
+                        <option value="Personnel de direction">Personnel de direction</option>
+                        <option value="Personnel d'inspection">Personnel d'inspection</option>
+                        <option value="Conseiller pédagogique de circonscription">Conseiller pédagogique de circonscription</option>
+                        <option value="Conseiller pédagogique départemental">Conseiller pédagogique départemental</option>
+                        <option value="Enseignant 1D">Enseignant 1D</option>
+                        <option value="Enseignant 2D">Enseignant 2D</option>
+                        <option value="Conseiller pédagogique d'éducation (CPE)">Conseiller pédagogique d'éducation (CPE)</option>
+                        <option value="Assistant d'Éducation (AED / PEC)">Assistant d'Éducation (AED / PEC)</option>
+                        <option value="Accompagnant d'élève en situation d'handicap (AESH)">Accompagnant d'élève en situation d'handicap (AESH)</option>
+                        <option value="Personnels administratifs, techniques, sociaux et de santé (ATSS)">Personnels administratifs, techniques, sociaux et de santé (ATSS)</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fonction autre</label>
+                    <input type="text" placeholder="Préciser la fonction..." id="fonctionAutre">
+                </div>
+                <div class="form-group">
+                    <label>Niveau d'enseignement</label>
+                    <select id="level">
+                        <option value="">Sélectionner...</option>
+                        <option value="Maternelle">Maternelle</option>
+                        <option value="Élémentaire">Élémentaire</option>
+                        <option value="Collège">Collège</option>
+                        <option value="Lycée">Lycée / Lycée Pro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Discipline (si 2nd degré)</label>
+                    <input type="text" placeholder="Ex: Histoire-Géo, Maths..." id="discipline">
+                </div>
+                
+                <div class="form-group">
+                    <label>Statut</label>
+                    <select id="status">
+                        <option value="">Sélectionner...</option>
+                        <option value="Titulaire">Titulaire</option>
+                        <option value="Contractuel">Contractuel</option>
+                        <option value="Stagiaire">Stagiaire (ESPE/INSPE)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Années d'expérience</label>
+                    <input type="text" placeholder="Ex: 5 ans, Débutant..." id="experience">
+                </div>
+
+            </div>
+
+            <!-- 2. CONTEXTE D'EXERCICE -->
+            <div class="card" data-section="localisation">
+                <h2><span class="material-icons">place</span> Localisation & classe</h2>
+                <div class="card-desc">Environnement et conditions d'exercice.</div>
+                
+                <!-- Champ texte libre (Détails) en premier et plus large (textarea) -->
+                <div class="form-group">
+                    <label>Détails</label>
+                    <textarea id="contextDetails" placeholder="Détails"></textarea>
+                </div>
+
+                <!-- Base -->
+                <div class="form-group">
+                    <label>Type d'établissement</label>
+                    <select id="schoolType">
+                        <option value="">Sélectionner...</option>
+                        <option value="École maternelle publique (EMPU)">École maternelle publique (EMPU)</option>
+                        <option value="École élémentaire publique (EEPU)">École élémentaire publique (EEPU)</option>
+                        <option value="École primaire publique (EPPU)">École primaire publique (EPPU)</option>
+                        <option value="Collège">Collège</option>
+                        <option value="Lycée général">Lycée général</option>
+                        <option value="Lycée général et technique (LGT)">Lycée général et technique (LGT)</option>
+                        <option value="Lycée professionnel (LPO)">Lycée professionnel (LPO)</option>
+                    </select>
+                </div>
+                <div class="suggestions-panel">
+                    <div class="form-group">
+                        <label>Profil général de la classe</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="heterogeneity"> Hétérogénéité scolaire</label>
+                            <label class="checkbox-item"><input type="checkbox" id="climate"> Gestion de classe difficile</label>
+                            <!-- Nouveaux ajouts -->
+                            <label class="checkbox-item"><input type="checkbox" id="multilevel"> Classe à double ou triple niveau</label>
+                            <label class="checkbox-item"><input type="checkbox" id="overcrowded"> Classe surchargée / Faible effectif</label>
+                            <label class="checkbox-item"><input type="checkbox" id="inclusion"> Élèves à besoins particuliers (ULIS, EBEP)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="social"> Précarité sociale des familles</label>
+                            <label class="checkbox-item"><input type="checkbox" id="turnover_students"> Fort turnover des élèves</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 3. COMPÉTENCES NUMÉRIQUES -->
+            <div class="card" data-section="numerique">
+                <h2><span class="material-icons">devices</span> Numérique</h2>
+                <div class="card-desc">Équipement et compétences technologiques.</div>
+                
+                <!-- Champ texte libre (Détails) en premier et plus large -->
+                <div class="form-group">
+                    <label>Détails</label>
+                    <textarea id="digitalDetails" placeholder="Détails"></textarea>
+                </div>
+                <!-- Base -->
+                <div class="suggestions-panel">
+                    <div class="form-group">
+                        <label>Outils & Usages</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="office"> Bureautique (Word/PPT)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="institution"> Outils Institutionnels (ENT, Pronote)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="smartphone"> Smartphone only</label>
+                            <!-- New items -->
+                            <label class="checkbox-item"><input type="checkbox" id="no_computer"> Pas d'ordi perso / Partage équipement</label>
+                            <label class="checkbox-item"><input type="checkbox" id="basic_training"> Besoin formation bases (fichiers, mails)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="paper_only"> Privilégie le papier / Réticent numérique</label>
+                            <label class="checkbox-item"><input type="checkbox" id="social_watch"> Veille via réseaux sociaux (Insta/TikTok)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="ai_curious"> Curieux/Utilisateur IA générative</label>
+                            <label class="checkbox-item"><input type="checkbox" id="cloud_academic"> Utilise le cloud académique (Nuage/Apps)</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 4. MOTIVATIONS -->
+            <div class="card" data-section="motivations">
+                <h2><span class="material-icons">psychology</span> Motivations</h2>
+                <div class="card-desc">Besoins et attentes vis-à-vis de la formation.</div>
+                
+                <!-- Champ texte libre (Détails) en premier et plus large -->
+                <div class="form-group">
+                    <label>Détails</label>
+                    <textarea id="motivationDetails" placeholder="Détails"></textarea>
+                </div>
+                <!-- Base -->
+                <div class="suggestions-panel">
+                    <div class="form-group">
+                        <label>Pourquoi se former ?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="classManagement"> Gestion de classe / Autorité</label>
+                            <label class="checkbox-item"><input type="checkbox" id="security"> Préparation aux concours</label>
+                            <label class="checkbox-item"><input type="checkbox" id="time"> Gain de temps (Ressources prêtes)</label>
+                            <!-- Nouveaux ajouts -->
+                            <label class="checkbox-item"><input type="checkbox" id="innovation"> Tester de nouvelles approches (Ludification, etc.)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="wellbeing"> Climat de classe / Bien-être</label>
+                            <label class="checkbox-item"><input type="checkbox" id="mutation"> Évolution de carrière/perspectives</label>
+                            <label class="checkbox-item"><input type="checkbox" id="project"> Monter un projet (Sortie, échange)</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 5. FREINS -->
+            <div class="card" data-section="freins">
+                <h2><span class="material-icons">warning</span> Freins</h2>
+                <div class="card-desc">Obstacles potentiels à l'apprentissage.</div>
+                
+                <!-- Champ texte libre (Détails) en premier et plus large -->
+                <div class="form-group">
+                    <label>Détails</label>
+                    <textarea id="obstacleDetails" placeholder="Détails"></textarea>
+                </div>
+                <!-- Base -->
+                <div class="suggestions-panel">
+                    <div class="form-group">
+                        <label>Obstacles à la formation</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="workload"> Charge de travail</label>
+                            <!-- Nouveaux ajouts -->
+                            <label class="checkbox-item"><input type="checkbox" id="training_gap"> Offre de formation inadaptée</label>
+                            <label class="checkbox-item"><input type="checkbox" id="logistics"> Transport / Logistique (Accès formation)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="language_barrier"> Barrière de la langue (Enseignant/Élèves)</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 6. PRÉFÉRENCES (FORMAT) -->
+            <div class="card" data-section="format">
+                <h2><span class="material-icons">headphones</span> Format</h2>
+                <div class="card-desc">Modalités pédagogiques préférées.</div>
+                
+                <!-- Champ texte libre (Détails) en premier et plus large -->
+                <div class="form-group">
+                    <label>Détails</label>
+                    <textarea id="formatDetails" placeholder="Détails"></textarea>
+                </div>
+                <!-- Base -->
+                <div class="suggestions-panel">
+                    <div class="form-group">
+                        <label>Formats préférés</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="micro"> Micro-learning (5-10 min)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="mobile"> Mobile Learning</label>
+                            <!-- Nouveaux ajouts -->
+                            <label class="checkbox-item"><input type="checkbox" id="visio"> Visio-conférence (Synchrones)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="hybrid"> Hybride (Présentiel + Distanciel)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="tutoring"> Tutorat / Accompagnement individuel</label>
+                            <label class="checkbox-item"><input type="checkbox" id="resources"> Banque de ressources libre accès</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 7. SCÉNARIO TYPE (Full Width) -->
+            <div class="card full-width">
+                <h2><span class="material-icons">edit_note</span> Scénario / Journée Type</h2>
+                <div class="card-desc">Déroulé d'une journée type et disponibilités.</div>
+                <div class="form-group">
+                    <label data-export-label="">Racontez sa journée pour identifier les créneaux disponibles et les contraintes techniques.</label>
+                    <textarea id="scenario" placeholder="Ex: Décrivez une journée représentative, les contraintes de temps, de connectivité..."></textarea>
+                </div>
+            </div>
+
+        </form>
+        </div><!-- .content-panel -->
+        </div><!-- .app-layout -->
+    </div>
+
+    <footer>
+        <p>François Jourde & Jacques Dubois (2026) • CC BY-SA<br>
+        Code disponible sur <a href="https://github.com/jourde/artefacts" target="_blank" style="color: inherit;">https://github.com/jourde/artefacts</a></p>
+    </footer>
+
+    <!-- Modal Help (Ignored in PDF) -->
+    <div id="helpModal" class="modal" data-html2canvas-ignore="true">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-btn" onclick="closeHelpModal()">&times;</span>
+            <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Guide d'utilisation</h2>
+            
+            <div style=”font-size: 0.95rem; line-height: 1.6; color: #334155;”>
+
+<p><strong>1. Objectif</strong><br>
+Ce canevas sert à décrire des profils types (personas) afin de concevoir des formations réellement adaptées aux besoins, motivations, contraintes et contextes d’exercice.</p>
+
+<p><strong>2. Gérer plusieurs personas</strong><br>
+La barre de personas, juste sous l’en-tête, permet de travailler sur plusieurs profils dans la même session :
+<ul style=”margin-top: 5px; margin-bottom: 10px;”>
+    <li><strong>◀ ▶</strong> : naviguer entre les personas. Le formulaire bascule automatiquement et l’état du persona quitté est préservé en mémoire.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>person_add</span> Nouveau</strong> : crée un persona vierge.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>content_copy</span> Dupliquer</strong> : duplique le persona courant (utile pour créer des variantes).</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>person_remove</span> Supprimer</strong> : supprime le persona courant après confirmation (inactif s’il n’en reste qu’un).</li>
+</ul>
+</p>
+
+<p><strong>3. Affichage</strong><br>
+<ul style=”margin-top: 5px; margin-bottom: 10px;”>
+    <li><strong>Suggestions :</strong> affiche ou masque les listes de cases à cocher dans tous les blocs.</li>
+</ul>
+</p>
+
+<p><strong>4. Contexte</strong><br>
+Le menu déroulant <strong>Contexte</strong> permet d’activer des champs spécifiques à un territoire ou une académie. En mode <em>Standard</em>, seuls les champs communs sont affichés. Le contexte <em>Guyane</em> est intégré par défaut.
+<ul style=”margin-top: 5px; margin-bottom: 10px;”>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>tune</span> Éditer</strong> : ouvre l’éditeur visuel pour créer ou modifier les champs du contexte actif — cases à cocher, menus déroulants, boutons radio — section par section.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>download</span> Exporter</strong> : télécharge le contexte actif en fichier <code>.json</code> pour le partager ou le réutiliser.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>upload_file</span> Importer</strong> : charge un fichier <code>.json</code> de contexte et l’ajoute au menu déroulant.</li>
+</ul>
+</p>
+
+<p><strong>5. Renseigner un persona</strong><br>
+<ul style=”margin-top: 5px; margin-bottom: 10px;”>
+    <li><strong>Texte libre :</strong> décrivez les éléments qualitatifs (exemples, anecdotes, précisions de contexte).</li>
+    <li><strong>Cases à cocher :</strong> activez l’interrupteur <strong>Suggestions</strong> pour faire apparaître les options prédéfinies, puis cochez ce qui correspond au profil.</li>
+</ul>
+</p>
+
+<p><strong>6. Import & Export</strong><br>
+Le bloc <strong>Import & Export</strong> couvre <em>tous les personas</em> de la session :
+<ul style=”margin-top: 5px; margin-bottom: 10px;”>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>upload_file</span> Charger</strong> : recharge un fichier <code>.json</code> précédemment sauvegardé (un ou plusieurs personas).</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>save</span> Sauvegarder</strong> : exporte tous les personas dans un fichier <code>.json</code> pour reprendre la session plus tard.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>visibility</span> Synthèse et export</strong> : affiche tous les profils dans une fenêtre, avec des boutons pour copier en <strong>Markdown</strong>, télécharger en <strong>.md</strong> ou en <strong>Word (.doc)</strong>.</li>
+</ul>
+</p>
+
+<p><strong>7. Aide</strong><br>
+<ul style=”margin-top: 5px; margin-bottom: 10px;”>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>list_alt</span> Canevas complet</strong> : exporte un fichier Markdown exhaustif listant toutes les options (cochées ou non) pour chaque persona — utile pour documenter ou réviser l’ensemble du canevas.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>help</span> Guide</strong> : affiche ce guide d’utilisation.</li>
+    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>info</span> À propos</strong> : informations sur l’outil.</li>
+</ul>
+</p>
+
+<p style=”margin-top: 12px;”><strong>Note</strong><br>
+Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne.</p>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal Suggestions (Ignored in PDF) -->
+    <div id="suggestionsModal" class="modal" data-html2canvas-ignore="true">
+        <div class="modal-content" style="max-width: 720px;">
+            <span class="close-btn" onclick="closeSuggestionsModal()">&times;</span>
+            <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Proposer une amélioration</h2>
+
+            <div style="font-size: 0.95rem; line-height: 1.6; color: #334155;">
+                <p style="margin-top: 0;">
+                    Cet espace permet de proposer des améliorations sur le contenu ou l’interface. Les suggestions sont stockées localement dans votre navigateur et peuvent être exportées en fichier (JSON) afin de les partager.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: end; margin: 14px 0;">
+                    <div>
+                        <label for="suggestionCategory" style="display:block; font-weight: 600; margin-bottom: 6px;">Catégorie</label>
+                        <select id="suggestionCategory" class="input" style="width: 100%;">
+                            <option value="Contenu des blocs">Contenu des blocs</option>
+                            <option value="Libellés / vocabulaire">Libellés / vocabulaire</option>
+                            <option value="Suggestions proposées">Suggestions proposées</option>
+                            <option value="Ergonomie / interface">Ergonomie / interface</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="suggestionPriority" style="display:block; font-weight: 600; margin-bottom: 6px;">Priorité</label>
+                        <select id="suggestionPriority" class="input" style="width: 100%;">
+                            <option value="À discuter">À discuter</option>
+                            <option value="Faible">Faible</option>
+                            <option value="Moyenne">Moyenne</option>
+                            <option value="Élevée">Élevée</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin: 12px 0;">
+                    <label for="suggestionText" style="display:block; font-weight: 600; margin-bottom: 6px;">Suggestion</label>
+                    <textarea id="suggestionText" class="input" rows="5" style="width: 100%; resize: vertical;" placeholder="Décrivez votre proposition de manière précise (ex. libellé à modifier, option à ajouter/supprimer, clarification à apporter, etc.)."></textarea>
+                    <div style="font-size: 0.82rem; color: #64748b; margin-top: 6px;">
+                        Merci d’éviter toute donnée personnelle. Objectif : améliorer le contenu et l’ergonomie.
+                    </div>
+                </div>
+
+                <div style="display:flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px;">
+                    <button class="btn btn-primary" onclick="addSuggestion()">
+                        <span class="material-icons" style="vertical-align: middle;">add</span>
+                        Ajouter
+                    </button>
+                    <button class="btn btn-outline" onclick="exportSuggestions()" id="exportSuggestionsBtn">
+                        <span class="material-icons" style="vertical-align: middle;">download</span>
+                        Exporter les suggestions
+                    </button>
+                    <button class="btn btn-reset" onclick="clearSuggestions()" id="clearSuggestionsBtn" data-tooltip="Supprimer toutes les suggestions locales">
+                        <span class="material-icons">delete</span>
+                    </button>
+                    <span id="suggestionsCount" style="margin-left: auto; font-weight: 600; color:#0f172a;">0 suggestion</span>
+                </div>
+
+                <div style="margin-top: 14px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;">
+                    <div style="font-weight: 700; margin-bottom: 6px;">Partager le fichier</div>
+                    <div style="font-size: 0.92rem; color:#334155;">
+                        Après export, merci de partager le fichier <strong>JSON</strong> (par exemple en pièce jointe dans un e-mail ou via votre canal habituel) afin de contribuer à l’amélioration du prototype.
+                    </div>
+                </div>
+
+                <div id="suggestionsList" style="margin-top: 14px;"></div>
+            </div>
+        </div>
+    </div>
+
+
+<!-- Modal Synthèse (Ignored in PDF) -->
+    <div id="synthesisModal" class="modal" data-html2canvas-ignore="true">
+        <div class="modal-content" style="max-width: 720px;">
+            <span class="close-btn" onclick="closeSynthesisModal()">&times;</span>
+            <h2 id="synthesisModalTitle" style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Synthèse</h2>
+            <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">
+                Relisez et copiez la synthèse ci-dessous pour la coller dans un outil tiers (assistant IA, document, email…).
+            </div>
+            <textarea id="synthesisContent" readonly
+                style="width: 100%; height: 350px; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; line-height: 1.5; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; color: #0f172a; resize: vertical; box-sizing: border-box;"></textarea>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px;">
+                <button class="btn btn-primary" onclick="copyAsMarkdown()">
+                    <span class="material-icons" style="vertical-align: middle; font-size: 18px;">code</span>
+                    Copier en Markdown
+                </button>
+                <button class="btn btn-outline" onclick="exportSynthesisMarkdown()">
+                    <span class="material-icons" style="vertical-align: middle; font-size: 18px;">download</span>
+                    Exporter en Markdown
+                </button>
+                <button class="btn btn-outline" onclick="exportSynthesisWord()">
+                    <span class="material-icons" style="vertical-align: middle; font-size: 18px;">description</span>
+                    Exporter en Word
+                </button>
+                <span id="synthesisCopiedFeedback" style="display: none; color: #059669; font-weight: 600; font-size: 0.9rem;">✓ Copié !</span>
+                <button class="btn btn-reset" onclick="closeSynthesisModal()" style="margin-left: auto;">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal Éditeur de Contexte (Ignored in PDF) -->
+<div id="contextEditorModal" class="modal" data-html2canvas-ignore="true">
+    <div class="modal-content" style="max-width: 760px; max-height: 85vh; overflow-y: auto;">
+        <span class="close-btn" onclick="closeContextEditorModal()">&times;</span>
+        <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Éditeur de contexte</h2>
+        <div class="form-group" style="margin-bottom: 16px;">
+            <label>Nom du contexte</label>
+            <input type="text" id="contextEditorName" placeholder="Ex : Guyane, Martinique, REP+..." style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.9rem; box-sizing:border-box;">
+        </div>
+        <div id="contextEditorSections"></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
+            <button class="btn btn-primary" onclick="applyContextEdit()">
+                <span class="material-icons" style="vertical-align:middle; font-size:18px;">check</span>
+                Appliquer
+            </button>
+            <button class="btn btn-outline" onclick="exportContextJSON()">
+                <span class="material-icons" style="vertical-align:middle; font-size:18px;">download</span>
+                Exporter JSON
+            </button>
+            <label class="btn btn-outline" style="cursor:pointer; margin:0;">
+                <span class="material-icons" style="vertical-align:middle; font-size:18px;">upload_file</span>
+                Importer JSON
+                <input type="file" accept=".json" style="display:none;" onchange="importContextJSON(this)">
+            </label>
+            <button class="btn btn-reset" onclick="closeContextEditorModal()" style="margin-left:auto;">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Info (Ignored in PDF) -->
+    <div id="infoModal" class="modal" data-html2canvas-ignore="true">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeInfoModal()">&times;</span>
+            <h2>À propos</h2>
+            <p>Cet outil permet de modéliser les besoins, motivations et contraintes des personnels d’éducation et d’administration scolaire afin de concevoir des formations adaptées.</p>
+            <p>Les personas sont des profils hypothétiques de personnes à former, utilisés pour concevoir des formations inclusives adaptées à leurs caractéristiques, besoins et contextes.</p>
+            <p><strong>Traitement local :</strong> toutes les données restent sur votre navigateur, rien n'est envoyé en ligne.</p>
+            <div class="modal-footer">
+                F. Jourde & J. Dubois (2026) • CC BY-SA
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggle = document.getElementById('contextToggle');
+        const body = document.body;
+        const suggestionsToggle = document.getElementById('suggestionsToggle');
+        const infoModal = document.getElementById('infoModal');
+        const helpModal = document.getElementById('helpModal');
+        const suggestionsModal = document.getElementById('suggestionsModal');
+
+        // Suggestions storage (local only)
+        const SUGGESTIONS_STORAGE_KEY = 'persona_guyane_suggestions_v1';
+        let suggestions = [];
+
+        function loadSuggestionsFromStorage() {
+            try {
+                const raw = localStorage.getItem(SUGGESTIONS_STORAGE_KEY);
+                suggestions = raw ? JSON.parse(raw) : [];
+                if (!Array.isArray(suggestions)) suggestions = [];
+            } catch (e) {
+                suggestions = [];
+            }
+        }
+
+        function saveSuggestionsToStorage() {
+            try {
+                localStorage.setItem(SUGGESTIONS_STORAGE_KEY, JSON.stringify(suggestions));
+            } catch (e) {
+                // Ignore storage errors (private browsing, quota, etc.)
+            }
+        }
+
+        // Toggle logic
+        toggle.addEventListener('change', function() {
+            const val = this.value;
+            body.classList.toggle('show-context', val !== 'Standard');
+            setActiveContext(val);
+        });
+
+        
+
+        // Suggestions (affichage global)
+        suggestionsToggle.addEventListener('change', function() {
+            if (this.checked) {
+                body.classList.add('show-suggestions');
+            } else {
+                body.classList.remove('show-suggestions');
+            }
+        });
+
+        // ── Persona Store ──────────────────────────────────────────
+        let personaStore = [];
+        let currentPersonaIndex = 0;
+
+        /** Lit l'état courant du formulaire et le retourne comme objet. */
+        function captureCurrentPersonaState() {
+            const state = {
+                contextToggle: toggle.value,
+                suggestionsToggle: suggestionsToggle.checked,
+                fields: {}
+            };
+            document.querySelectorAll('[id]').forEach(el => {
+                if (['contextToggle','suggestionsToggle','fileInput'].includes(el.id)) return;
+                if (el.type === 'checkbox') state.fields[el.id] = el.checked;
+                else if (el.value !== undefined) state.fields[el.id] = el.value;
+            });
+            const radioNames = new Set();
+            document.querySelectorAll('input[type="radio"]').forEach(el => radioNames.add(el.name));
+            radioNames.forEach(name => {
+                const checked = document.querySelector(`input[name="${name}"]:checked`);
+                if (checked) state.fields['radio:' + name] = checked.value;
+            });
+            return state;
+        }
+
+        /** Applique un état de persona au formulaire sans toucher au store. */
+        function applyPersonaState(state) {
+            document.getElementById('personaForm').reset();
+            // Migration : anciens états booléens → valeur texte
+            const ctxValue = typeof state.contextToggle === 'boolean'
+                ? (state.contextToggle ? 'Académie de Guyane' : 'Standard')
+                : (state.contextToggle || 'Standard');
+            // Ajouter l'option au select si elle n'existe pas encore
+            if (!Array.from(toggle.options).some(o => o.value === ctxValue)) {
+                const opt = document.createElement('option');
+                opt.value = ctxValue; opt.textContent = ctxValue;
+                toggle.appendChild(opt);
+            }
+            toggle.value = ctxValue;
+            body.classList.toggle('show-context', ctxValue !== 'Standard');
+            setActiveContext(ctxValue);
+            suggestionsToggle.checked = !!state.suggestionsToggle;
+            body.classList.toggle('show-suggestions', suggestionsToggle.checked);
+            for (const [key, value] of Object.entries(state.fields || {})) {
+                if (key.startsWith('radio:')) {
+                    const name = key.split(':')[1];
+                    const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+                    if (radio) radio.checked = true;
+                } else {
+                    const el = document.getElementById(key);
+                    if (el) {
+                        if (el.type === 'checkbox') el.checked = value;
+                        else el.value = value;
+                    }
+                }
+            }
+            updateAllDots();
+        }
+
+        /** Met à jour l'affichage de la barre (nom, index, boutons). */
+        function updatePersonaBar() {
+            const total = personaStore.length;
+            const nameEl = document.getElementById('name');
+            const name = (nameEl && nameEl.value) ? nameEl.value : '—';
+            document.getElementById('personaBarLabel').textContent = `${name}  •  ${currentPersonaIndex + 1} / ${total}`;
+            document.getElementById('btnPrevPersona').disabled = currentPersonaIndex === 0;
+            document.getElementById('btnNextPersona').disabled = currentPersonaIndex === total - 1;
+            document.getElementById('btnDeletePersona').disabled = total <= 1;
+        }
+
+        /** Sauvegarde l'état courant dans le store et bascule vers un autre persona. */
+        function switchToPersona(index) {
+            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            currentPersonaIndex = index;
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+        }
+
+        function prevPersona() {
+            if (currentPersonaIndex > 0) switchToPersona(currentPersonaIndex - 1);
+        }
+
+        function nextPersona() {
+            if (currentPersonaIndex < personaStore.length - 1) switchToPersona(currentPersonaIndex + 1);
+        }
+
+        function newPersona() {
+            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            personaStore.push({ contextToggle: 'Standard', suggestionsToggle: true, fields: {} });
+            currentPersonaIndex = personaStore.length - 1;
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+        }
+
+        function duplicatePersona() {
+            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            const copy = JSON.parse(JSON.stringify(personaStore[currentPersonaIndex]));
+            if (copy.fields && copy.fields['name']) copy.fields['name'] += ' (copie)';
+            personaStore.splice(currentPersonaIndex + 1, 0, copy);
+            currentPersonaIndex += 1;
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+        }
+
+        function deletePersona() {
+            if (personaStore.length <= 1) return;
+            const name = (personaStore[currentPersonaIndex].fields && personaStore[currentPersonaIndex].fields['name']) || 'ce persona';
+            if (!confirm(`Supprimer le persona « ${name} » ? Cette action est irréversible.`)) return;
+            personaStore.splice(currentPersonaIndex, 1);
+            currentPersonaIndex = Math.min(currentPersonaIndex, personaStore.length - 1);
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+        }
+
+        /** Utilitaire de téléchargement de fichier texte. */
+        function downloadTextFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Save Functionality — sauvegarde tous les personas (format v2)
+        function saveData() {
+            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            const data = {
+                version: 2,
+                currentIndex: currentPersonaIndex,
+                personas: personaStore
+            };
+            downloadTextFile(JSON.stringify(data, null, 2), 'personas_guyane.json', 'application/json');
+        }
+
+        // Load Functionality
+        function loadData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    restoreForm(data);
+                } catch(err) {
+                    alert("Erreur lors de la lecture du fichier : " + err);
+                }
+                input.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function restoreForm(data) {
+            if (data.version === 2 && Array.isArray(data.personas) && data.personas.length > 0) {
+                // Format multi-personas (v2)
+                personaStore = data.personas;
+                currentPersonaIndex = Math.min(data.currentIndex || 0, personaStore.length - 1);
+            } else {
+                // Format hérité (persona unique)
+                personaStore = [data];
+                currentPersonaIndex = 0;
+            }
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+        }
+
+        // PDF Export Functionality
+        function exportPDF() {
+            // Temporarily show all cards for capture
+            document.querySelectorAll('.card').forEach(c => c.classList.add('active-section'));
+
+            const nameValue = document.getElementById('name').value;
+            const safeName = nameValue ? nameValue.replace(/[^a-z0-9]/gi, '_') : 'persona';
+
+            const element = document.body;
+            const opt = {
+                margin:       10,
+                filename:     `Canevas_${safeName}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            const restoreActiveSection = () => {
+                const activeIndex = parseInt(document.querySelector('.nav-item.active')?.dataset.index ?? 0);
+                document.querySelectorAll('.card').forEach((c, i) => {
+                    c.classList.toggle('active-section', i === activeIndex);
+                });
+            };
+
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(element).save().then(restoreActiveSection);
+            } else {
+                restoreActiveSection();
+                alert("La librairie PDF n'est pas encore chargée. Veuillez réessayer dans un instant.");
+            }
+        }
+
+        // Markdown generation - shared core logic
+        function generateMarkdownContent() {
+            const name = document.getElementById('name').value || 'Persona';
+            const ctxName = document.getElementById('contextToggle').value;
+            const isCustomContext = ctxName && ctxName !== 'Standard';
+            let md = `# Profil Persona : ${name}\n`;
+            md += isCustomContext
+                ? `> Contexte : ${ctxName}\n`
+                : `> Contexte : Standard\n`;
+            md += `> Date : ${new Date().toLocaleDateString()}\n\n`;
+
+            // Helper to process a specific DOM element (form-group or checkbox-group)
+            // Using textContent instead of innerText to avoid costly reflows
+            const processElement = (el) => {
+                let text = '';
+
+                if (el.classList.contains('form-group')) {
+                    const labelEl = el.querySelector('label');
+                    const exportLabel = labelEl ? labelEl.dataset.exportLabel : undefined;
+                    const label = (exportLabel !== undefined) ? exportLabel : (labelEl ? labelEl.textContent.replace(':','').trim() : 'Champ');
+
+                    // Text/Select/Textarea
+                    const simpleInput = el.querySelector('input[type="text"], select, textarea');
+                    if (simpleInput) {
+                        // For selects, use the displayed text rather than the internal value
+                        const val = simpleInput.tagName === 'SELECT'
+                            ? (simpleInput.selectedIndex > 0 ? simpleInput.options[simpleInput.selectedIndex].text.trim() : '')
+                            : simpleInput.value.trim();
+                        if (val && val !== 'Sélectionner...') {
+                            if (label === '') {
+                                text += `${val}\n`;
+                            } else {
+                                text += `- **${label}** : ${val}\n`;
+                            }
+                        }
+                    }
+
+                    // Radio/Checkbox inside form-group
+                    const inputs = el.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+                    if (inputs.length > 0) {
+                        if (inputs[0].type === 'radio') {
+                            const checked = el.querySelector('input:checked');
+                            if (checked) {
+                                text += `- **${label}** : ${checked.parentElement.textContent.trim()}\n`;
+                            }
+                        } else {
+                            // Checkboxes
+                            const checked = el.querySelectorAll('input:checked');
+                            if (checked.length > 0) {
+                                text += `- **${label}** :\n`;
+                                checked.forEach(c => {
+                                    text += `  - ${c.parentElement.textContent.trim()}\n`;
+                                });
+                            }
+                        }
+                    }
+                } else if (el.classList.contains('checkbox-group')) {
+                    // Standalone checkbox group (no label wrapper)
+                    const checked = el.querySelectorAll('input:checked');
+                    checked.forEach(c => {
+                        text += `- ${c.parentElement.textContent.trim()}\n`;
+                    });
+                }
+                return text;
+            };
+
+            document.querySelectorAll('.card').forEach(card => {
+                let title = "";
+                const h2 = card.querySelector('h2');
+                if (h2) {
+                    title = Array.from(h2.childNodes)
+                        .filter(n => n.nodeType === Node.TEXT_NODE)
+                        .map(n => n.textContent.trim())
+                        .join(' ').trim();
+                }
+
+                let sectionContent = '';
+
+                Array.from(card.children).forEach(child => {
+                    if (child.tagName === 'H2') return;
+                    if (child.tagName === 'BUTTON') return;
+                    if (child.classList.contains('card-desc')) return;
+
+                    if (child.classList.contains('context-section')) {
+                        if (isCustomContext) {
+                            let contextContent = '';
+                            Array.from(child.children).forEach(ctxChild => {
+                                contextContent += processElement(ctxChild);
+                            });
+                            if (contextContent) {
+                                sectionContent += `\n> **Contexte ${ctxName}**\n${contextContent}`;
+                            }
+                        }
+                    } else if (child.classList.contains('suggestions-panel')) {
+                        Array.from(child.children).forEach(innerChild => {
+                            sectionContent += processElement(innerChild);
+                        });
+                    } else {
+                        sectionContent += processElement(child);
+                    }
+                });
+
+                if (sectionContent.trim()) {
+                    md += `## ${title}\n${sectionContent}\n`;
+                }
+            });
+
+            return md;
+        }
+
+        // Markdown Export Functionality — génère un profil pour chaque persona
+        function exportMarkdown() {
+            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            let allMd = '';
+            personaStore.forEach((state, i) => {
+                applyPersonaState(state);
+                if (i > 0) allMd += '\n\n---\n\n';
+                allMd += generateMarkdownContent();
+            });
+            // Restaure le persona courant
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+            const label = personaStore.length === 1
+                ? `Persona_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
+                : `Personas_Guyane_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
+            downloadTextFile(allMd, `${label}.md`, 'text/markdown');
+        }
+
+        // Helper : génère le canevas complet (toutes options) depuis le DOM courant
+        function generateFullMarkdownContent() {
+            const name = document.getElementById('name').value || 'Persona';
+            let md = `# Canevas Persona Complet : ${name}\n`;
+            md += `> Contexte : Éducation nationale / Académie de Guyane\n`;
+            md += `> Date : ${new Date().toLocaleDateString()}\n\n`;
+
+            const processElementFull = (el) => {
+                let text = '';
+                if (el.classList.contains('form-group')) {
+                    const labelEl = el.querySelector('label');
+                    const label = labelEl ? labelEl.textContent.replace(':','').trim() : 'Champ';
+                    const simpleInput = el.querySelector('input[type="text"], select, textarea');
+                    if (simpleInput) {
+                        if (simpleInput.tagName === 'SELECT') {
+                            text += `- **${label}** :\n`;
+                            Array.from(simpleInput.options).forEach(opt => {
+                                if (opt.value) {
+                                    text += `  - [${opt.selected ? 'x' : ' '}] ${opt.text}\n`;
+                                }
+                            });
+                        } else {
+                            const val = simpleInput.value.trim();
+                            text += `- **${label}** : ${val || '(vide)'}\n`;
+                        }
+                    }
+                    const inputs = el.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+                    if (inputs.length > 0) {
+                        text += `- **${label}** :\n`;
+                        inputs.forEach(input => {
+                            text += `  - [${input.checked ? 'x' : ' '}] ${input.parentElement.textContent.trim()}\n`;
+                        });
+                    }
+                } else if (el.classList.contains('checkbox-group')) {
+                    el.querySelectorAll('input[type="checkbox"]').forEach(input => {
+                        text += `- [${input.checked ? 'x' : ' '}] ${input.parentElement.textContent.trim()}\n`;
+                    });
+                }
+                return text;
+            };
+
+            document.querySelectorAll('.card').forEach(card => {
+                let title = '';
+                const h2 = card.querySelector('h2');
+                if (h2) {
+                    title = Array.from(h2.childNodes)
+                        .filter(n => n.nodeType === Node.TEXT_NODE)
+                        .map(n => n.textContent.trim())
+                        .join(' ').trim();
+                }
+                let sectionContent = '';
+                Array.from(card.children).forEach(child => {
+                    if (child.tagName === 'H2' || child.tagName === 'BUTTON') return;
+                    if (child.classList.contains('card-desc')) return;
+                    if (child.classList.contains('context-section')) {
+                        const ctxLabel = document.getElementById('contextToggle').value || 'Contexte';
+                        let ctx = '';
+                        Array.from(child.children).forEach(c => { ctx += processElementFull(c); });
+                        if (ctx) sectionContent += `\n> **Contexte ${ctxLabel}**\n${ctx}`;
+                    } else if (child.classList.contains('suggestions-panel')) {
+                        Array.from(child.children).forEach(c => { sectionContent += processElementFull(c); });
+                    } else {
+                        sectionContent += processElementFull(child);
+                    }
+                });
+                if (sectionContent.trim()) md += `## ${title}\n${sectionContent}\n`;
+            });
+            return md;
+        }
+
+        // Full Canvas Export — tous les personas
+        function exportFullMarkdown() {
+            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            let allMd = '';
+            personaStore.forEach((state, i) => {
+                applyPersonaState(state);
+                if (i > 0) allMd += '\n\n---\n\n';
+                allMd += generateFullMarkdownContent();
+            });
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+            const label = personaStore.length === 1
+                ? `Persona_Complet_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
+                : `Personas_Complet_Guyane_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
+            downloadTextFile(allMd, `${label}.md`, 'text/markdown');
+        }
+
+        function resetForm() {
+            if (!confirm('Réinitialiser tous les personas ? Cette action supprime toutes les données non sauvegardées.')) return;
+            personaStore = [{ contextToggle: 'Standard', suggestionsToggle: true, fields: {} }];
+            currentPersonaIndex = 0;
+            applyPersonaState(personaStore[0]);
+            updatePersonaBar();
+        }
+
+        
+        // Suggestions (local collection)
+        function pluraliseSuggestion(n) {
+            return n === 1 ? 'suggestion' : 'suggestions';
+        }
+
+        function formatDateTimeISO(dt) {
+            const pad = (x) => String(x).padStart(2, '0');
+            return dt.getFullYear()
+                + '-' + pad(dt.getMonth() + 1)
+                + '-' + pad(dt.getDate())
+                + ' ' + pad(dt.getHours())
+                + ':' + pad(dt.getMinutes());
+        }
+
+        function renderSuggestions() {
+            const countEl = document.getElementById('suggestionsCount');
+            const listEl = document.getElementById('suggestionsList');
+            if (!countEl || !listEl) return;
+
+            const n = suggestions.length;
+            countEl.textContent = `${n} ${pluraliseSuggestion(n)}`;
+
+            if (n === 0) {
+                listEl.innerHTML = '<div style="color:#64748b; font-size:0.92rem; margin-top: 8px;">Aucune suggestion enregistrée pour le moment.</div>';
+                return;
+            }
+
+            const items = suggestions
+                .slice()
+                .sort((a, b) => (b.created_at || 0) - (a.created_at || 0))
+                .map(s => {
+                    const created = s.created_at ? formatDateTimeISO(new Date(s.created_at)) : '';
+                    const cat = s.category || '—';
+                    const prio = s.priority || '—';
+                    const text = (s.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    return `
+                        <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; background:#ffffff; margin-top:10px;">
+                            <div style="display:flex; gap:10px; align-items: baseline; flex-wrap: wrap;">
+                                <span style="font-weight:700; color:#0f172a;">${cat}</span>
+                                <span style="color:#64748b;">•</span>
+                                <span style="font-weight:600; color:#334155;">Priorité : ${prio}</span>
+                                ${created ? `<span style="margin-left:auto; color:#64748b; font-size:0.85rem;">${created}</span>` : `<span style="margin-left:auto;"></span>`}
+                            </div>
+                            <div style="margin-top:8px; white-space:pre-wrap; color:#0f172a;">${text}</div>
+                            <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-reset" onclick="removeSuggestion('${s.id}')" data-tooltip="Supprimer cette suggestion">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </div>
+                        </div>`;
+                })
+                .join('');
+
+            listEl.innerHTML = items;
+        }
+
+        function openSuggestionsModal() {
+            loadSuggestionsFromStorage();
+            renderSuggestions();
+            suggestionsModal.style.display = "block";
+        }
+
+        function closeSuggestionsModal() {
+            suggestionsModal.style.display = "none";
+        }
+
+        function addSuggestion() {
+            const catEl = document.getElementById('suggestionCategory');
+            const prioEl = document.getElementById('suggestionPriority');
+            const textEl = document.getElementById('suggestionText');
+
+            if (!textEl) return;
+
+            const text = (textEl.value || '').trim();
+            if (!text) {
+                alert('Merci de saisir une suggestion avant de l’ajouter.');
+                return;
+            }
+
+            const suggestion = {
+                id: 'sug_' + Math.random().toString(36).slice(2) + '_' + Date.now(),
+                created_at: Date.now(),
+                category: catEl ? catEl.value : 'Autre',
+                priority: prioEl ? prioEl.value : 'À discuter',
+                text: text
+            };
+
+            loadSuggestionsFromStorage();
+            suggestions.push(suggestion);
+            saveSuggestionsToStorage();
+
+            textEl.value = '';
+            renderSuggestions();
+        }
+
+        function removeSuggestion(id) {
+            loadSuggestionsFromStorage();
+            suggestions = suggestions.filter(s => s.id !== id);
+            saveSuggestionsToStorage();
+            renderSuggestions();
+        }
+
+        function clearSuggestions() {
+            const ok = confirm('Supprimer toutes les suggestions enregistrées localement ?');
+            if (!ok) return;
+            suggestions = [];
+            saveSuggestionsToStorage();
+            renderSuggestions();
+        }
+
+        function exportSuggestions() {
+            loadSuggestionsFromStorage();
+
+            if (!suggestions || suggestions.length === 0) {
+                alert('Aucune suggestion à exporter.');
+                return;
+            }
+
+            const payload = {
+                tool: 'Canevas de personas — Guyane (prototype)',
+                exported_at: new Date().toISOString(),
+                suggestions: suggestions
+            };
+
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const dt = new Date();
+            const pad = (x) => String(x).padStart(2, '0');
+            const filename = `suggestions-persona-guyane-${dt.getFullYear()}${pad(dt.getMonth() + 1)}${pad(dt.getDate())}-${pad(dt.getHours())}${pad(dt.getMinutes())}${pad(dt.getSeconds())}.json`;
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+
+        // Sidebar navigation
+        function initSidebar() {
+            const sidebar = document.getElementById('sectionSidebar');
+            const cards = Array.from(document.querySelectorAll('.card'));
+
+            cards.forEach((card, i) => {
+                const h2 = card.querySelector('h2');
+                if (!h2) return;
+
+                const iconEl = h2.querySelector('.material-icons');
+                const icon = iconEl ? iconEl.textContent.trim() : 'circle';
+                const label = Array.from(h2.childNodes)
+                    .filter(n => n.nodeType === Node.TEXT_NODE)
+                    .map(n => n.textContent.trim())
+                    .join(' ').trim();
+
+                const item = document.createElement('div');
+                item.className = 'nav-item';
+                item.dataset.index = i;
+                item.innerHTML = `<span class="material-icons">${icon}</span><span>${label}</span><span class="nav-dot" id="nav-dot-${i}"></span>`;
+                item.addEventListener('click', () => activateSection(i));
+                sidebar.appendChild(item);
+            });
+
+            activateSection(0);
+
+            document.getElementById('personaForm').addEventListener('input', updateAllDots);
+            document.getElementById('personaForm').addEventListener('change', updateAllDots);
+        }
+
+        function activateSection(index) {
+            document.querySelectorAll('.card').forEach((c, i) => c.classList.toggle('active-section', i === index));
+            document.querySelectorAll('.nav-item').forEach((it, i) => it.classList.toggle('active', i === index));
+            document.querySelector('.content-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function hasCardContent(card) {
+            for (const el of card.querySelectorAll('input, select, textarea')) {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    if (el.checked) return true;
+                } else if (el.value && el.value.trim()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function updateAllDots() {
+            document.querySelectorAll('.card').forEach((card, i) => {
+                const dot = document.getElementById(`nav-dot-${i}`);
+                if (dot) dot.classList.toggle('filled', hasCardContent(card));
+            });
+        }
+
+        // ══════════════════════════════════════════════════════
+        // CONTEXT ENGINE — définition, rendu, éditeur, import/export
+        // ══════════════════════════════════════════════════════
+
+        const SECTION_LABELS = {
+            identite:    'Identité',
+            localisation:'Localisation & classe',
+            numerique:   'Numérique',
+            motivations: 'Motivations',
+            freins:      'Freins',
+            format:      'Format'
+        };
+
+        // Définition intégrée du contexte Guyane
+        const GUYANE_CONTEXT = {
+            name: 'Académie de Guyane',
+            sections: {
+                identite: [
+                    { type: 'radio', groupLabel: 'Origine & Mobilité', name: 'origin',
+                      options: [
+                        { value: 'Muté',  label: 'Mutation depuis Métropole/DOM' },
+                        { value: 'Local', label: 'Recrutement local' }
+                      ]
+                    },
+                    { type: 'checkboxes', groupLabel: 'Spécialité',
+                      items: [{ id: 'bilingue', label: 'Enseignant 1D classe bilingue' }]
+                    },
+                    { type: 'select', id: 'seniority', label: 'Ancienneté sur le territoire',
+                      options: [
+                        { value: 'Arrivant', label: 'Arrive tout juste (< 1 an)' },
+                        { value: 'Installé', label: '1 à 3 ans' },
+                        { value: 'Ancien',   label: 'Plus de 3 ans' }
+                      ]
+                    }
+                ],
+                localisation: [
+                    { type: 'select', id: 'location', label: 'Localisation & Isolement',
+                      options: [
+                        { value: 'Urbain',            label: 'Zone Urbaine / Littoral (Cayenne, Kourou...)' },
+                        { value: 'EloigneRoute',       label: 'Commune éloignée (délai de route important depuis Cayenne)' },
+                        { value: 'EloignePiroguAvion', label: 'Commune éloignée (pirogue, avion)' },
+                        { value: 'IsoleInterieur',     label: 'Site isolé (intérieur)' },
+                        { value: 'IsoleFleuve',        label: 'Site isolé (fleuve)' }
+                      ]
+                    },
+                    { type: 'checkboxes', groupLabel: 'Réalités Terrain',
+                      items: [
+                        { id: 'allophone', label: 'Élèves allophones / Plurilinguisme fort' },
+                        { id: 'heat',      label: 'Ventilation HS / Chaleur extrême' },
+                        { id: 'power',     label: 'Coupures électricité / Net HS' }
+                      ]
+                    }
+                ],
+                numerique: [
+                    { type: 'checkboxes',
+                      items: [
+                        { id: 'systemD',       label: 'Solutions de contournement numériques (ressources hors ligne, partage de connexion)' },
+                        { id: 'fracture',      label: 'Fracture numérique (matériel)' },
+                        { id: 'fracture_skills', label: 'Fracture numérique (Compétences insuffisantes)' }
+                      ]
+                    }
+                ],
+                motivations: [
+                    { type: 'checkboxes',
+                      items: [{ id: 'isolation', label: "Rompre l'isolement géographique" }]
+                    }
+                ],
+                freins: [
+                    { type: 'checkboxes',
+                      items: [
+                        { id: 'internet', label: 'Connexion domicile instable/inexistante' },
+                        { id: 'jetlag',   label: 'Décalage horaire (si formateur métropole)' }
+                      ]
+                    }
+                ],
+                format: [
+                    { type: 'checkboxes',
+                      items: [{ id: 'offline', label: 'Mode "Hors-ligne" à considérer (Téléchargement)' }]
+                    }
+                ]
+            }
+        };
+
+        // Contextes chargés (nom → définition)
+        const loadedContexts = { 'Académie de Guyane': GUYANE_CONTEXT };
+        let activeContext = null;
+
+        /** Rend les champs dynamiques d'un contexte dans les cards. */
+        function renderContextSections(ctxDef) {
+            // Nettoyer les anciennes sections dynamiques
+            document.querySelectorAll('.context-section').forEach(el => el.remove());
+            if (!ctxDef) return;
+
+            Object.entries(ctxDef.sections || {}).forEach(([sectionKey, items]) => {
+                const card = document.querySelector(`.card[data-section="${sectionKey}"]`);
+                if (!card || !items || items.length === 0) return;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'context-section';
+
+                const lbl = document.createElement('span');
+                lbl.className = 'guyane-label';
+                lbl.textContent = ctxDef.name || 'Contexte';
+                wrapper.appendChild(lbl);
+
+                items.forEach(item => {
+                    if (item.type === 'checkboxes') {
+                        const fg = document.createElement('div');
+                        fg.className = 'form-group';
+                        if (item.groupLabel) {
+                            const gl = document.createElement('label');
+                            gl.textContent = item.groupLabel;
+                            fg.appendChild(gl);
+                        }
+                        const cg = document.createElement('div');
+                        cg.className = 'checkbox-group';
+                        (item.items || []).forEach(cb => {
+                            const lbEl = document.createElement('label');
+                            lbEl.className = 'checkbox-item';
+                            const inp = document.createElement('input');
+                            inp.type = 'checkbox';
+                            if (cb.id) inp.id = cb.id;
+                            lbEl.appendChild(inp);
+                            lbEl.appendChild(document.createTextNode(' ' + cb.label));
+                            cg.appendChild(lbEl);
+                        });
+                        fg.appendChild(cg);
+                        wrapper.appendChild(fg);
+                    } else if (item.type === 'radio') {
+                        const fg = document.createElement('div');
+                        fg.className = 'form-group';
+                        if (item.groupLabel) {
+                            const gl = document.createElement('label');
+                            gl.textContent = item.groupLabel;
+                            fg.appendChild(gl);
+                        }
+                        const cg = document.createElement('div');
+                        cg.className = 'checkbox-group';
+                        (item.options || []).forEach(opt => {
+                            const lbEl = document.createElement('label');
+                            lbEl.className = 'checkbox-item';
+                            const inp = document.createElement('input');
+                            inp.type = 'radio';
+                            inp.name = item.name || ('radio_' + sectionKey);
+                            inp.value = opt.value;
+                            lbEl.appendChild(inp);
+                            lbEl.appendChild(document.createTextNode(' ' + opt.label));
+                            cg.appendChild(lbEl);
+                        });
+                        fg.appendChild(cg);
+                        wrapper.appendChild(fg);
+                    } else if (item.type === 'select') {
+                        const fg = document.createElement('div');
+                        fg.className = 'form-group';
+                        const gl = document.createElement('label');
+                        gl.textContent = item.label || '';
+                        fg.appendChild(gl);
+                        const sel = document.createElement('select');
+                        if (item.id) sel.id = item.id;
+                        const defOpt = document.createElement('option');
+                        defOpt.value = ''; defOpt.textContent = 'Sélectionner...';
+                        sel.appendChild(defOpt);
+                        (item.options || []).forEach(opt => {
+                            const o = document.createElement('option');
+                            o.value = opt.value; o.textContent = opt.label;
+                            sel.appendChild(o);
+                        });
+                        fg.appendChild(sel);
+                        wrapper.appendChild(fg);
+                    }
+                });
+                card.appendChild(wrapper);
+            });
+        }
+
+        /** Active un contexte par son nom (depuis le dropdown). */
+        function setActiveContext(name) {
+            if (name === 'Standard' || !name) {
+                activeContext = null;
+                renderContextSections(null);
+            } else {
+                activeContext = loadedContexts[name] || null;
+                renderContextSections(activeContext);
+            }
+        }
+
+        // ── Context Editor ─────────────────────────────────
+        let editorContext = null;
+
+        function openContextEditorModal() {
+            editorContext = activeContext
+                ? JSON.parse(JSON.stringify(activeContext))
+                : { name: '', sections: {} };
+            renderContextEditor();
+            document.getElementById('contextEditorModal').style.display = 'block';
+        }
+
+        function closeContextEditorModal() {
+            document.getElementById('contextEditorModal').style.display = 'none';
+        }
+
+        function renderContextEditor() {
+            document.getElementById('contextEditorName').value = editorContext.name || '';
+            const container = document.getElementById('contextEditorSections');
+            container.innerHTML = '';
+
+            Object.entries(SECTION_LABELS).forEach(([sectionKey, sectionLabel]) => {
+                const items = (editorContext.sections || {})[sectionKey] || [];
+                const secDiv = document.createElement('div');
+                secDiv.className = 'editor-section';
+                secDiv.dataset.section = sectionKey;
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'editor-section-title';
+                titleDiv.textContent = sectionLabel;
+                secDiv.appendChild(titleDiv);
+
+                const itemsDiv = document.createElement('div');
+                itemsDiv.id = `editor-items-${sectionKey}`;
+                items.forEach((item, idx) => {
+                    itemsDiv.appendChild(buildEditorItemEl(sectionKey, item, idx));
+                });
+                secDiv.appendChild(itemsDiv);
+
+                const addRow = document.createElement('div');
+                addRow.className = 'editor-add-btns';
+                ['checkboxes', 'select', 'radio'].forEach(type => {
+                    const labels = { checkboxes: '+ Cases à cocher', select: '+ Menu déroulant', radio: '+ Boutons radio' };
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-outline btn-sm';
+                    btn.textContent = labels[type];
+                    btn.onclick = () => addEditorItem(sectionKey, type);
+                    addRow.appendChild(btn);
+                });
+                secDiv.appendChild(addRow);
+                container.appendChild(secDiv);
+            });
+        }
+
+        function buildEditorItemEl(sectionKey, item, idx) {
+            const div = document.createElement('div');
+            div.className = 'editor-item';
+            div.dataset.idx = idx;
+
+            const body = document.createElement('div');
+            body.className = 'editor-item-body';
+
+            const typeLabel = document.createElement('div');
+            typeLabel.className = 'editor-item-type';
+            typeLabel.textContent = { checkboxes: 'Cases à cocher', select: 'Menu déroulant', radio: 'Boutons radio' }[item.type] || item.type;
+            body.appendChild(typeLabel);
+
+            if (item.type === 'checkboxes') {
+                if (item.groupLabel !== undefined) {
+                    const glInp = document.createElement('input');
+                    glInp.type = 'text'; glInp.placeholder = 'Titre du groupe (optionnel)';
+                    glInp.value = item.groupLabel || '';
+                    glInp.oninput = e => { item.groupLabel = e.target.value; };
+                    body.appendChild(glInp);
+                }
+                (item.items || []).forEach((cb, ci) => {
+                    const row = document.createElement('div');
+                    row.className = 'editor-option-row';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.placeholder = 'Libellé de la case'; inp.value = cb.label || '';
+                    inp.oninput = e => { cb.label = e.target.value; };
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'btn-danger'; delBtn.textContent = '✕';
+                    delBtn.onclick = () => { item.items.splice(ci, 1); renderContextEditor(); };
+                    row.appendChild(inp); row.appendChild(delBtn);
+                    body.appendChild(row);
+                });
+                const addCbBtn = document.createElement('button');
+                addCbBtn.className = 'btn btn-outline btn-sm';
+                addCbBtn.style.marginTop = '4px';
+                addCbBtn.textContent = '+ Ajouter une case';
+                addCbBtn.onclick = () => {
+                    if (!item.items) item.items = [];
+                    item.items.push({ id: 'ctx_' + Date.now(), label: '' });
+                    renderContextEditor();
+                };
+                body.appendChild(addCbBtn);
+            } else if (item.type === 'select' || item.type === 'radio') {
+                const labelField = document.createElement('input');
+                labelField.type = 'text';
+                labelField.placeholder = item.type === 'select' ? 'Libellé du menu' : 'Titre du groupe';
+                labelField.value = (item.type === 'select' ? item.label : item.groupLabel) || '';
+                labelField.oninput = e => {
+                    if (item.type === 'select') item.label = e.target.value;
+                    else item.groupLabel = e.target.value;
+                };
+                body.appendChild(labelField);
+                (item.options || []).forEach((opt, oi) => {
+                    const row = document.createElement('div');
+                    row.className = 'editor-option-row';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.placeholder = 'Libellé'; inp.value = opt.label || '';
+                    inp.style.flex = '2';
+                    inp.oninput = e => { opt.label = e.target.value; };
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'btn-danger'; delBtn.textContent = '✕';
+                    delBtn.onclick = () => { item.options.splice(oi, 1); renderContextEditor(); };
+                    row.appendChild(inp); row.appendChild(delBtn);
+                    body.appendChild(row);
+                });
+                const addOptBtn = document.createElement('button');
+                addOptBtn.className = 'btn btn-outline btn-sm';
+                addOptBtn.style.marginTop = '4px';
+                addOptBtn.textContent = '+ Ajouter une option';
+                addOptBtn.onclick = () => {
+                    if (!item.options) item.options = [];
+                    const slug = 'opt_' + Date.now();
+                    item.options.push({ value: slug, label: '' });
+                    renderContextEditor();
+                };
+                body.appendChild(addOptBtn);
+            }
+
+            div.appendChild(body);
+
+            const delItemBtn = document.createElement('button');
+            delItemBtn.className = 'btn-danger';
+            delItemBtn.style.flexShrink = '0';
+            delItemBtn.textContent = '✕ Supprimer';
+            delItemBtn.onclick = () => {
+                const sec = (editorContext.sections || {})[sectionKey] || [];
+                sec.splice(idx, 1);
+                renderContextEditor();
+            };
+            div.appendChild(delItemBtn);
+            return div;
+        }
+
+        function addEditorItem(sectionKey, type) {
+            if (!editorContext.sections) editorContext.sections = {};
+            if (!editorContext.sections[sectionKey]) editorContext.sections[sectionKey] = [];
+            const defaults = {
+                checkboxes: { type: 'checkboxes', groupLabel: '', items: [{ id: 'ctx_' + Date.now(), label: '' }] },
+                select:     { type: 'select', id: 'ctx_sel_' + Date.now(), label: '', options: [] },
+                radio:      { type: 'radio',  name: 'ctx_radio_' + Date.now(), groupLabel: '', options: [] }
+            };
+            editorContext.sections[sectionKey].push(defaults[type]);
+            renderContextEditor();
+        }
+
+        function applyContextEdit() {
+            editorContext.name = document.getElementById('contextEditorName').value.trim() || 'Contexte';
+            const name = editorContext.name;
+            loadedContexts[name] = JSON.parse(JSON.stringify(editorContext));
+
+            // Ajouter l'option au select si absente
+            const sel = document.getElementById('contextToggle');
+            if (!Array.from(sel.options).some(o => o.value === name)) {
+                const opt = document.createElement('option');
+                opt.value = name; opt.textContent = name;
+                sel.appendChild(opt);
+            }
+            sel.value = name;
+            body.classList.add('show-context');
+            setActiveContext(name);
+            closeContextEditorModal();
+        }
+
+        // ── Import / Export JSON ────────────────────────────
+        function exportContextJSON() {
+            const ctx = activeContext || editorContext;
+            if (!ctx) { alert('Aucun contexte actif à exporter.'); return; }
+            const name = (ctx.name || 'contexte').replace(/\s+/g, '_');
+            downloadTextFile(JSON.stringify(ctx, null, 2), `${name}.json`, 'application/json');
+        }
+
+        function importContextJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const ctx = JSON.parse(e.target.result);
+                    if (typeof ctx !== 'object' || ctx === null || typeof ctx.sections !== 'object' || ctx.sections === null) {
+                        alert('Fichier JSON invalide : la propriété "sections" est manquante ou incorrecte.'); return;
+                    }
+                    if (!ctx.name) ctx.name = file.name.replace(/\.json$/i, '') || 'Contexte importé';
+                    loadedContexts[ctx.name] = ctx;
+                    const sel = document.getElementById('contextToggle');
+                    if (!Array.from(sel.options).some(o => o.value === ctx.name)) {
+                        const opt = document.createElement('option');
+                        opt.value = ctx.name; opt.textContent = ctx.name;
+                        sel.appendChild(opt);
+                    }
+                    sel.value = ctx.name;
+                    body.classList.add('show-context');
+                    setActiveContext(ctx.name);
+                    // Si ouvert depuis l'éditeur, rafraîchir
+                    if (document.getElementById('contextEditorModal').style.display === 'block') {
+                        editorContext = JSON.parse(JSON.stringify(ctx));
+                        renderContextEditor();
+                    }
+                } catch(err) { alert('Erreur lors de la lecture du fichier JSON : ' + err.message); }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialiser le store avec un persona vide
+            personaStore = [{ contextToggle: 'Standard', suggestionsToggle: true, fields: {} }];
+            currentPersonaIndex = 0;
+            updatePersonaBar();
+            // Rendre les sections du contexte actif au démarrage
+            setActiveContext(toggle.value);
+
+            // Mettre à jour la barre quand le prénom change
+            const nameField = document.getElementById('name');
+            if (nameField) nameField.addEventListener('input', updatePersonaBar);
+
+            initSidebar();
+            updateAllDots();
+        });
+
+        // Synthesis Modal
+        const synthesisModal = document.getElementById('synthesisModal');
+
+        function openSynthesisModal() {
+            // Sauvegarde l'état courant, génère la synthèse de tous les personas, restaure
+            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            let allMd = '';
+            personaStore.forEach((state, i) => {
+                applyPersonaState(state);
+                if (i > 0) allMd += '\n\n---\n\n';
+                allMd += generateMarkdownContent();
+            });
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+
+            const title = personaStore.length === 1
+                ? `Synthèse : ${personaStore[0].fields['name'] || 'Persona'}`
+                : `Synthèse (${personaStore.length} personas)`;
+            document.getElementById('synthesisModalTitle').textContent = title;
+            document.getElementById('synthesisContent').value = allMd;
+            document.getElementById('synthesisCopiedFeedback').style.display = 'none';
+            synthesisModal.style.display = 'block';
+        }
+
+        function closeSynthesisModal() {
+            synthesisModal.style.display = 'none';
+        }
+
+        function showCopiedFeedback() {
+            const fb = document.getElementById('synthesisCopiedFeedback');
+            fb.style.display = 'inline';
+            setTimeout(() => { fb.style.display = 'none'; }, 2000);
+        }
+
+        function copyAsMarkdown() {
+            const md = document.getElementById('synthesisContent').value;
+            navigator.clipboard.writeText(md).then(showCopiedFeedback);
+        }
+
+        function markdownToPlainText(md) {
+            return md
+                .replace(/^## (.+)$/gm, (_, t) => `\n${t.toUpperCase()}\n`)
+                .replace(/^> \*\*(.+?)\*\*$/gm, '[$1]')
+                .replace(/^> (.+)$/gm, '$1')
+                .replace(/^- \*\*(.+?)\*\* : (.+)$/gm, '$1 : $2')
+                .replace(/^- \*\*(.+?)\*\* :$/gm, '$1 :')
+                .replace(/^  - (.+)$/gm, '  · $1')
+                .replace(/^- (.+)$/gm, '  · $1')
+                .replace(/\*\*(.+?)\*\*/g, '$1')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        }
+
+        function copyAsText() {
+            const md = document.getElementById('synthesisContent').value;
+            navigator.clipboard.writeText(markdownToPlainText(md)).then(showCopiedFeedback);
+        }
+
+        function exportSynthesisMarkdown() {
+            const md = document.getElementById('synthesisContent').value;
+            const label = personaStore.length === 1
+                ? `Persona_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
+                : `Personas_Guyane_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
+            downloadTextFile(md, `${label}.md`, 'text/markdown');
+        }
+
+        function markdownToHtml(md) {
+            return md
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/^> \*\*(.+?)\*\*$/gm, '<blockquote><strong>$1</strong></blockquote>')
+                .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+                .replace(/^  - (.+)$/gm, '<li style="margin-left:20px">$1</li>')
+                .replace(/^- \*\*(.+?)\*\* : (.+)$/gm, '<li><strong>$1</strong> : $2</li>')
+                .replace(/^- \*\*(.+?)\*\* :$/gm, '<li><strong>$1</strong> :</li>')
+                .replace(/^- (.+)$/gm, '<li>$1</li>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^---$/gm, '<hr>')
+                .replace(/\n{2,}/g, '<br><br>');
+        }
+
+        function exportSynthesisWord() {
+            const md = document.getElementById('synthesisContent').value;
+            const label = personaStore.length === 1
+                ? `Persona_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
+                : `Personas_Guyane_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
+            const html = markdownToHtml(md);
+            const wordContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='UTF-8'><style>
+body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;margin:2cm;}
+h2{color:#1e40af;font-size:14pt;margin-top:16pt;}
+blockquote{border-left:3px solid #2563eb;margin-left:0;padding-left:12px;color:#475569;}
+li{margin-bottom:4px;}
+hr{border:none;border-top:1px solid #e2e8f0;margin:12pt 0;}
+</style></head><body>${html}</body></html>`;
+            downloadTextFile(wordContent, `${label}.doc`, 'application/vnd.ms-word;charset=utf-8');
+        }
+
+        // Modal Logic
+        function openInfoModal() {
+            infoModal.style.display = "block";
+        }
+
+        function closeInfoModal() {
+            infoModal.style.display = "none";
+        }
+
+        function openHelpModal() {
+            helpModal.style.display = "block";
+        }
+
+        function closeHelpModal() {
+            helpModal.style.display = "none";
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == infoModal) {
+                infoModal.style.display = "none";
+            }
+            if (event.target == helpModal) {
+                helpModal.style.display = "none";
+            }
+            if (event.target == suggestionsModal) {
+                suggestionsModal.style.display = "none";
+            }
+            if (event.target == synthesisModal) {
+                synthesisModal.style.display = "none";
+            }
+            const contextEditorModal = document.getElementById('contextEditorModal');
+            if (event.target == contextEditorModal) {
+                contextEditorModal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
