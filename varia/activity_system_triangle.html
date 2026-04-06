@@ -16,21 +16,30 @@
   #editor p.label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
   #editor p.guidance { font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 2px; }
   #editor p.prompt { font-size: 12px; color: #555; font-style: italic; margin-bottom: 6px; }
+  #contra-editor { display: none; border-radius: 10px; padding: 10px 12px; background: #fff; border: 1.5px solid #f59e0b; }
+  #contra-editor p.label { font-size: 13px; font-weight: 600; color: #b45309; margin-bottom: 4px; }
+  #contra-editor p.type-desc { font-size: 12px; color: #555; margin-bottom: 6px; }
   textarea { width: 100%; font-size: 13px; resize: vertical; border-radius: 8px; border: 0.5px solid #ccc; padding: 6px 8px; font-family: inherit; background: #fff; color: #111; }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
   button { font-size: 13px; padding: 7px 16px; border-radius: 8px; border: 0.5px solid #ccc; background: #f2f2f0; color: #111; cursor: pointer; }
   button:hover { background: #e8e8e6; }
+  .btn-contra-active { background: #fef3c7 !important; border-color: #f59e0b !important; color: #92400e !important; }
   #chat-header { padding: 9px 13px; border-bottom: 0.5px solid #ddd; font-size: 13px; font-weight: 500; }
   #chat-messages { overflow-y: auto; padding: 10px 13px; display: flex; flex-direction: column; gap: 9px; min-height: 260px; max-height: 380px; }
   .msg { max-width: 90%; font-size: 13px; line-height: 1.55; border-radius: 8px; padding: 7px 10px; white-space: pre-wrap; }
   .msg.user { align-self: flex-end; background: #e8f0fb; }
   .msg.assistant { align-self: flex-start; background: #f2f2f0; }
   .msg.hint { align-self: flex-start; font-style: italic; color: #888; background: none; padding: 0; }
+  .msg.contra { align-self: flex-start; background: #fef9ec; border-left: 3px solid #f59e0b; }
   #chat-input-row { border-top: 0.5px solid #ddd; padding: 9px 11px; display: flex; gap: 7px; }
   #chat-input { flex: 1; font-size: 13px; border-radius: 8px; border: 0.5px solid #ccc; padding: 6px 9px; font-family: inherit; }
   #send-btn { font-size: 13px; padding: 6px 13px; }
   .tooltip { position: absolute; background: #fff; border-radius: 6px; padding: 6px 8px; font-size: 10px; line-height: 1.4; color: #333; pointer-events: none; max-width: 180px; z-index: 10; display: none; }
   #svg-wrap { position: relative; }
+  #export-wrap { position: relative; display: inline-block; }
+  #export-menu { display: none; position: absolute; bottom: calc(100% + 6px); left: 0; background: #fff; border: 0.5px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; z-index: 20; min-width: 130px; }
+  #export-menu button { display: block; width: 100%; text-align: left; border: none; border-radius: 0; background: #fff; padding: 8px 14px; font-size: 13px; color: #111; }
+  #export-menu button:hover { background: #f2f2f0; }
   @media (max-width: 700px) { #app { flex-direction: column; } #left { flex: none; width: 100%; } }
 </style>
 </head>
@@ -38,7 +47,7 @@
 <h1>Engeström Activity System Analyser</h1>
 <div id="app">
   <div id="left">
-    <p style="font-size:12px;color:#666;">Click a node to edit it. Hover for guidance.</p>
+    <p id="hint-text" style="font-size:12px;color:#666;">Click a node to edit it. Hover for guidance.</p>
     <div id="svg-wrap">
       <svg id="tri" viewBox="0 0 580 430"></svg>
       <div class="tooltip" id="tooltip"></div>
@@ -49,8 +58,26 @@
       <p class="prompt" id="ed-prompt"></p>
       <textarea id="ed-input" rows="2" placeholder="Type here…"></textarea>
     </div>
+    <div id="contra-editor">
+      <p class="label" id="contra-label"></p>
+      <p class="type-desc" id="contra-type-desc"></p>
+      <textarea id="contra-input" rows="2" placeholder="Describe the contradiction…"></textarea>
+      <div class="btn-row" style="margin-top:6px">
+        <button id="contra-save-btn">Save contradiction</button>
+        <button id="contra-cancel-btn">Cancel</button>
+      </div>
+    </div>
     <div class="btn-row">
+      <button id="contra-btn">⚡ Contradiction</button>
       <button id="analyse-btn">Explain the model</button>
+      <div id="export-wrap">
+        <button id="export-btn">Export ↓</button>
+        <div id="export-menu">
+          <button data-fmt="text">Plain text</button>
+          <button data-fmt="markdown">Markdown</button>
+          <button data-fmt="json">JSON</button>
+        </div>
+      </div>
     </div>
   </div>
   <div id="right">
@@ -148,11 +175,10 @@ function shorten(x1,y1,x2,y2) {
 }
 
 // Draw edges
-const edgeEls = {};
 for (const [a,b] of EDGES) {
   const na=NODES.find(n=>n.id===a), nb=NODES.find(n=>n.id===b);
   const s=shorten(na.x,na.y,nb.x,nb.y);
-  const line = el("line",{x1:s.x1,y1:s.y1,x2:s.x2,y2:s.y2,
+  el("line",{x1:s.x1,y1:s.y1,x2:s.x2,y2:s.y2,
     stroke:"#333","stroke-width":"1.5",
     "marker-start":"url(#tip-start)","marker-end":"url(#tip-end)"},svg);
 }
@@ -162,6 +188,9 @@ const outLine = el("line",{x1:Ox+60,y1:Oy,x2:Ox+95,y2:Oy,
   stroke:"#888","stroke-width":"1.5","marker-end":"url(#tip-out)"},svg);
 const outText = el("text",{x:Ox+108,y:Oy+4,"font-size":"11",fill:"#888","text-anchor":"start"},svg);
 outText.textContent="Outcome";
+
+// Contradiction layer (rendered below nodes so nodes stay on top)
+const contraLayer = el("g",{id:"contra-layer"},svg);
 
 // Node groups
 const nodeEls = {};
@@ -176,7 +205,6 @@ for (const n of NODES) {
     t2 = el("text",{x:n.x+n.lx,y:n.y+n.ly2,"text-anchor":n.anchor,"font-size":"12","font-weight":"600",fill:"#222"},g);
     t2.textContent=n.lines[1];
   }
-  // Preview text
   const tp = el("text",{x:n.x+n.lx,y:n.y+(n.ly<0?n.ly-14:n.ly2?(n.ly2+14):n.ly+14),
     "text-anchor":n.anchor,"font-size":"10",fill:"#888","font-style":"italic"},g);
 
@@ -192,9 +220,10 @@ function updateNodeVisual(id) {
   const {circle,dot,t1,t2,tp}=nodeEls[id];
   const filled=vals[id].trim();
   const isActive=activeId===id;
+  const isContraFirst=contraMode && contraFirst===id && contraPromptNodes===null;
   const c=COL[id];
-  circle.setAttribute("stroke", isActive||filled?c:"#333");
-  circle.setAttribute("stroke-width", isActive?"2.5":"1.5");
+  circle.setAttribute("stroke", isContraFirst?"#f59e0b": isActive||filled?c:"#333");
+  circle.setAttribute("stroke-width", isActive||isContraFirst?"2.5":"1.5");
   dot.setAttribute("fill", filled?c:"transparent");
   const textCol = filled||isActive?c:"#222";
   t1.setAttribute("fill",textCol);
@@ -205,6 +234,7 @@ function updateNodeVisual(id) {
 }
 
 function activateNode(id) {
+  if (contraMode) { handleContraNodeClick(id); return; }
   if (activeId===id) { activeId=null; hideEditor(); }
   else { activeId=id; showEditor(id); }
   for (const n of NODES) updateNodeVisual(n.id);
@@ -237,13 +267,10 @@ function showTooltip(n) {
   tooltip.style.display="block";
   tooltip.style.borderColor=COL[n.id];
   tooltip.innerHTML=`<strong style="color:${COL[n.id]}">${n.short}</strong><br>${n.guidance}`;
-  const svgRect=document.getElementById("svg-wrap").getBoundingClientRect();
-  // position relative to svg-wrap
-  const pct=n.x/W, pctY=n.y/H;
   const ww=document.getElementById("svg-wrap").offsetWidth;
   const hh=ww*(H/W);
-  let left=pct*ww+(n.lx||0)-90;
-  let top=pctY*hh+(n.ly<0?-90:20);
+  let left=(n.x/W)*ww+(n.lx||0)-90;
+  let top=(n.y/H)*hh+(n.ly<0?-90:20);
   left=Math.max(0,Math.min(left,ww-190));
   top=Math.max(0,top);
   tooltip.style.left=left+"px";
@@ -267,7 +294,91 @@ analyseBtn.addEventListener("click",()=>{
   }
 });
 
-// Notes / chat (static, no AI)
+// ─── Contradictions ───────────────────────────────────────────────
+const contradictions = [];
+let contraMode = false;
+let contraFirst = null;
+let contraPromptNodes = null;
+
+const contraBtn = document.getElementById("contra-btn");
+const contraEditor = document.getElementById("contra-editor");
+const contraLabel = document.getElementById("contra-label");
+const contraTypeDesc = document.getElementById("contra-type-desc");
+const contraInput = document.getElementById("contra-input");
+const contraSaveBtn = document.getElementById("contra-save-btn");
+const contraCancelBtn = document.getElementById("contra-cancel-btn");
+const hintEl = document.getElementById("hint-text");
+
+function renderContradictions() {
+  while (contraLayer.firstChild) contraLayer.removeChild(contraLayer.firstChild);
+  for (const c of contradictions) {
+    const n = NODES.find(x => x.id === c.nodes[0]);
+    el("circle",{cx:n.x, cy:n.y, r:R+7, fill:"none",
+      stroke:"#f59e0b", "stroke-width":"2", "stroke-dasharray":"3,2.5"}, contraLayer);
+  }
+}
+
+function setContraMode(on) {
+  contraMode = on;
+  contraFirst = null;
+  contraPromptNodes = null;
+  contraEditor.style.display = "none";
+  contraBtn.classList.toggle("btn-contra-active", on);
+  if (on) {
+    hideEditor();
+    activeId = null;
+    hintEl.textContent = "Click a node to mark an inner contradiction. Click the same node again to confirm.";
+  } else {
+    hintEl.textContent = "Click a node to edit it. Hover for guidance.";
+  }
+  for (const n of NODES) updateNodeVisual(n.id);
+}
+
+contraBtn.addEventListener("click", () => setContraMode(!contraMode));
+
+function handleContraNodeClick(id) {
+  if (contraPromptNodes !== null) return;
+  if (contraFirst === null) {
+    contraFirst = id;
+    for (const n of NODES) updateNodeVisual(n.id);
+  } else if (contraFirst === id) {
+    showContraPrompt([id]);
+  } else {
+    contraFirst = id;
+    for (const n of NODES) updateNodeVisual(n.id);
+  }
+}
+
+function showContraPrompt(nodes) {
+  contraPromptNodes = nodes;
+  contraEditor.style.display = "block";
+  const n = NODES.find(x => x.id === nodes[0]);
+  contraLabel.textContent = `⚡ Inner Contradiction — ${n.short}`;
+  contraTypeDesc.textContent = "A tension within this single component. Describe what is pulling against itself.";
+  contraInput.value = "";
+  contraInput.focus();
+  contraSaveBtn.onclick = () => saveContradiction(nodes);
+}
+
+function saveContradiction(nodes) {
+  const desc = contraInput.value.trim();
+  contradictions.push({ nodes, description: desc });
+  renderContradictions();
+  const n = NODES.find(x => x.id === nodes[0]);
+  addContraMessage(`⚡ Inner contradiction (${n.short})` + (desc ? `\n${desc}` : ""));
+  cancelContraPrompt();
+}
+
+function cancelContraPrompt() {
+  contraPromptNodes = null;
+  contraFirst = null;
+  contraEditor.style.display = "none";
+  for (const n of NODES) updateNodeVisual(n.id);
+}
+
+contraCancelBtn.addEventListener("click", cancelContraPrompt);
+
+// ─── Notes / chat ─────────────────────────────────────────────────
 const chatMessages=document.getElementById("chat-messages");
 const chatInput=document.getElementById("chat-input");
 const sendBtn=document.getElementById("send-btn");
@@ -275,6 +386,14 @@ const sendBtn=document.getElementById("send-btn");
 function addMessage(role,text) {
   const d=document.createElement("div");
   d.className="msg "+role;
+  d.textContent=text;
+  chatMessages.appendChild(d);
+  chatMessages.scrollTop=chatMessages.scrollHeight;
+}
+
+function addContraMessage(text) {
+  const d=document.createElement("div");
+  d.className="msg contra";
   d.textContent=text;
   chatMessages.appendChild(d);
   chatMessages.scrollTop=chatMessages.scrollHeight;
@@ -288,6 +407,74 @@ function sendNote() {
 }
 sendBtn.addEventListener("click",sendNote);
 chatInput.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendNote();} });
+
+// ─── Export ───────────────────────────────────────────────────────
+const exportBtn = document.getElementById("export-btn");
+const exportMenu = document.getElementById("export-menu");
+
+exportBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  exportMenu.style.display = exportMenu.style.display === "block" ? "none" : "block";
+});
+document.addEventListener("click", () => { exportMenu.style.display = "none"; });
+
+function buildExportData() {
+  return {
+    nodes: NODES.map(n => ({ id: n.id, label: n.label, value: vals[n.id] })),
+    contradictions: contradictions.map(c => ({
+      node: NODES.find(n => n.id === c.nodes[0]).short,
+      description: c.description,
+    })),
+  };
+}
+
+function exportText() {
+  const d = buildExportData();
+  const lines = ["Engeström Activity System Analysis", "=".repeat(36), ""];
+  for (const n of d.nodes) lines.push(`${n.label}:\n${n.value || "(empty)"}\n`);
+  if (d.contradictions.length) {
+    lines.push("Contradictions", "-".repeat(14));
+    for (const c of d.contradictions) {
+      lines.push(`[Inner contradiction] ${c.node}${c.description ? "\n" + c.description : ""}\n`);
+    }
+  }
+  return lines.join("\n");
+}
+
+function exportMarkdown() {
+  const d = buildExportData();
+  const lines = ["# Engeström Activity System Analysis", ""];
+  lines.push("| Component | Content |", "|-----------|---------|");
+  for (const n of d.nodes) lines.push(`| **${n.label}** | ${n.value || "—"} |`);
+  if (d.contradictions.length) {
+    lines.push("", "## Contradictions", "");
+    for (const c of d.contradictions) {
+      lines.push(`- **Inner contradiction — ${c.node}**${c.description ? ": " + c.description : ""}`);
+    }
+  }
+  return lines.join("\n");
+}
+
+function exportJSON() {
+  return JSON.stringify(buildExportData(), null, 2);
+}
+
+function download(content, filename, mime) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+exportMenu.addEventListener("click", (e) => {
+  const fmt = e.target.dataset.fmt;
+  if (!fmt) return;
+  if (fmt === "text")     download(exportText(),     "activity-system.txt",  "text/plain");
+  if (fmt === "markdown") download(exportMarkdown(), "activity-system.md",   "text/markdown");
+  if (fmt === "json")     download(exportJSON(),     "activity-system.json", "application/json");
+  exportMenu.style.display = "none";
+});
 
 // Init
 for (const n of NODES) updateNodeVisual(n.id);
