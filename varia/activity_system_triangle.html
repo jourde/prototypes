@@ -70,6 +70,7 @@
     <div class="btn-row">
       <button id="contra-btn">⚡ Contradiction</button>
       <button id="analyse-btn">Explain the model</button>
+      <button id="copy-btn">Copy summary</button>
       <div id="export-wrap">
         <button id="export-btn">Export ↓</button>
         <div id="export-menu">
@@ -407,6 +408,16 @@ function sendNote() {
 }
 sendBtn.addEventListener("click",sendNote);
 chatInput.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendNote();} });
+
+// ─── Copy summary ─────────────────────────────────────────────────
+const copyBtn = document.getElementById("copy-btn");
+copyBtn.addEventListener("click", () => {
+  const text = exportText();
+  navigator.clipboard.writeText(text).then(() => {
+    copyBtn.textContent = "Copied!";
+    setTimeout(() => { copyBtn.textContent = "Copy summary"; }, 1800);
+  });
+});
 
 // ─── Export ───────────────────────────────────────────────────────
 const exportBtn = document.getElementById("export-btn");
