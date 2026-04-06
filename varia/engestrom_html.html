@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Engeström Activity System Analyser</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f9f9f7; color: #111; min-height: 100vh; padding: 1.5rem; }
+  h1 { font-size: 16px; font-weight: 600; margin-bottom: 1rem; }
+  #app { display: flex; gap: 16px; align-items: flex-start; }
+  #left { flex: 0 0 54%; display: flex; flex-direction: column; gap: 10px; }
+  #right { flex: 1; display: flex; flex-direction: column; border: 0.5px solid #ddd; border-radius: 12px; overflow: hidden; background: #fff; }
+  svg { display: block; width: 100%; height: auto; background: #fff; border: 0.5px solid #ddd; border-radius: 12px; }
+  #editor { display: none; border-radius: 10px; padding: 10px 12px; background: #fff; }
+  #editor p.label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  #editor p.guidance { font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 2px; }
+  #editor p.prompt { font-size: 12px; color: #555; font-style: italic; margin-bottom: 6px; }
+  textarea { width: 100%; font-size: 13px; resize: vertical; border-radius: 8px; border: 0.5px solid #ccc; padding: 6px 8px; font-family: inherit; background: #fff; color: #111; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  button { font-size: 13px; padding: 7px 16px; border-radius: 8px; border: 0.5px solid #ccc; background: #f2f2f0; color: #111; cursor: pointer; }
+  button:hover { background: #e8e8e6; }
+  #chat-header { padding: 9px 13px; border-bottom: 0.5px solid #ddd; font-size: 13px; font-weight: 500; }
+  #chat-messages { overflow-y: auto; padding: 10px 13px; display: flex; flex-direction: column; gap: 9px; min-height: 260px; max-height: 380px; }
+  .msg { max-width: 90%; font-size: 13px; line-height: 1.55; border-radius: 8px; padding: 7px 10px; white-space: pre-wrap; }
+  .msg.user { align-self: flex-end; background: #e8f0fb; }
+  .msg.assistant { align-self: flex-start; background: #f2f2f0; }
+  .msg.hint { align-self: flex-start; font-style: italic; color: #888; background: none; padding: 0; }
+  #chat-input-row { border-top: 0.5px solid #ddd; padding: 9px 11px; display: flex; gap: 7px; }
+  #chat-input { flex: 1; font-size: 13px; border-radius: 8px; border: 0.5px solid #ccc; padding: 6px 9px; font-family: inherit; }
+  #send-btn { font-size: 13px; padding: 6px 13px; }
+  .tooltip { position: absolute; background: #fff; border-radius: 6px; padding: 6px 8px; font-size: 10px; line-height: 1.4; color: #333; pointer-events: none; max-width: 180px; z-index: 10; display: none; }
+  #svg-wrap { position: relative; }
+  @media (max-width: 700px) { #app { flex-direction: column; } #left { flex: none; width: 100%; } }
+</style>
+</head>
+<body>
+<h1>Engeström Activity System Analyser</h1>
+<div id="app">
+  <div id="left">
+    <p style="font-size:12px;color:#666;">Click a node to edit it. Hover for guidance.</p>
+    <div id="svg-wrap">
+      <svg id="tri" viewBox="0 0 580 400"></svg>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+    <div id="editor">
+      <p class="label" id="ed-label"></p>
+      <p class="guidance" id="ed-guidance"></p>
+      <p class="prompt" id="ed-prompt"></p>
+      <textarea id="ed-input" rows="2" placeholder="Type here…"></textarea>
+    </div>
+    <div class="btn-row">
+      <button id="analyse-btn">Explain the model</button>
+    </div>
+  </div>
+  <div id="right">
+    <div id="chat-header">Activity Theory notes</div>
+    <div id="chat-messages">
+      <div class="msg hint">Fill in the triangle nodes, then use the notes area to record observations.</div>
+    </div>
+    <div id="chat-input-row">
+      <input id="chat-input" type="text" placeholder="Add a note or observation…"/>
+      <button id="send-btn">Add</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const W=580, H=400;
+const Tx=270,Ty=30, Rx=60,Ry=350, Dx=460,Dy=350;
+const Sx=(Tx+Rx)/2, Sy=(Ty+Ry)/2;
+const Ox=(Tx+Dx)/2, Oy=(Ty+Dy)/2;
+const Cx=(Rx+Dx)/2, Cy=(Ry+Dy)/2;
+const R=9, GAP=6;
+
+const NODES = [
+  { id:"tools",     short:"Tools",             x:Tx, y:Ty,
+    label:"Mediating artefacts (tools and signs)",
+    guidance:"Physical objects and systems of symbols (like language, mathematics, digital tools) that people use to accomplish the activity.",
+    prompt:"What tools, technologies, signs or symbols mediate this activity?",
+    lines:["Tools",null], lx:0, ly:-22, anchor:"middle", ly2:-10 },
+  { id:"subject",   short:"Subject",           x:Sx, y:Sy,
+    label:"Subject",
+    guidance:"The person or group engaged in the activity who are the focus of analysis.",
+    prompt:"Who performs the activity? Whose perspective are you analysing?",
+    lines:["Subject",null], lx:-16, ly:0, anchor:"end", ly2:14 },
+  { id:"object",    short:"Object",            x:Ox, y:Oy,
+    label:"Object / Motive",
+    guidance:"The immediate goals of the activity — what is being worked on or transformed.",
+    prompt:"What is being transformed? What are the immediate goals and underlying motives?",
+    lines:["Object",null], lx:16, ly:0, anchor:"start", ly2:14 },
+  { id:"rules",     short:"Rules",             x:Rx, y:Ry,
+    label:"Rules",
+    guidance:"Laws, codes, conventions, customs and agreements that people adhere to while engaging in the activity.",
+    prompt:"What rules, norms or regulations constrain or guide the activity?",
+    lines:["Rules",null], lx:-14, ly:22, anchor:"end", ly2:36 },
+  { id:"community", short:"Community",         x:Cx, y:Cy,
+    label:"Community",
+    guidance:"People and groups whose knowledge, interests, stakes and goals shape the activity.",
+    prompt:"Who else shares or has a stake in this activity?",
+    lines:["Community",null], lx:0, ly:22, anchor:"middle", ly2:36 },
+  { id:"division",  short:"Division",          x:Dx, y:Dy,
+    label:"Division of Labour",
+    guidance:"How the work in the activity is divided among participants — tasks and power.",
+    prompt:"How are tasks, roles and power distributed among participants?",
+    lines:["Division","of labour"], lx:14, ly:22, anchor:"start", ly2:36 },
+];
+
+const EDGES = [
+  ["tools","subject"],["tools","object"],["subject","object"],
+  ["tools","community"],["subject","community"],["object","community"],
+  ["subject","rules"],["object","division"],
+  ["rules","community"],["community","division"],
+  ["subject","division"],["rules","object"],
+];
+
+const COL = {tools:"#534AB7",subject:"#0F6E56",object:"#993C1D",rules:"#185FA5",community:"#854F0B",division:"#993556"};
+
+const vals = {tools:"",subject:"",object:"",rules:"",community:"",division:""};
+let activeId = null;
+
+const svg = document.getElementById("tri");
+const NS = "http://www.w3.org/2000/svg";
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+// Defs
+const defs = el("defs",{},svg);
+function mkMarker(id, refX, reverse) {
+  const m = el("marker",{id, markerWidth:"8", markerHeight:"8", refX:String(refX), refY:"4",
+    orient: reverse?"auto-start-reverse":"auto", markerUnits:"userSpaceOnUse"},defs);
+  el("path",{d:"M0,1 L7,4 L0,7 z", fill: id==="tip-out"?"#888":"#333"},m);
+}
+mkMarker("tip-end",0,false);
+mkMarker("tip-start",7,true);
+mkMarker("tip-out",0,false);
+
+function shorten(x1,y1,x2,y2) {
+  const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy);
+  if(len<1) return {x1,y1,x2,y2};
+  const pad=R+GAP+10, ux=dx/len, uy=dy/len;
+  return {x1:x1+ux*pad,y1:y1+uy*pad,x2:x2-ux*pad,y2:y2-uy*pad};
+}
+
+// Draw edges
+const edgeEls = {};
+for (const [a,b] of EDGES) {
+  const na=NODES.find(n=>n.id===a), nb=NODES.find(n=>n.id===b);
+  const s=shorten(na.x,na.y,nb.x,nb.y);
+  const line = el("line",{x1:s.x1,y1:s.y1,x2:s.x2,y2:s.y2,
+    stroke:"#333","stroke-width":"1.5",
+    "marker-start":"url(#tip-start)","marker-end":"url(#tip-end)"},svg);
+}
+
+// Outcome arrow
+const outLine = el("line",{x1:Ox+R+GAP,y1:Oy,x2:Ox+55,y2:Oy,
+  stroke:"#888","stroke-width":"1.5","marker-end":"url(#tip-out)"},svg);
+const outText = el("text",{x:Ox+59,y:Oy+4,"font-size":"11",fill:"#888","text-anchor":"start"},svg);
+outText.textContent="Outcome";
+
+// Node groups
+const nodeEls = {};
+for (const n of NODES) {
+  const g = el("g",{style:"cursor:pointer"},svg);
+  const circle = el("circle",{cx:n.x,cy:n.y,r:R,fill:"white",stroke:"#333","stroke-width":"1.5"},g);
+  const dot = el("circle",{cx:n.x,cy:n.y,r:4,fill:"transparent"},g);
+  const t1 = el("text",{x:n.x+n.lx,y:n.y+n.ly,"text-anchor":n.anchor,"font-size":"12","font-weight":"600",fill:"#222"},g);
+  t1.textContent=n.lines[0];
+  let t2 = null;
+  if (n.lines[1]) {
+    t2 = el("text",{x:n.x+n.lx,y:n.y+n.ly2,"text-anchor":n.anchor,"font-size":"12","font-weight":"600",fill:"#222"},g);
+    t2.textContent=n.lines[1];
+  }
+  // Preview text
+  const tp = el("text",{x:n.x+n.lx,y:n.y+(n.ly<0?n.ly-14:n.ly2?(n.ly2+14):n.ly+14),
+    "text-anchor":n.anchor,"font-size":"10",fill:"#888","font-style":"italic"},g);
+
+  nodeEls[n.id]={g,circle,dot,t1,t2,tp};
+
+  g.addEventListener("click",()=>activateNode(n.id));
+  g.addEventListener("mouseenter",()=>showTooltip(n));
+  g.addEventListener("mouseleave",()=>hideTooltip());
+}
+
+function updateNodeVisual(id) {
+  const n=NODES.find(x=>x.id===id);
+  const {circle,dot,t1,t2,tp}=nodeEls[id];
+  const filled=vals[id].trim();
+  const isActive=activeId===id;
+  const c=COL[id];
+  circle.setAttribute("stroke", isActive||filled?c:"#333");
+  circle.setAttribute("stroke-width", isActive?"2.5":"1.5");
+  dot.setAttribute("fill", filled?c:"transparent");
+  const textCol = filled||isActive?c:"#222";
+  t1.setAttribute("fill",textCol);
+  if(t2) t2.setAttribute("fill",textCol);
+  const preview=filled?(filled.length>18?filled.slice(0,16)+"…":filled):"";
+  tp.textContent=preview;
+  tp.setAttribute("fill",c);
+}
+
+function activateNode(id) {
+  if (activeId===id) { activeId=null; hideEditor(); }
+  else { activeId=id; showEditor(id); }
+  for (const n of NODES) updateNodeVisual(n.id);
+}
+
+const editor=document.getElementById("editor");
+const edLabel=document.getElementById("ed-label");
+const edGuidance=document.getElementById("ed-guidance");
+const edPrompt=document.getElementById("ed-prompt");
+const edInput=document.getElementById("ed-input");
+
+function showEditor(id) {
+  const n=NODES.find(x=>x.id===id);
+  editor.style.display="block";
+  editor.style.border=`1.5px solid ${COL[id]}`;
+  edLabel.style.color=COL[id];
+  edLabel.textContent=n.label;
+  edGuidance.textContent=n.guidance;
+  edPrompt.textContent=n.prompt;
+  edInput.value=vals[id];
+  edInput.focus();
+  edInput.oninput=()=>{ vals[id]=edInput.value; updateNodeVisual(id); updateAnalyseBtn(); };
+}
+function hideEditor() { editor.style.display="none"; }
+
+// Tooltip
+const tooltip=document.getElementById("tooltip");
+function showTooltip(n) {
+  if (activeId) return;
+  tooltip.style.display="block";
+  tooltip.style.borderColor=COL[n.id];
+  tooltip.innerHTML=`<strong style="color:${COL[n.id]}">${n.short}</strong><br>${n.guidance}`;
+  const svgRect=document.getElementById("svg-wrap").getBoundingClientRect();
+  // position relative to svg-wrap
+  const pct=n.x/W, pctY=n.y/H;
+  const ww=document.getElementById("svg-wrap").offsetWidth;
+  const hh=ww*(H/W);
+  let left=pct*ww+(n.lx||0)-90;
+  let top=pctY*hh+(n.ly<0?-90:20);
+  left=Math.max(0,Math.min(left,ww-190));
+  top=Math.max(0,top);
+  tooltip.style.left=left+"px";
+  tooltip.style.top=top+"px";
+}
+function hideTooltip() { tooltip.style.display="none"; }
+
+// Analyse button
+const analyseBtn=document.getElementById("analyse-btn");
+function updateAnalyseBtn() {
+  const has=Object.values(vals).some(v=>v.trim());
+  analyseBtn.textContent=has?"Analyse the system":"Explain the model";
+}
+analyseBtn.addEventListener("click",()=>{
+  const has=Object.values(vals).some(v=>v.trim());
+  if (!has) {
+    addMessage("assistant","Engeström's Activity System has six components:\n\n• Tools — what mediates the activity\n• Subject — who does it\n• Object — what is being transformed\n• Rules — norms and conventions\n• Community — others who share the object\n• Division of Labour — how work is distributed\n\nClick any node on the triangle to fill it in, then click Analyse for a reading of your system.");
+  } else {
+    const lines=NODES.map(n=>`• ${n.label}: ${vals[n.id]||"(empty)"}`).join("\n");
+    addMessage("assistant","Activity system summary:\n\n"+lines+"\n\nUse the notes panel to record observations, tensions, or contradictions you notice between components.");
+  }
+});
+
+// Notes / chat (static, no AI)
+const chatMessages=document.getElementById("chat-messages");
+const chatInput=document.getElementById("chat-input");
+const sendBtn=document.getElementById("send-btn");
+
+function addMessage(role,text) {
+  const d=document.createElement("div");
+  d.className="msg "+role;
+  d.textContent=text;
+  chatMessages.appendChild(d);
+  chatMessages.scrollTop=chatMessages.scrollHeight;
+}
+
+function sendNote() {
+  const t=chatInput.value.trim();
+  if(!t) return;
+  addMessage("user",t);
+  chatInput.value="";
+}
+sendBtn.addEventListener("click",sendNote);
+chatInput.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendNote();} });
+
+// Init
+for (const n of NODES) updateNodeVisual(n.id);
+</script>
+</body>
+</html>
