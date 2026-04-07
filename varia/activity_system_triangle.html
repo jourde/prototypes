@@ -164,8 +164,8 @@
   #modal-close:hover { background: #f2f2f0; }
 
   /* ── Footer ── */
-  #page-footer { margin-top: 1.25rem; text-align: center; }
-  #footer-credit { font-size: 0.75rem; color: #555; margin-bottom: 4px; }
+  #page-footer { margin-top: 1.25rem; display: flex; justify-content: center; align-items: center; gap: 12px; }
+  #footer-credit { font-size: 0.75rem; color: #555; }
   #legal-btn {
     font-size: 0.75rem; color: #555; background: none;
     border: none; padding: 4px 8px; cursor: pointer;
@@ -258,12 +258,12 @@
     <div class="btn-row" role="toolbar" aria-label="Actions">
       <button id="analyse-btn">Explain the model</button>
       <button id="contra-btn" aria-pressed="false">⚡ Contradiction</button>
-      <button id="copy-btn">Copy summary</button>
+      <button id="copy-btn">Copy summary and notes</button>
       <div id="export-wrap">
         <button id="export-btn"
                 aria-haspopup="menu"
                 aria-expanded="false"
-                aria-controls="export-menu">Export ↓</button>
+                aria-controls="export-menu">Export summary and notes ↓</button>
         <div id="export-menu" role="menu" aria-label="Export format">
           <button role="menuitem" data-fmt="text">Plain text</button>
           <button role="menuitem" data-fmt="markdown">Markdown</button>
@@ -311,6 +311,7 @@
 
 <footer id="page-footer">
   <p id="footer-credit">François Jourde (2026) — MIT Licence</p>
+  <span aria-hidden="true" style="font-size:0.75rem;color:#555;">|</span>
   <button id="legal-btn">Legal Notice &amp; Privacy Policy</button>
 </footer>
 
