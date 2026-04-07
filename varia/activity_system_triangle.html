@@ -5,111 +5,286 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Engeström Activity System Analyser</title>
 <style>
+  /* ── Reset ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── Base ── */
   body { font-family: system-ui, sans-serif; background: #f9f9f7; color: #111; min-height: 100vh; padding: 1.5rem; }
-  h1 { font-size: 16px; font-weight: 600; margin-bottom: 1rem; }
-  #app { display: flex; gap: 16px; align-items: flex-start; }
-  #left { flex: 0 0 54%; display: flex; flex-direction: column; gap: 10px; }
-  #right { flex: 1; display: flex; flex-direction: column; border: 0.5px solid #ddd; border-radius: 12px; overflow: hidden; background: #fff; }
-  svg { display: block; width: 100%; height: auto; background: #fff; border: 0.5px solid #ddd; border-radius: 12px; }
-  #editor { display: none; border-radius: 10px; padding: 10px 12px; background: #fff; }
-  #editor p.label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-  #editor p.guidance { font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 2px; }
-  #editor p.prompt { font-size: 12px; color: #555; font-style: italic; margin-bottom: 6px; }
-  #contra-editor { display: none; border-radius: 10px; padding: 10px 12px; background: #fff; border: 1.5px solid #f59e0b; }
-  #contra-editor p.label { font-size: 13px; font-weight: 600; color: #b45309; margin-bottom: 4px; }
-  #contra-editor p.type-desc { font-size: 12px; color: #555; margin-bottom: 6px; }
-  textarea { width: 100%; font-size: 13px; resize: vertical; border-radius: 8px; border: 0.5px solid #ccc; padding: 6px 8px; font-family: inherit; background: #fff; color: #111; }
-  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  button { font-size: 13px; padding: 7px 16px; border-radius: 8px; border: 0.5px solid #ccc; background: #f2f2f0; color: #111; cursor: pointer; }
-  button:hover { background: #e8e8e6; }
-  .btn-contra-active { background: #fef3c7 !important; border-color: #f59e0b !important; color: #92400e !important; }
-  #chat-header { padding: 9px 13px; border-bottom: 0.5px solid #ddd; font-size: 13px; font-weight: 500; }
-  #chat-messages { overflow-y: auto; padding: 10px 13px; display: flex; flex-direction: column; gap: 9px; min-height: 260px; max-height: 380px; }
-  .msg { max-width: 90%; font-size: 13px; line-height: 1.55; border-radius: 8px; padding: 7px 10px; white-space: pre-wrap; }
-  .msg.user { align-self: flex-end; background: #e8f0fb; }
-  .msg.assistant { align-self: flex-start; background: #f2f2f0; }
-  .msg.hint { align-self: flex-start; font-style: italic; color: #888; background: none; padding: 0; }
-  .msg.contra { align-self: flex-start; background: #fef9ec; border-left: 3px solid #f59e0b; }
-  #chat-input-row { border-top: 0.5px solid #ddd; padding: 9px 11px; display: flex; gap: 7px; }
-  #chat-input { flex: 1; font-size: 13px; border-radius: 8px; border: 0.5px solid #ccc; padding: 6px 9px; font-family: inherit; }
-  #send-btn { font-size: 13px; padding: 6px 13px; }
-  .tooltip { position: absolute; background: #fff; border-radius: 6px; padding: 6px 8px; font-size: 10px; line-height: 1.4; color: #333; pointer-events: none; max-width: 180px; z-index: 10; display: none; }
+  h1 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+  h2 { font-size: 0.8125rem; font-weight: 500; }
+
+  /* ── Utility: visually hidden but accessible to AT ── */
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* ── Focus indicators (WCAG 2.4.7 / 2.4.11) ── */
+  :focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  textarea:focus-visible,
+  input[type="text"]:focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 0;
+    border-radius: 8px;
+  }
+  /* SVG node focus ring — visible custom indicator */
+  .node-focus-ring {
+    display: none; fill: none;
+    stroke: #005fcc; stroke-width: 3;
+    pointer-events: none;
+  }
+  g[role="button"]:focus { outline: none; }
+  g[role="button"]:focus-visible .node-focus-ring { display: block; }
+
+  /* ── Layout ── */
+  #app { display: flex; gap: 1rem; align-items: flex-start; }
+  #left { flex: 0 0 54%; display: flex; flex-direction: column; gap: 0.625rem; min-width: 0; }
+  #right { flex: 1; display: flex; flex-direction: column; border: 1px solid #c4c4c4; border-radius: 12px; overflow: hidden; background: #fff; min-width: 0; }
+
+  /* ── SVG ── */
+  svg { display: block; width: 100%; height: auto; background: #fff; border: 1px solid #c4c4c4; border-radius: 12px; }
   #svg-wrap { position: relative; }
-  #contra-guide { display:none; background:#fffbeb; border:0.5px solid #f59e0b; border-radius:10px; padding:10px 12px; font-size:12px; line-height:1.6; color:#444; }
-  #contra-guide strong { color:#92400e; }
-  #contra-guide .cg-row { margin-bottom:6px; }
-  #contra-guide .cg-row:last-child { margin-bottom:0; }
-  #contra-guide .cg-type { font-weight:600; color:#b45309; }
-  #contra-guide .cg-example { color:#888; font-style:italic; }
+
+  /* ── Editor panels ── */
+  #editor { display: none; border-radius: 10px; padding: 0.625rem 0.75rem; background: #fff; border: 2px solid #c4c4c4; }
+  #editor p.label { font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; }
+  #editor p.guidance { font-size: 0.75rem; color: #555; line-height: 1.4; margin-bottom: 2px; }
+  #editor p.prompt { font-size: 0.75rem; color: #555; font-style: italic; margin-bottom: 6px; }
+
+  #contra-editor { display: none; border-radius: 10px; padding: 0.625rem 0.75rem; background: #fff; border: 2px solid #b45309; }
+  #contra-editor p.label { font-size: 0.8125rem; font-weight: 600; color: #b45309; margin-bottom: 4px; }
+  #contra-editor p.type-desc { font-size: 0.75rem; color: #555; margin-bottom: 6px; }
+
+  /* ── Form elements ── */
+  textarea {
+    width: 100%; font-size: 0.8125rem; resize: vertical;
+    border-radius: 8px; border: 1px solid #767676;
+    padding: 6px 8px; font-family: inherit;
+    background: #fff; color: #111; min-height: 3em;
+  }
+
+  /* ── Buttons ── */
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  button {
+    font-size: 0.8125rem; padding: 7px 16px;
+    border-radius: 8px; border: 1px solid #767676;
+    background: #f2f2f0; color: #111; cursor: pointer;
+  }
+  button:hover { background: #e8e8e6; }
+  .btn-contra-active {
+    background: #fef3c7 !important;
+    border-color: #b45309 !important;
+    color: #7a3507 !important;
+  }
+
+  /* ── Summary panel ── */
+  #chat-header { padding: 9px 13px; border-bottom: 1px solid #c4c4c4; }
+  #summary-body { overflow-y: auto; padding: 12px 13px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .sr-row { font-size: 0.8125rem; line-height: 1.5; }
+  .sr-label { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .sr-value { color: #222; white-space: pre-wrap; overflow-wrap: break-word; }
+  .sr-empty { color: #767676; font-style: italic; }
+  .sr-divider { border: none; border-top: 1px solid #bbb; margin: 2px 0; }
+  .sr-contra { font-size: 0.75rem; line-height: 1.5; padding: 5px 9px; border-radius: 7px; background: #fef9ec; border-left: 3px solid #b45309; }
+
+  /* ── Notes row ── */
+  #notes-row { border-top: 1px solid #c4c4c4; padding: 9px 11px; }
+  #notes-row label { display: block; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #555; margin-bottom: 4px; }
+
+  /* ── Tooltip (mouse only, aria-hidden) ── */
+  .tooltip {
+    position: absolute; background: #fff;
+    border-radius: 6px; padding: 6px 8px;
+    font-size: 0.75rem; line-height: 1.4; color: #333;
+    pointer-events: none; max-width: 180px;
+    z-index: 10; display: none;
+    border: 1px solid #767676;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+
+  /* ── Hint text ── */
+  #hint-text { font-size: 0.75rem; color: #555; }
+
+  /* ── Contradiction guidance ── */
+  #contra-guide {
+    display: none; background: #fffbeb;
+    border-bottom: 1px solid #b45309;
+    padding: 10px 13px; font-size: 0.75rem;
+    line-height: 1.6; color: #333;
+  }
+  #contra-guide strong { color: #7a3507; }
+  #contra-guide .cg-row { margin-bottom: 6px; }
+  #contra-guide .cg-row:last-child { margin-bottom: 0; }
+  #contra-guide .cg-type { font-weight: 600; color: #7a3507; }
+  #contra-guide .cg-example { color: #666; font-style: italic; }
+
+  /* ── Export menu ── */
   #export-wrap { position: relative; display: inline-block; }
-  #export-menu { display: none; position: absolute; bottom: calc(100% + 6px); left: 0; background: #fff; border: 0.5px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; z-index: 20; min-width: 130px; }
-  #export-menu button { display: block; width: 100%; text-align: left; border: none; border-radius: 0; background: #fff; padding: 8px 14px; font-size: 13px; color: #111; }
+  #export-menu {
+    display: none; position: absolute;
+    bottom: calc(100% + 6px); left: 0;
+    background: #fff; border: 1px solid #767676;
+    border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    overflow: hidden; z-index: 20; min-width: 130px;
+  }
+  #export-menu button {
+    display: block; width: 100%; text-align: left;
+    border: none; border-radius: 0; background: #fff;
+    padding: 8px 14px; font-size: 0.8125rem; color: #111;
+  }
   #export-menu button:hover { background: #f2f2f0; }
-  @media (max-width: 700px) { #app { flex-direction: column; } #left { flex: none; width: 100%; } }
+  #export-menu button:focus-visible { outline-offset: -3px; }
+
+  /* ── Modal ── */
+  #modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100; align-items: center; justify-content: center;
+  }
+  #modal-overlay.open { display: flex; }
+  #modal-box {
+    background: #fff; border-radius: 14px;
+    padding: 24px 26px; max-width: 480px; width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  #modal-box h2 { font-size: 0.9375rem; font-weight: 600; margin-bottom: 12px; padding-right: 28px; }
+  #modal-body { font-size: 0.8125rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: break-word; color: #222; }
+  #modal-close {
+    position: absolute; top: 12px; right: 14px;
+    background: none; border: 1px solid transparent;
+    font-size: 1.125rem; color: #333; cursor: pointer;
+    padding: 4px 8px; border-radius: 6px; line-height: 1;
+  }
+  #modal-close:hover { background: #f2f2f0; }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    #app { flex-direction: column; }
+    #left, #right { flex: none; width: 100%; }
+  }
 </style>
 </head>
 <body>
+
 <h1>Engeström Activity System Analyser</h1>
-<div id="app">
-  <div id="left">
-    <p id="hint-text" style="font-size:12px;color:#666;">Click a node to edit it. Hover for guidance.</p>
-    <div id="contra-guide">
-      <div class="cg-row"><span class="cg-type">⚡ Primary Contradiction</span> — a tension <strong>within a single component</strong>.<br>
-        Click the same node twice to mark it.<br>
-        <span class="cg-example">Example: the Tools node — staff are required to use a digital platform they find unusable.</span>
-      </div>
-      <div class="cg-row"><span class="cg-type">⚡ Secondary Contradiction</span> — a tension <strong>between two components</strong>.<br>
-        Click one node, then a different node to mark the pair.<br>
-        <span class="cg-example">Example: Rules demand standardised assessment, but the Object is personalised learning.</span>
-      </div>
-    </div>
+
+<!-- Hidden live region for screen-reader announcements -->
+<div id="live-region" aria-live="polite" aria-atomic="true" class="visually-hidden"></div>
+
+<main id="app">
+
+  <!-- Left: diagram + editors -->
+  <section id="left" aria-label="Activity system diagram">
+
     <div id="svg-wrap">
-      <svg id="tri" viewBox="0 0 580 430"></svg>
-      <div class="tooltip" id="tooltip"></div>
+      <svg id="tri" viewBox="0 0 580 430"
+           aria-labelledby="svg-title"
+           focusable="false">
+        <title id="svg-title">Engeström Activity System Triangle — six interactive nodes: Tools, Subject, Object, Rules, Community, Division of Labour</title>
+      </svg>
+      <!-- Tooltip is mouse-only; hidden from AT -->
+      <div class="tooltip" id="tooltip" aria-hidden="true"></div>
     </div>
-    <div id="editor">
+    <p id="hint-text" aria-live="polite">Click a node to edit it. Hover for guidance.</p>
+
+    <!-- Node editor -->
+    <div id="editor" role="region" aria-labelledby="ed-label">
       <p class="label" id="ed-label"></p>
       <p class="guidance" id="ed-guidance"></p>
       <p class="prompt" id="ed-prompt"></p>
-      <textarea id="ed-input" rows="2" placeholder="Type here…"></textarea>
+      <label for="ed-input" class="visually-hidden">Component description</label>
+      <textarea id="ed-input" rows="2" placeholder="Type here…"
+                aria-describedby="ed-guidance ed-prompt"></textarea>
     </div>
-    <div id="contra-editor">
+
+    <!-- Contradiction editor -->
+    <div id="contra-editor" role="region" aria-labelledby="contra-label">
       <p class="label" id="contra-label"></p>
       <p class="type-desc" id="contra-type-desc"></p>
-      <textarea id="contra-input" rows="2" placeholder="Describe the contradiction…"></textarea>
+      <label for="contra-input" class="visually-hidden">Contradiction description</label>
+      <textarea id="contra-input" rows="2" placeholder="Describe the contradiction…"
+                aria-describedby="contra-type-desc"></textarea>
       <div class="btn-row" style="margin-top:6px">
         <button id="contra-save-btn">Save contradiction</button>
         <button id="contra-cancel-btn">Cancel</button>
       </div>
     </div>
-    <div class="btn-row">
-      <button id="contra-btn">⚡ Contradiction</button>
+
+    <!-- Action bar -->
+    <div class="btn-row" role="toolbar" aria-label="Actions">
       <button id="analyse-btn">Explain the model</button>
+      <button id="contra-btn" aria-pressed="false">⚡ Contradiction</button>
       <button id="copy-btn">Copy summary</button>
       <div id="export-wrap">
-        <button id="export-btn">Export ↓</button>
-        <div id="export-menu">
-          <button data-fmt="text">Plain text</button>
-          <button data-fmt="markdown">Markdown</button>
-          <button data-fmt="json">JSON</button>
+        <button id="export-btn"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="export-menu">Export ↓</button>
+        <div id="export-menu" role="menu" aria-label="Export format">
+          <button role="menuitem" data-fmt="text">Plain text</button>
+          <button role="menuitem" data-fmt="markdown">Markdown</button>
+          <button role="menuitem" data-fmt="json">JSON</button>
         </div>
       </div>
     </div>
-  </div>
-  <div id="right">
-    <div id="chat-header">Activity Theory notes</div>
-    <div id="chat-messages">
-      <div class="msg hint">Fill in the triangle nodes, then use the notes area to record observations.</div>
+
+  </section>
+
+  <!-- Right: summary panel -->
+  <aside id="right" aria-labelledby="summary-heading">
+
+    <div id="chat-header">
+      <h2 id="summary-heading">Summary</h2>
     </div>
-    <div id="chat-input-row">
-      <input id="chat-input" type="text" placeholder="Add a note or observation…"/>
-      <button id="send-btn">Add</button>
+
+    <!-- Contradiction guidance — shown only in contra mode -->
+    <div id="contra-guide" role="region" aria-label="Contradiction guidance">
+      <div class="cg-row">
+        <span class="cg-type">⚡ Primary Contradiction</span> — a tension <strong>within a single component</strong>.<br>
+        Click the same node twice to mark it.<br>
+        <span class="cg-example">Example: the Tools node — staff must use a digital platform they find unusable.</span>
+      </div>
+      <div class="cg-row">
+        <span class="cg-type">⚡ Secondary Contradiction</span> — a tension <strong>between two components</strong>.<br>
+        Click one node, then a different node to mark the pair.<br>
+        <span class="cg-example">Example: Rules demand standardised assessment, but the Object is personalised learning.</span>
+      </div>
     </div>
+
+    <!-- Live summary -->
+    <div id="summary-body"
+         aria-live="polite"
+         aria-label="Live activity system summary"></div>
+
+    <!-- Notes -->
+    <div id="notes-row">
+      <label for="notes-input">Additional notes</label>
+      <textarea id="notes-input" rows="3" placeholder="Additional notes…"></textarea>
+    </div>
+
+  </aside>
+</main>
+
+<!-- Modal dialog -->
+<div id="modal-overlay">
+  <div id="modal-box"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="modal-title">
+    <button id="modal-close" aria-label="Close dialog">&#x2715;</button>
+    <h2 id="modal-title"></h2>
+    <div id="modal-body"></div>
   </div>
 </div>
 
 <script>
+/* ── Constants ── */
 const W=580, H=430;
 const Tx=270,Ty=55, Rx=60,Ry=375, Dx=460,Dy=375;
 const Sx=(Tx+Rx)/2, Sy=(Ty+Ry)/2;
@@ -118,32 +293,32 @@ const Cx=(Rx+Dx)/2, Cy=(Ry+Dy)/2;
 const R=9, GAP=6;
 
 const NODES = [
-  { id:"tools",     short:"Tools",             x:Tx, y:Ty,
+  { id:"tools",     short:"Tools",       x:Tx, y:Ty,
     label:"Mediating artefacts (tools and signs)",
     guidance:"Physical objects and systems of symbols (like language, mathematics, digital tools) that people use to accomplish the activity.",
     prompt:"What tools, technologies, signs or symbols mediate this activity?",
     lines:["Tools",null], lx:0, ly:-22, anchor:"middle", ly2:-10 },
-  { id:"subject",   short:"Subject",           x:Sx, y:Sy,
+  { id:"subject",   short:"Subject",     x:Sx, y:Sy,
     label:"Subject",
     guidance:"The person or group engaged in the activity who are the focus of analysis.",
     prompt:"Who performs the activity? Whose perspective are you analysing?",
     lines:["Subject",null], lx:-16, ly:0, anchor:"end", ly2:14 },
-  { id:"object",    short:"Object",            x:Ox, y:Oy,
+  { id:"object",    short:"Object",      x:Ox, y:Oy,
     label:"Object / Motive",
     guidance:"The immediate goals of the activity — what is being worked on or transformed.",
     prompt:"What is being transformed? What are the immediate goals and underlying motives?",
     lines:["Object",null], lx:16, ly:0, anchor:"start", ly2:14 },
-  { id:"rules",     short:"Rules",             x:Rx, y:Ry,
+  { id:"rules",     short:"Rules",       x:Rx, y:Ry,
     label:"Rules",
     guidance:"Laws, codes, conventions, customs and agreements that people adhere to while engaging in the activity.",
     prompt:"What rules, norms or regulations constrain or guide the activity?",
     lines:["Rules",null], lx:-14, ly:22, anchor:"end", ly2:36 },
-  { id:"community", short:"Community",         x:Cx, y:Cy,
+  { id:"community", short:"Community",   x:Cx, y:Cy,
     label:"Community",
     guidance:"People and groups whose knowledge, interests, stakes and goals shape the activity.",
     prompt:"Who else shares or has a stake in this activity?",
     lines:["Community",null], lx:0, ly:22, anchor:"middle", ly2:36 },
-  { id:"division",  short:"Division",          x:Dx, y:Dy,
+  { id:"division",  short:"Division",    x:Dx, y:Dy,
     label:"Division of Labour",
     guidance:"How the work in the activity is divided among participants — tasks and power.",
     prompt:"How are tasks, roles and power distributed among participants?",
@@ -163,6 +338,7 @@ const COL = {tools:"#534AB7",subject:"#0F6E56",object:"#993C1D",rules:"#185FA5",
 const vals = {tools:"",subject:"",object:"",rules:"",community:"",division:""};
 let activeId = null;
 
+/* ── SVG helpers ── */
 const svg = document.getElementById("tri");
 const NS = "http://www.w3.org/2000/svg";
 
@@ -173,12 +349,12 @@ function el(tag, attrs, parent) {
   return e;
 }
 
-// Defs
+/* ── Markers (decorative) ── */
 const defs = el("defs",{},svg);
 function mkMarker(id, refX, reverse) {
   const m = el("marker",{id, markerWidth:"8", markerHeight:"8", refX:String(refX), refY:"4",
-    orient: reverse?"auto-start-reverse":"auto", markerUnits:"userSpaceOnUse"},defs);
-  el("path",{d:"M0,1 L7,4 L0,7 z", fill: id==="tip-out"?"#888":"#333"},m);
+    orient:reverse?"auto-start-reverse":"auto", markerUnits:"userSpaceOnUse"},defs);
+  el("path",{d:"M0,1 L7,4 L0,7 z", fill:id==="tip-out"?"#595959":"#333"},m);
 }
 mkMarker("tip-end",0,false);
 mkMarker("tip-start",7,true);
@@ -191,156 +367,241 @@ function shorten(x1,y1,x2,y2) {
   return {x1:x1+ux*pad,y1:y1+uy*pad,x2:x2-ux*pad,y2:y2-uy*pad};
 }
 
-// Draw edges
+/* ── Draw edges (decorative — aria-hidden) ── */
+const edgesGroup = el("g",{"aria-hidden":"true"},svg);
 for (const [a,b] of EDGES) {
   const na=NODES.find(n=>n.id===a), nb=NODES.find(n=>n.id===b);
   const s=shorten(na.x,na.y,nb.x,nb.y);
   el("line",{x1:s.x1,y1:s.y1,x2:s.x2,y2:s.y2,
     stroke:"#333","stroke-width":"1.5",
-    "marker-start":"url(#tip-start)","marker-end":"url(#tip-end)"},svg);
+    "marker-start":"url(#tip-start)","marker-end":"url(#tip-end)"},edgesGroup);
 }
 
-// Outcome arrow
-const outLine = el("line",{x1:Ox+60,y1:Oy,x2:Ox+95,y2:Oy,
-  stroke:"#888","stroke-width":"1.5","marker-end":"url(#tip-out)"},svg);
-const outText = el("text",{x:Ox+108,y:Oy+4,"font-size":"11",fill:"#888","text-anchor":"start"},svg);
+/* ── Outcome arrow (decorative — aria-hidden) ── */
+const outcomeGroup = el("g",{"aria-hidden":"true"},svg);
+el("line",{x1:Ox+60,y1:Oy,x2:Ox+95,y2:Oy,
+  stroke:"#595959","stroke-width":"1.5","marker-end":"url(#tip-out)"},outcomeGroup);
+const outText = el("text",{x:Ox+108,y:Oy+4,"font-size":"11",fill:"#595959","text-anchor":"start"},outcomeGroup);
 outText.textContent="Outcome";
 
-// Contradiction layer (rendered below nodes so nodes stay on top)
-const contraLayer = el("g",{id:"contra-layer"},svg);
+/* ── Contradiction layer (aria-hidden — summary panel is authoritative) ── */
+const contraLayer = el("g",{"aria-hidden":"true"},svg);
 
-// Node groups
+/* ── Node groups (interactive) ── */
 const nodeEls = {};
 for (const n of NODES) {
-  const g = el("g",{style:"cursor:pointer"},svg);
+  const g = el("g",{
+    role:"button",
+    tabindex:"0",
+    "aria-label":`${n.short}: empty. Activate to edit.`,
+    style:"cursor:pointer"
+  },svg);
+
+  /* Custom focus ring (shown via CSS on :focus-visible) */
+  el("circle",{cx:n.x, cy:n.y, r:R+5, class:"node-focus-ring"},g);
+
   const circle = el("circle",{cx:n.x,cy:n.y,r:R,fill:"white",stroke:"#333","stroke-width":"1.5"},g);
-  const dot = el("circle",{cx:n.x,cy:n.y,r:4,fill:"transparent"},g);
-  const t1 = el("text",{x:n.x+n.lx,y:n.y+n.ly,"text-anchor":n.anchor,"font-size":"12","font-weight":"600",fill:"#222"},g);
-  t1.textContent=n.lines[0];
+  const dot    = el("circle",{cx:n.x,cy:n.y,r:4,fill:"transparent","aria-hidden":"true"},g);
+  const t1     = el("text",{x:n.x+n.lx,y:n.y+n.ly,"text-anchor":n.anchor,
+                     "font-size":"12","font-weight":"600",fill:"#222","aria-hidden":"true"},g);
+  t1.textContent = n.lines[0];
   let t2 = null;
   if (n.lines[1]) {
-    t2 = el("text",{x:n.x+n.lx,y:n.y+n.ly2,"text-anchor":n.anchor,"font-size":"12","font-weight":"600",fill:"#222"},g);
-    t2.textContent=n.lines[1];
+    t2 = el("text",{x:n.x+n.lx,y:n.y+n.ly2,"text-anchor":n.anchor,
+                    "font-size":"12","font-weight":"600",fill:"#222","aria-hidden":"true"},g);
+    t2.textContent = n.lines[1];
   }
-  const tp = el("text",{x:n.x+n.lx,y:n.y+(n.ly<0?n.ly-14:n.ly2?(n.ly2+14):n.ly+14),
-    "text-anchor":n.anchor,"font-size":"10",fill:"#888","font-style":"italic"},g);
+  const tp = el("text",{
+    x:n.x+n.lx,
+    y:n.y+(n.ly<0 ? n.ly-14 : n.ly2 ? n.ly2+14 : n.ly+14),
+    "text-anchor":n.anchor,"font-size":"10",fill:"#555","font-style":"italic","aria-hidden":"true"
+  },g);
 
-  nodeEls[n.id]={g,circle,dot,t1,t2,tp};
+  nodeEls[n.id] = {g, circle, dot, t1, t2, tp};
 
-  g.addEventListener("click",()=>activateNode(n.id));
-  g.addEventListener("mouseenter",()=>showTooltip(n));
-  g.addEventListener("mouseleave",()=>hideTooltip());
+  g.addEventListener("click",    ()  => activateNode(n.id));
+  g.addEventListener("keydown",  (e) => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); activateNode(n.id); } });
+  g.addEventListener("mouseenter",() => showTooltip(n));
+  g.addEventListener("mouseleave",() => hideTooltip());
 }
 
+/* ── Update aria-label on a node to reflect current state ── */
+function updateNodeAriaLabel(id) {
+  const n   = NODES.find(x=>x.id===id);
+  const {g} = nodeEls[id];
+  const val = vals[id].trim();
+  let label;
+  if (contraMode) {
+    if (contraFirst === id) {
+      label = `${n.short} selected. Activate again for a primary contradiction, or activate another node for a secondary contradiction.`;
+    } else {
+      label = val
+        ? `${n.short}: ${val}. Activate to select for contradiction.`
+        : `${n.short}: empty. Activate to select for contradiction.`;
+    }
+  } else {
+    label = val
+      ? `${n.short}: ${val}. Activate to edit.`
+      : `${n.short}: empty. Activate to edit.`;
+  }
+  g.setAttribute("aria-label", label);
+}
+
+/* ── Update node visuals + aria-label ── */
 function updateNodeVisual(id) {
-  const n=NODES.find(x=>x.id===id);
-  const {circle,dot,t1,t2,tp}=nodeEls[id];
-  const filled=vals[id].trim();
-  const isActive=activeId===id;
-  const isContraFirst=contraMode && contraFirst===id && contraPromptNodes===null;
-  const c=COL[id];
-  circle.setAttribute("stroke", isContraFirst?"#f59e0b": isActive||filled?c:"#333");
+  const n = NODES.find(x=>x.id===id);
+  const {circle,dot,t1,t2,tp} = nodeEls[id];
+  const filled        = vals[id].trim();
+  const isActive      = activeId===id;
+  const isContraFirst = contraMode && contraFirst===id && contraPromptNodes===null;
+  const c = COL[id];
+  circle.setAttribute("stroke",       isContraFirst?"#b45309": isActive||filled?c:"#333");
   circle.setAttribute("stroke-width", isActive||isContraFirst?"2.5":"1.5");
-  dot.setAttribute("fill", filled?c:"transparent");
+  dot.setAttribute("fill",            filled?c:"transparent");
   const textCol = filled||isActive?c:"#222";
-  t1.setAttribute("fill",textCol);
-  if(t2) t2.setAttribute("fill",textCol);
-  const preview=filled?(filled.length>18?filled.slice(0,16)+"…":filled):"";
-  tp.textContent=preview;
-  tp.setAttribute("fill",c);
+  t1.setAttribute("fill", textCol);
+  if(t2) t2.setAttribute("fill", textCol);
+  const preview = filled?(filled.length>18?filled.slice(0,16)+"…":filled):"";
+  tp.textContent = preview;
+  tp.setAttribute("fill", c);
+  updateNodeAriaLabel(id);
 }
 
+/* ── Activate a node (edit or contradiction mode) ── */
 function activateNode(id) {
   if (contraMode) { handleContraNodeClick(id); return; }
   if (activeId===id) { activeId=null; hideEditor(); }
-  else { activeId=id; showEditor(id); }
+  else               { activeId=id;  showEditor(id); }
   for (const n of NODES) updateNodeVisual(n.id);
 }
 
-const editor=document.getElementById("editor");
-const edLabel=document.getElementById("ed-label");
-const edGuidance=document.getElementById("ed-guidance");
-const edPrompt=document.getElementById("ed-prompt");
-const edInput=document.getElementById("ed-input");
+/* ── Editor ── */
+const editor     = document.getElementById("editor");
+const edLabel    = document.getElementById("ed-label");
+const edGuidance = document.getElementById("ed-guidance");
+const edPrompt   = document.getElementById("ed-prompt");
+const edInput    = document.getElementById("ed-input");
 
 function showEditor(id) {
-  const n=NODES.find(x=>x.id===id);
-  editor.style.display="block";
-  editor.style.border=`1.5px solid ${COL[id]}`;
-  edLabel.style.color=COL[id];
-  edLabel.textContent=n.label;
-  edGuidance.textContent=n.guidance;
-  edPrompt.textContent=n.prompt;
-  edInput.value=vals[id];
+  const n = NODES.find(x=>x.id===id);
+  editor.style.display = "block";
+  editor.style.border  = `2px solid ${COL[id]}`;
+  edLabel.style.color  = COL[id];
+  edLabel.textContent  = n.label;
+  edGuidance.textContent = n.guidance;
+  edPrompt.textContent   = n.prompt;
+  edInput.value = vals[id];
   edInput.focus();
-  edInput.oninput=()=>{ vals[id]=edInput.value; updateNodeVisual(id); updateAnalyseBtn(); };
+  edInput.oninput = () => { vals[id]=edInput.value; updateNodeVisual(id); updateAnalyseBtn(); updateSummary(); };
 }
-function hideEditor() { editor.style.display="none"; }
+function hideEditor() { editor.style.display = "none"; }
 
-// Tooltip
-const tooltip=document.getElementById("tooltip");
+/* ── Tooltip (mouse only) ── */
+const tooltip = document.getElementById("tooltip");
 function showTooltip(n) {
   if (activeId) return;
-  tooltip.style.display="block";
-  tooltip.style.borderColor=COL[n.id];
-  tooltip.innerHTML=`<strong style="color:${COL[n.id]}">${n.short}</strong><br>${n.guidance}`;
-  const ww=document.getElementById("svg-wrap").offsetWidth;
-  const hh=ww*(H/W);
-  let left=(n.x/W)*ww+(n.lx||0)-90;
-  let top=(n.y/H)*hh+(n.ly<0?-90:20);
-  left=Math.max(0,Math.min(left,ww-190));
-  top=Math.max(0,top);
-  tooltip.style.left=left+"px";
-  tooltip.style.top=top+"px";
+  tooltip.style.display  = "block";
+  tooltip.style.borderColor = COL[n.id];
+  tooltip.innerHTML = `<strong style="color:${COL[n.id]}">${n.short}</strong><br>${n.guidance}`;
+  const ww = document.getElementById("svg-wrap").offsetWidth;
+  const hh = ww*(H/W);
+  let left = (n.x/W)*ww+(n.lx||0)-90;
+  let top  = (n.y/H)*hh+(n.ly<0?-90:20);
+  left = Math.max(0,Math.min(left,ww-190));
+  top  = Math.max(0,top);
+  tooltip.style.left = left+"px";
+  tooltip.style.top  = top+"px";
 }
-function hideTooltip() { tooltip.style.display="none"; }
+function hideTooltip() { tooltip.style.display = "none"; }
 
-// Analyse button
-const analyseBtn=document.getElementById("analyse-btn");
-function updateAnalyseBtn() {
-  const has=Object.values(vals).some(v=>v.trim());
-  analyseBtn.textContent=has?"Analyse the system":"Explain the model";
+/* ── Screen-reader live announcer ── */
+const liveRegion = document.getElementById("live-region");
+function announce(msg) {
+  liveRegion.textContent = "";
+  setTimeout(()=>{ liveRegion.textContent = msg; }, 100);
 }
-analyseBtn.addEventListener("click",()=>{
-  const has=Object.values(vals).some(v=>v.trim());
+
+/* ── Analyse button + modal ── */
+const analyseBtn = document.getElementById("analyse-btn");
+function updateAnalyseBtn() {
+  const has = Object.values(vals).some(v=>v.trim());
+  analyseBtn.textContent = has ? "Analyse the system" : "Explain the model";
+}
+
+const modalOverlay = document.getElementById("modal-overlay");
+const modalBox     = document.getElementById("modal-box");
+const modalTitle   = document.getElementById("modal-title");
+const modalBody    = document.getElementById("modal-body");
+let   modalOpener  = null;
+
+function showModal(title, body) {
+  modalTitle.textContent = title;
+  modalBody.textContent  = body;
+  modalOpener = document.activeElement;
+  modalOverlay.classList.add("open");
+  document.getElementById("modal-close").focus();
+  document.addEventListener("keydown", handleModalKey);
+}
+function closeModal() {
+  modalOverlay.classList.remove("open");
+  document.removeEventListener("keydown", handleModalKey);
+  if (modalOpener) modalOpener.focus();
+}
+function handleModalKey(e) {
+  if (e.key === "Escape") { closeModal(); return; }
+  if (e.key !== "Tab") return;
+  const focusable = [...modalBox.querySelectorAll(
+    'button, [tabindex="0"], textarea, input, a[href]'
+  )].filter(el => !el.disabled);
+  if (!focusable.length) return;
+  const first = focusable[0], last = focusable[focusable.length-1];
+  if (e.shiftKey && document.activeElement===first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement===last) { e.preventDefault(); first.focus(); }
+}
+document.getElementById("modal-close").addEventListener("click", closeModal);
+modalOverlay.addEventListener("click", e => { if (e.target===modalOverlay) closeModal(); });
+
+analyseBtn.addEventListener("click", () => {
+  const has = Object.values(vals).some(v=>v.trim());
   if (!has) {
-    addMessage("assistant","Engeström's Activity System has six components:\n\n• Tools — what mediates the activity\n• Subject — who does it\n• Object — what is being transformed\n• Rules — norms and conventions\n• Community — others who share the object\n• Division of Labour — how work is distributed\n\nClick any node on the triangle to fill it in, then click Analyse for a reading of your system.");
+    showModal("About the model",
+      "Engeström's Activity System has six components:\n\n• Tools — what mediates the activity\n• Subject — who does it\n• Object — what is being transformed\n• Rules — norms and conventions\n• Community — others who share the object\n• Division of Labour — how work is distributed\n\nClick any node on the triangle to fill it in, then click Analyse for a reading of your system.");
   } else {
-    const lines=NODES.map(n=>`• ${n.label}: ${vals[n.id]||"(empty)"}`).join("\n");
-    addMessage("assistant","Activity system summary:\n\n"+lines+"\n\nUse the notes panel to record observations, tensions, or contradictions you notice between components.");
+    const lines = NODES.map(n=>`• ${n.label}: ${vals[n.id]||"(empty)"}`).join("\n");
+    showModal("Activity system summary",
+      lines + "\n\nUse the notes panel to record observations, tensions, or contradictions you notice between components.");
   }
 });
 
-// ─── Contradictions ───────────────────────────────────────────────
-const contradictions = [];
-let contraMode = false;
-let contraFirst = null;
-let contraPromptNodes = null;
+/* ── Contradictions ── */
+const contradictions    = [];
+let   contraMode        = false;
+let   contraFirst       = null;
+let   contraPromptNodes = null;
 
-const contraBtn = document.getElementById("contra-btn");
-const contraEditor = document.getElementById("contra-editor");
-const contraLabel = document.getElementById("contra-label");
+const contraBtn      = document.getElementById("contra-btn");
+const contraEditor   = document.getElementById("contra-editor");
+const contraLabel    = document.getElementById("contra-label");
 const contraTypeDesc = document.getElementById("contra-type-desc");
-const contraInput = document.getElementById("contra-input");
-const contraSaveBtn = document.getElementById("contra-save-btn");
-const contraCancelBtn = document.getElementById("contra-cancel-btn");
-const hintEl = document.getElementById("hint-text");
+const contraInput    = document.getElementById("contra-input");
+const contraSaveBtn  = document.getElementById("contra-save-btn");
+const contraCancelBtn= document.getElementById("contra-cancel-btn");
+const hintEl         = document.getElementById("hint-text");
 
 function renderContradictions() {
   while (contraLayer.firstChild) contraLayer.removeChild(contraLayer.firstChild);
   for (const c of contradictions) {
-    if (c.type === "primary") {
-      const n = NODES.find(x => x.id === c.nodes[0]);
+    if (c.type==="primary") {
+      const n = NODES.find(x=>x.id===c.nodes[0]);
       el("circle",{cx:n.x, cy:n.y, r:R+7, fill:"none",
-        stroke:"#f59e0b", "stroke-width":"2", "stroke-dasharray":"3,2.5"}, contraLayer);
+        stroke:"#b45309","stroke-width":"2","stroke-dasharray":"3,2.5"}, contraLayer);
     } else {
-      const na = NODES.find(x => x.id === c.nodes[0]);
-      const nb = NODES.find(x => x.id === c.nodes[1]);
-      const mx = (na.x + nb.x) / 2, my = (na.y + nb.y) / 2;
-      el("line",{x1:na.x, y1:na.y, x2:nb.x, y2:nb.y,
-        stroke:"#ef4444", "stroke-width":"2", "stroke-dasharray":"6,3", opacity:"0.7"}, contraLayer);
-      const t = el("text",{x:mx, y:my-7, "text-anchor":"middle", "font-size":"13", fill:"#ef4444"}, contraLayer);
-      t.textContent = "⚡";
+      const na=NODES.find(x=>x.id===c.nodes[0]), nb=NODES.find(x=>x.id===c.nodes[1]);
+      const mx=(na.x+nb.x)/2, my=(na.y+nb.y)/2;
+      el("line",{x1:na.x,y1:na.y,x2:nb.x,y2:nb.y,
+        stroke:"#c0392b","stroke-width":"2","stroke-dasharray":"6,3",opacity:"0.8"}, contraLayer);
+      const t = el("text",{x:mx,y:my-7,"text-anchor":"middle","font-size":"13",fill:"#c0392b"}, contraLayer);
+      t.textContent="⚡";
     }
   }
 }
@@ -351,11 +612,12 @@ function setContraMode(on) {
   contraPromptNodes = null;
   contraEditor.style.display = "none";
   contraBtn.classList.toggle("btn-contra-active", on);
+  contraBtn.setAttribute("aria-pressed", String(on));
   const guide = document.getElementById("contra-guide");
   if (on) {
     hideEditor();
     activeId = null;
-    hintEl.textContent = "Select nodes to mark contradictions — see guidance below.";
+    hintEl.textContent = "Select nodes to mark contradictions — see guidance in the Summary panel.";
     guide.style.display = "block";
   } else {
     hintEl.textContent = "Click a node to edit it. Hover for guidance.";
@@ -363,32 +625,31 @@ function setContraMode(on) {
   }
   for (const n of NODES) updateNodeVisual(n.id);
 }
-
 contraBtn.addEventListener("click", () => setContraMode(!contraMode));
 
 function handleContraNodeClick(id) {
-  if (contraPromptNodes !== null) return;
-  if (contraFirst === null) {
+  if (contraPromptNodes!==null) return;
+  if (contraFirst===null) {
     contraFirst = id;
     for (const n of NODES) updateNodeVisual(n.id);
-  } else if (contraFirst === id) {
-    showContraPrompt("primary", [id]);
+    announce(`${NODES.find(x=>x.id===id).short} selected. Activate the same node again for a primary contradiction, or another node for a secondary contradiction.`);
+  } else if (contraFirst===id) {
+    showContraPrompt("primary",[id]);
   } else {
-    showContraPrompt("secondary", [contraFirst, id]);
+    showContraPrompt("secondary",[contraFirst,id]);
   }
 }
 
 function showContraPrompt(type, nodes) {
   contraPromptNodes = nodes;
   contraEditor.style.display = "block";
-  if (type === "primary") {
-    const n = NODES.find(x => x.id === nodes[0]);
-    contraLabel.textContent = `⚡ Primary Contradiction — ${n.short}`;
+  if (type==="primary") {
+    const n = NODES.find(x=>x.id===nodes[0]);
+    contraLabel.textContent    = `⚡ Primary Contradiction — ${n.short}`;
     contraTypeDesc.textContent = "A tension within this single component. Describe what is pulling against itself.";
   } else {
-    const na = NODES.find(x => x.id === nodes[0]);
-    const nb = NODES.find(x => x.id === nodes[1]);
-    contraLabel.textContent = `⚡ Secondary Contradiction — ${na.short} ↔ ${nb.short}`;
+    const na=NODES.find(x=>x.id===nodes[0]), nb=NODES.find(x=>x.id===nodes[1]);
+    contraLabel.textContent    = `⚡ Secondary Contradiction — ${na.short} ↔ ${nb.short}`;
     contraTypeDesc.textContent = "A tension between these two components. Describe how they pull in different directions.";
   }
   contraInput.value = "";
@@ -398,16 +659,15 @@ function showContraPrompt(type, nodes) {
 
 function saveContradiction(type, nodes) {
   const desc = contraInput.value.trim();
-  contradictions.push({ type, nodes, description: desc });
+  contradictions.push({type, nodes, description:desc});
   renderContradictions();
-  const na = NODES.find(x => x.id === nodes[0]);
-  if (type === "primary") {
-    addContraMessage(`⚡ Primary contradiction (${na.short})` + (desc ? `\n${desc}` : ""));
-  } else {
-    const nb = NODES.find(x => x.id === nodes[1]);
-    addContraMessage(`⚡ Secondary contradiction (${na.short} ↔ ${nb.short})` + (desc ? `\n${desc}` : ""));
-  }
+  const na = NODES.find(x=>x.id===nodes[0]);
+  const msg = type==="primary"
+    ? `Primary contradiction saved for ${na.short}.`
+    : `Secondary contradiction saved between ${na.short} and ${NODES.find(x=>x.id===nodes[1]).short}.`;
+  announce(msg);
   cancelContraPrompt();
+  updateSummary();
 }
 
 function cancelContraPrompt() {
@@ -416,124 +676,150 @@ function cancelContraPrompt() {
   contraEditor.style.display = "none";
   for (const n of NODES) updateNodeVisual(n.id);
 }
-
 contraCancelBtn.addEventListener("click", cancelContraPrompt);
 
-// ─── Notes / chat ─────────────────────────────────────────────────
-const chatMessages=document.getElementById("chat-messages");
-const chatInput=document.getElementById("chat-input");
-const sendBtn=document.getElementById("send-btn");
+/* ── Live summary ── */
+const summaryBody = document.getElementById("summary-body");
 
-function addMessage(role,text) {
-  const d=document.createElement("div");
-  d.className="msg "+role;
-  d.textContent=text;
-  chatMessages.appendChild(d);
-  chatMessages.scrollTop=chatMessages.scrollHeight;
+function updateSummary() {
+  summaryBody.innerHTML = "";
+  for (const n of NODES) {
+    const row = document.createElement("div");
+    row.className = "sr-row";
+    const lbl = document.createElement("div");
+    lbl.className  = "sr-label";
+    lbl.textContent = n.short;
+    const val = document.createElement("div");
+    if (vals[n.id].trim()) {
+      val.className  = "sr-value";
+      val.textContent = vals[n.id];
+    } else {
+      val.className  = "sr-empty";
+      val.textContent = "—";
+    }
+    row.appendChild(lbl);
+    row.appendChild(val);
+    summaryBody.appendChild(row);
+  }
+  if (contradictions.length) {
+    const hr = document.createElement("hr");
+    hr.className = "sr-divider";
+    hr.setAttribute("aria-hidden","true");
+    summaryBody.appendChild(hr);
+    const heading = document.createElement("div");
+    heading.className  = "sr-label";
+    heading.textContent = "Contradictions";
+    summaryBody.appendChild(heading);
+    for (const c of contradictions) {
+      const na = NODES.find(x=>x.id===c.nodes[0]);
+      const div = document.createElement("div");
+      div.className = "sr-contra";
+      if (c.type==="primary") {
+        div.textContent = `⚡ Primary — ${na.short}${c.description ? ": "+c.description : ""}`;
+      } else {
+        const nb = NODES.find(x=>x.id===c.nodes[1]);
+        div.textContent = `⚡ Secondary — ${na.short} ↔ ${nb.short}${c.description ? ": "+c.description : ""}`;
+      }
+      summaryBody.appendChild(div);
+    }
+  }
 }
 
-function addContraMessage(text) {
-  const d=document.createElement("div");
-  d.className="msg contra";
-  d.textContent=text;
-  chatMessages.appendChild(d);
-  chatMessages.scrollTop=chatMessages.scrollHeight;
-}
-
-function sendNote() {
-  const t=chatInput.value.trim();
-  if(!t) return;
-  addMessage("user",t);
-  chatInput.value="";
-}
-sendBtn.addEventListener("click",sendNote);
-chatInput.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendNote();} });
-
-// ─── Copy summary ─────────────────────────────────────────────────
+/* ── Copy summary ── */
 const copyBtn = document.getElementById("copy-btn");
 copyBtn.addEventListener("click", () => {
-  const text = exportText();
-  navigator.clipboard.writeText(text).then(() => {
+  navigator.clipboard.writeText(exportText()).then(() => {
     copyBtn.textContent = "Copied!";
-    setTimeout(() => { copyBtn.textContent = "Copy summary"; }, 1800);
+    announce("Summary copied to clipboard.");
+    setTimeout(()=>{ copyBtn.textContent = "Copy summary"; }, 1800);
   });
 });
 
-// ─── Export ───────────────────────────────────────────────────────
-const exportBtn = document.getElementById("export-btn");
+/* ── Export menu ── */
+const exportBtn  = document.getElementById("export-btn");
 const exportMenu = document.getElementById("export-menu");
 
-exportBtn.addEventListener("click", (e) => {
+function setExportOpen(open) {
+  exportBtn.setAttribute("aria-expanded", String(open));
+  exportMenu.style.display = open ? "block" : "none";
+  if (open) exportMenu.querySelector("button").focus();
+}
+exportBtn.addEventListener("click", e => {
   e.stopPropagation();
-  exportMenu.style.display = exportMenu.style.display === "block" ? "none" : "block";
+  setExportOpen(exportBtn.getAttribute("aria-expanded")==="false");
 });
-document.addEventListener("click", () => { exportMenu.style.display = "none"; });
+exportMenu.addEventListener("keydown", e => {
+  const items = [...exportMenu.querySelectorAll("button")];
+  const idx   = items.indexOf(document.activeElement);
+  if (e.key==="Escape")    { setExportOpen(false); exportBtn.focus(); }
+  if (e.key==="ArrowDown") { e.preventDefault(); items[(idx+1)%items.length].focus(); }
+  if (e.key==="ArrowUp")   { e.preventDefault(); items[(idx-1+items.length)%items.length].focus(); }
+});
+document.addEventListener("click",   ()  => setExportOpen(false));
+document.addEventListener("keydown", e   => { if(e.key==="Escape") setExportOpen(false); });
 
+/* ── Export data ── */
 function buildExportData() {
   return {
-    nodes: NODES.map(n => ({ id: n.id, label: n.label, value: vals[n.id] })),
-    contradictions: contradictions.map(c => ({
+    nodes: NODES.map(n=>({id:n.id, label:n.label, value:vals[n.id]})),
+    contradictions: contradictions.map(c=>({
       type: c.type,
-      nodes: c.nodes.map(id => NODES.find(n => n.id === id).short),
+      nodes: c.nodes.map(id=>NODES.find(n=>n.id===id).short),
       description: c.description,
     })),
+    notes: document.getElementById("notes-input").value.trim(),
   };
 }
-
 function exportText() {
   const d = buildExportData();
-  const lines = ["Engeström Activity System Analysis", "=".repeat(36), ""];
-  for (const n of d.nodes) lines.push(`${n.label}:\n${n.value || "(empty)"}\n`);
+  const lines = ["Engeström Activity System Analysis","=".repeat(36),""];
+  for (const n of d.nodes) lines.push(`${n.label}:\n${n.value||"(empty)"}\n`);
   if (d.contradictions.length) {
-    lines.push("Contradictions", "-".repeat(14));
+    lines.push("Contradictions","-".repeat(14));
     for (const c of d.contradictions) {
-      const tag = c.type === "primary" ? "Primary contradiction" : "Secondary contradiction";
-      const who = c.nodes.length === 1 ? c.nodes[0] : `${c.nodes[0]} ↔ ${c.nodes[1]}`;
-      lines.push(`[${tag}] ${who}${c.description ? "\n" + c.description : ""}\n`);
+      const tag = c.type==="primary"?"Primary contradiction":"Secondary contradiction";
+      const who = c.nodes.length===1?c.nodes[0]:`${c.nodes[0]} ↔ ${c.nodes[1]}`;
+      lines.push(`[${tag}] ${who}${c.description?"\n"+c.description:""}\n`);
     }
   }
+  if (d.notes) lines.push("Notes","-".repeat(14),d.notes);
   return lines.join("\n");
 }
-
 function exportMarkdown() {
   const d = buildExportData();
-  const lines = ["# Engeström Activity System Analysis", ""];
-  lines.push("| Component | Content |", "|-----------|---------|");
-  for (const n of d.nodes) lines.push(`| **${n.label}** | ${n.value || "—"} |`);
+  const lines = ["# Engeström Activity System Analysis",""];
+  lines.push("| Component | Content |","|-----------|---------|");
+  for (const n of d.nodes) lines.push(`| **${n.label}** | ${n.value||"—"} |`);
   if (d.contradictions.length) {
-    lines.push("", "## Contradictions", "");
+    lines.push("","## Contradictions","");
     for (const c of d.contradictions) {
-      const tag = c.type === "primary" ? "Primary contradiction" : "Secondary contradiction";
-      const who = c.nodes.length === 1 ? c.nodes[0] : `${c.nodes[0]} ↔ ${c.nodes[1]}`;
-      lines.push(`- **${tag} — ${who}**${c.description ? ": " + c.description : ""}`);
+      const tag = c.type==="primary"?"Primary contradiction":"Secondary contradiction";
+      const who = c.nodes.length===1?c.nodes[0]:`${c.nodes[0]} ↔ ${c.nodes[1]}`;
+      lines.push(`- **${tag} — ${who}**${c.description?": "+c.description:""}`);
     }
   }
+  if (d.notes) lines.push("","## Notes","",d.notes);
   return lines.join("\n");
 }
-
-function exportJSON() {
-  return JSON.stringify(buildExportData(), null, 2);
-}
-
-function download(content, filename, mime) {
+function exportJSON() { return JSON.stringify(buildExportData(),null,2); }
+function download(content,filename,mime) {
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([content], { type: mime }));
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
+  a.href = URL.createObjectURL(new Blob([content],{type:mime}));
+  a.download = filename; a.click(); URL.revokeObjectURL(a.href);
 }
-
-exportMenu.addEventListener("click", (e) => {
+exportMenu.addEventListener("click", e => {
   const fmt = e.target.dataset.fmt;
   if (!fmt) return;
-  if (fmt === "text")     download(exportText(),     "activity-system.txt",  "text/plain");
-  if (fmt === "markdown") download(exportMarkdown(), "activity-system.md",   "text/markdown");
-  if (fmt === "json")     download(exportJSON(),     "activity-system.json", "application/json");
-  exportMenu.style.display = "none";
+  if (fmt==="text")     download(exportText(),    "activity-system.txt", "text/plain");
+  if (fmt==="markdown") download(exportMarkdown(),"activity-system.md",  "text/markdown");
+  if (fmt==="json")     download(exportJSON(),    "activity-system.json","application/json");
+  setExportOpen(false);
+  exportBtn.focus();
 });
 
-// Init
+/* ── Init ── */
 for (const n of NODES) updateNodeVisual(n.id);
+updateSummary();
 </script>
 </body>
 </html>
