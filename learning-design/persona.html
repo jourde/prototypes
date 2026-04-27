@@ -767,6 +767,32 @@
         <div class="content-panel">
         <form id="personaForm">
 
+            <!-- NEW: Finalité & validation (cadre la persona avant tout le reste) -->
+            <div class="card" data-section="finalite">
+                <h2><span class="material-icons">flag</span> Finalité &amp; validation</h2>
+                <div class="card-desc">À quoi sert cette persona, et sur quoi repose-t-elle ?</div>
+
+                <div class="form-group">
+                    <label>Question de conception</label>
+                    <textarea id="finalite_question" placeholder="Ex : Conception d'une formation hybride de 6h à l'IA générative pour des PE de cycle 3 en zone éloignée."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Sources &amp; éléments de validation</label>
+                    <textarea id="finalite_validation" placeholder="Ex : 4 entretiens individuels, observations en école, données académiques, ou « hypothèses de travail à valider »."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Niveau de validation</label>
+                    <select id="finalite_niveau">
+                        <option value="">Sélectionner...</option>
+                        <option value="Hypothétique">Hypothétique (composite, non vérifié)</option>
+                        <option value="Validé partiellement">Validé partiellement (quelques sources de terrain)</option>
+                        <option value="Validé empiriquement">Validé empiriquement (entretiens, observations, données)</option>
+                    </select>
+                </div>
+            </div>
+
             <!-- 1. IDENTITÉ -->
             <div class="card" data-section="identite">
                 <h2><span class="material-icons">badge</span> Identité</h2>
@@ -904,6 +930,33 @@
 
             </div>
 
+            <!-- NEW: Vécu de formation / Point de départ (Knowles : l'expérience comme ressource ; Ausubel : prior knowledge) -->
+            <div class="card" data-section="vecu">
+                <h2><span class="material-icons">history_edu</span> Vécu de formation</h2>
+                <div class="card-desc">Parcours antérieur et point de départ sur le sujet visé.</div>
+
+                <div class="form-group">
+                    <label>Détails</label>
+                    <textarea id="vecu_details" placeholder="Ex : a déjà suivi 2 modules M@gistère sur la différenciation, se dit « débutante » sur l'IA, se méfie des stages descendants après une mauvaise expérience en 2024."></textarea>
+                </div>
+
+                <div class="suggestions-panel">
+                    <div class="form-group">
+                        <label>Point de départ</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="vecu_formation_recente"> Formations récentes pertinentes déjà suivies</label>
+                            <label class="checkbox-item"><input type="checkbox" id="vecu_competence_initiale"> Compétence initiale sur le sujet visé</label>
+                            <label class="checkbox-item"><input type="checkbox" id="vecu_representations"> Représentations / croyances initiales à prendre en compte</label>
+                            <label class="checkbox-item"><input type="checkbox" id="vecu_cpd_positif"> Expérience(s) positive(s) de formation continue</label>
+                            <label class="checkbox-item"><input type="checkbox" id="vecu_cpd_negatif"> Expérience(s) négative(s) de formation continue (méfiance)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="vecu_autoformation"> Autoformation active (lectures, MOOC, réseaux)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="vecu_apprentissage_situation"> Apprentissage en situation (essais en classe, tâtonnements)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="vecu_pas_experience"> Pas d'expérience préalable identifiée sur le sujet</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 4. MOTIVATIONS -->
             <div class="card" data-section="motivations">
                 <h2><span class="material-icons">psychology</span> Motivations</h2>
@@ -959,28 +1012,63 @@
 
             </div>
 
-            <!-- 6. PRÉFÉRENCES (FORMAT) -->
+            <!-- NEW: Ancrage collégial (Wenger : communautés de pratique ; Cordingley / TALIS : la CPD qui transfère est collaborative) -->
+            <div class="card" data-section="collegial">
+                <h2><span class="material-icons">groups</span> Ancrage collégial</h2>
+                <div class="card-desc">Réseaux professionnels, soutien hiérarchique et culture collaborative.</div>
+
+                <div class="form-group">
+                    <label>Détails</label>
+                    <textarea id="collegial_details" placeholder="Ex : équipe de cycle soudée, conseil des maîtres mensuel actif, IEN très soutenant ; pas de mentor formel ; isolement géographique compensé par un groupe WhatsApp disciplinaire."></textarea>
+                </div>
+
+                <div class="suggestions-panel">
+                    <div class="form-group">
+                        <label>Réseaux &amp; soutien</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_equipe_pedago"> Équipe pédagogique soudée / Conseil de cycle actif</label>
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_equipe_disciplinaire"> Équipe disciplinaire active (collège/lycée)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_mentor"> Mentor ou tuteur formel identifié</label>
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_communaute"> Communauté professionnelle (réseau, groupe disciplinaire, association)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_isolement"> Sentiment d'isolement professionnel</label>
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_soutien_direction"> Soutien actif de la direction / IEN / IA-IPR</label>
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_frein_hierarchique"> Frein hiérarchique ou administratif perçu</label>
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_observation_mutuelle"> Disposition à partager sa pratique / observation mutuelle</label>
+                            <label class="checkbox-item"><input type="checkbox" id="collegial_reticence_pairs"> Réticence à exposer sa pratique aux pairs</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. MODALITÉS PRATICABLES — reframed away from learning-styles language.
+                 Items describe conditions of feasibility (temps, équipement, accès, soutien),
+                 not cognitive preferences. Existing IDs preserved for backward compatibility
+                 with saved JSON files. New items reflect 70-20-10 / Cordingley / Wenger. -->
             <div class="card" data-section="format">
-                <h2><span class="material-icons">headphones</span> Format</h2>
-                <div class="card-desc">Modalités pédagogiques préférées.</div>
-                
+                <h2><span class="material-icons">event_available</span> Modalités praticables</h2>
+                <div class="card-desc">Quelles modalités sont réalistes compte tenu des contraintes de temps, d'équipement, d'accès et de soutien ? Ce bloc décrit des conditions de faisabilité, et non des préférences cognitives (la recherche ne soutient pas la notion de « style d'apprentissage » individuel).</div>
+
                 <!-- Champ texte libre (Détails) en premier et plus large -->
                 <div class="form-group">
                     <label>Détails</label>
-                    <textarea id="formatDetails" placeholder="Détails"></textarea>
+                    <textarea id="formatDetails" placeholder="Ex : 30 min disponibles le mercredi après-midi, pas de visio possible avant 18h, pas de wifi à domicile, école à 90 min de l'INSPE le plus proche..."></textarea>
                 </div>
                 <!-- Base -->
                 <div class="suggestions-panel">
                     <div class="form-group">
-                        <label>Formats préférés</label>
+                        <label>Modalités viables compte tenu des contraintes</label>
                         <div class="checkbox-group">
-                            <label class="checkbox-item"><input type="checkbox" id="micro"> Micro-learning (5-10 min)</label>
-                            <label class="checkbox-item"><input type="checkbox" id="mobile"> Mobile Learning</label>
-                            <!-- Nouveaux ajouts -->
-                            <label class="checkbox-item"><input type="checkbox" id="visio"> Visio-conférence (Synchrones)</label>
-                            <label class="checkbox-item"><input type="checkbox" id="hybrid"> Hybride (Présentiel + Distanciel)</label>
-                            <label class="checkbox-item"><input type="checkbox" id="tutoring"> Tutorat / Accompagnement individuel</label>
-                            <label class="checkbox-item"><input type="checkbox" id="resources"> Banque de ressources libre accès</label>
+                            <label class="checkbox-item"><input type="checkbox" id="micro"> Sessions courtes (≤ 15 min) imposées par le temps disponible</label>
+                            <label class="checkbox-item"><input type="checkbox" id="mobile"> Smartphone comme seul équipement personnel</label>
+                            <label class="checkbox-item"><input type="checkbox" id="visio"> Visioconférence praticable (créneaux synchrones libres, équipement OK)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="hybrid"> Hybride viable (alternance présentiel / distanciel possible)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="tutoring"> Accompagnement individuel possible (mentor, formateur ressource)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="resources"> Auto-formation à la demande (ressources en libre accès)</label>
+                            <!-- Nouveaux ajouts (recherche : 70-20-10, Cordingley, Wenger) -->
+                            <label class="checkbox-item"><input type="checkbox" id="workplace_embedded"> Apprentissage situé en classe (lesson study, observation, expérimentation in situ)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="peer_protocol"> Protocole entre pairs (analyse de pratiques, GAP, codéveloppement)</label>
+                            <label class="checkbox-item"><input type="checkbox" id="presentiel_local"> Présentiel uniquement si proche du lieu d'exercice</label>
+                            <label class="checkbox-item"><input type="checkbox" id="asynchrone_offline"> Asynchrone hors ligne nécessaire (contraintes de connexion)</label>
                         </div>
                     </div>
                 </div>
@@ -994,6 +1082,32 @@
                 <div class="form-group">
                     <label data-export-label="">Racontez sa journée pour identifier les créneaux disponibles et les contraintes techniques.</label>
                     <textarea id="scenario" placeholder="Ex: Décrivez une journée représentative, les contraintes de temps, de connectivité..."></textarea>
+                </div>
+            </div>
+
+            <!-- NEW: Implications pour la conception (rend la persona porteuse de décisions de design) -->
+            <div class="card" data-section="implications">
+                <h2><span class="material-icons">lightbulb</span> Implications pour la conception</h2>
+                <div class="card-desc">Que signifie ce profil, concrètement, pour la formation à concevoir ?</div>
+
+                <div class="form-group">
+                    <label>Modalités à privilégier</label>
+                    <textarea id="implications_modalites" placeholder="Ex : asynchrone court (15 min) avec rendez-vous synchrone optionnel ; pas de visio avant 18h ; téléchargement hors ligne nécessaire."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Contenus à prioriser</label>
+                    <textarea id="implications_contenus" placeholder="Ex : démarrer par un cas concret de classe ; éviter le vocabulaire académique non explicité ; prévoir un glossaire."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Évaluation &amp; preuves de transfert</label>
+                    <textarea id="implications_evaluation" placeholder="Ex : un livrable réutilisable en classe la semaine suivante ; une auto-évaluation « I can » ; un partage entre pairs sous 15 jours."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Points de vigilance / risques de désengagement</label>
+                    <textarea id="implications_vigilance" placeholder="Ex : ne pas commencer par la théorie ; ne pas exiger une caméra allumée ; ménager le rapport au numérique."></textarea>
                 </div>
             </div>
 
@@ -1013,62 +1127,79 @@
             <span class="close-btn" onclick="closeHelpModal()">&times;</span>
             <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Guide d'utilisation</h2>
             
-            <div style=”font-size: 0.95rem; line-height: 1.6; color: #334155;”>
+            <div style="font-size: 0.95rem; line-height: 1.6; color: #334155;">
 
 <p><strong>1. Objectif</strong><br>
-Ce canevas sert à décrire des profils types (personas) afin de concevoir des formations réellement adaptées aux besoins, motivations, contraintes et contextes d’exercice.</p>
+Ce canevas sert à décrire des profils types (personas) afin de concevoir des formations réellement adaptées aux besoins, motivations, contraintes et contextes d'exercice.</p>
 
-<p><strong>2. Gérer plusieurs personas</strong><br>
-La barre de personas, juste sous l’en-tête, permet de travailler sur plusieurs profils dans la même session :
-<ul style=”margin-top: 5px; margin-bottom: 10px;”>
-    <li><strong>◀ ▶</strong> : naviguer entre les personas. Le formulaire bascule automatiquement et l’état du persona quitté est préservé en mémoire.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>person_add</span> Nouveau</strong> : crée un persona vierge.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>content_copy</span> Dupliquer</strong> : duplique le persona courant (utile pour créer des variantes).</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>person_remove</span> Supprimer</strong> : supprime le persona courant après confirmation (inactif s’il n’en reste qu’un).</li>
+<p><strong>2. Sections du canevas</strong><br>
+Chaque persona est structuré en 11 blocs, accessibles dans la barre latérale. Il n'est pas nécessaire de les remplir dans l'ordre :
+<ul style="margin-top: 5px; margin-bottom: 10px;">
+    <li><strong>Finalité &amp; validation</strong> : à quoi sert cette persona (quelle formation alimente-t-elle ?) et sur quoi repose-t-elle (entretiens, observations, hypothèses).</li>
+    <li><strong>Identité</strong> : profil administratif (fonction, niveau, statut, expérience).</li>
+    <li><strong>Localisation &amp; classe</strong> : conditions d'exercice et profil de la classe.</li>
+    <li><strong>Numérique</strong> : équipement, outils, attitudes face au numérique.</li>
+    <li><strong>Vécu de formation</strong> : parcours antérieur et point de départ sur le sujet visé (formations suivies, croyances initiales, expériences positives ou négatives de CPD).</li>
+    <li><strong>Motivations</strong> : besoins et raisons de se former.</li>
+    <li><strong>Freins</strong> : obstacles potentiels à la formation.</li>
+    <li><strong>Ancrage collégial</strong> : réseaux professionnels, soutien hiérarchique, culture collaborative.</li>
+    <li><strong>Modalités praticables</strong> : modalités <em>réalistes compte tenu des contraintes</em> (temps, équipement, accès, soutien). Ce bloc décrit des <strong>conditions de faisabilité</strong>, et non des préférences cognitives : la recherche ne soutient pas la notion de « style d'apprentissage » individuel (Pashler et al. 2008 ; Kirschner &amp; van Merriënboer 2013).</li>
+    <li><strong>Scénario / Journée Type</strong> : narration libre d'une journée pour faire émerger créneaux disponibles et contraintes vécues.</li>
+    <li><strong>Implications pour la conception</strong> : synthèse opérationnelle — modalités à privilégier, contenus à prioriser, évaluation visée, points de vigilance.</li>
 </ul>
 </p>
 
-<p><strong>3. Affichage</strong><br>
-<ul style=”margin-top: 5px; margin-bottom: 10px;”>
+<p><strong>3. Gérer plusieurs personas</strong><br>
+La barre de personas, juste sous l'en-tête, permet de travailler sur plusieurs profils dans la même session :
+<ul style="margin-top: 5px; margin-bottom: 10px;">
+    <li><strong>◀ ▶</strong> : naviguer entre les personas. Le formulaire bascule automatiquement et l'état du persona quitté est préservé en mémoire.</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">person_add</span> Nouveau</strong> : crée un persona vierge.</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">content_copy</span> Dupliquer</strong> : duplique le persona courant (utile pour créer des variantes).</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">person_remove</span> Supprimer</strong> : supprime le persona courant après confirmation (inactif s'il n'en reste qu'un).</li>
+</ul>
+</p>
+
+<p><strong>4. Affichage</strong><br>
+<ul style="margin-top: 5px; margin-bottom: 10px;">
     <li><strong>Suggestions :</strong> affiche ou masque les listes de cases à cocher dans tous les blocs.</li>
 </ul>
 </p>
 
-<p><strong>4. Contexte</strong><br>
-Le menu déroulant <strong>Contexte</strong> permet d’activer des champs spécifiques à un territoire ou une académie. En mode <em>Standard</em>, seuls les champs communs sont affichés. Le contexte <em>Guyane</em> est intégré par défaut.
-<ul style=”margin-top: 5px; margin-bottom: 10px;”>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>tune</span> Éditer</strong> : ouvre l’éditeur visuel pour créer ou modifier les champs du contexte actif — cases à cocher, menus déroulants, boutons radio — section par section.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>download</span> Exporter</strong> : télécharge le contexte actif en fichier <code>.json</code> pour le partager ou le réutiliser.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>upload_file</span> Importer</strong> : charge un fichier <code>.json</code> de contexte et l’ajoute au menu déroulant.</li>
+<p><strong>5. Contexte</strong><br>
+Le menu déroulant <strong>Contexte</strong> permet d'activer des champs spécifiques à un territoire ou une académie. En mode <em>Standard</em>, seuls les champs communs sont affichés. Le contexte <em>Académie de Guyane</em> est intégré par défaut et propose des items territoriaux dans <em>Finalité</em>, <em>Identité</em>, <em>Localisation</em>, <em>Numérique</em>, <em>Vécu de formation</em>, <em>Motivations</em>, <em>Freins</em>, <em>Ancrage collégial</em>, <em>Modalités praticables</em> et <em>Implications pour la conception</em>.
+<ul style="margin-top: 5px; margin-bottom: 10px;">
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">tune</span> Éditer</strong> : ouvre l'éditeur visuel pour créer ou modifier les champs du contexte actif — cases à cocher, menus déroulants, boutons radio — section par section.</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">download</span> Exporter</strong> : télécharge le contexte actif en fichier <code>.json</code> pour le partager ou le réutiliser.</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">upload_file</span> Importer</strong> : charge un fichier <code>.json</code> de contexte et l'ajoute au menu déroulant.</li>
 </ul>
 </p>
 
-<p><strong>5. Renseigner un persona</strong><br>
-<ul style=”margin-top: 5px; margin-bottom: 10px;”>
-    <li><strong>Texte libre :</strong> décrivez les éléments qualitatifs (exemples, anecdotes, précisions de contexte).</li>
-    <li><strong>Cases à cocher :</strong> activez l’interrupteur <strong>Suggestions</strong> pour faire apparaître les options prédéfinies, puis cochez ce qui correspond au profil.</li>
+<p><strong>6. Renseigner un persona</strong><br>
+<ul style="margin-top: 5px; margin-bottom: 10px;">
+    <li><strong>Texte libre :</strong> décrivez les éléments qualitatifs (exemples, anecdotes, précisions de contexte). Pour <em>Implications pour la conception</em>, traduisez le profil en décisions de design concrètes.</li>
+    <li><strong>Cases à cocher :</strong> activez l'interrupteur <strong>Suggestions</strong> pour faire apparaître les options prédéfinies, puis cochez ce qui correspond au profil.</li>
 </ul>
 </p>
 
-<p><strong>6. Import & Export</strong><br>
-Le bloc <strong>Import & Export</strong> couvre <em>tous les personas</em> de la session :
-<ul style=”margin-top: 5px; margin-bottom: 10px;”>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>upload_file</span> Charger</strong> : recharge un fichier <code>.json</code> précédemment sauvegardé (un ou plusieurs personas).</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>save</span> Sauvegarder</strong> : exporte tous les personas dans un fichier <code>.json</code> pour reprendre la session plus tard.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>visibility</span> Synthèse et export</strong> : affiche tous les profils dans une fenêtre, avec des boutons pour copier en <strong>Markdown</strong>, télécharger en <strong>.md</strong> ou en <strong>Word (.doc)</strong>.</li>
+<p><strong>7. Import &amp; Export</strong><br>
+Le bloc <strong>Import &amp; Export</strong> couvre <em>tous les personas</em> de la session :
+<ul style="margin-top: 5px; margin-bottom: 10px;">
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">upload_file</span> Charger</strong> : recharge un fichier <code>.json</code> précédemment sauvegardé (un ou plusieurs personas).</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">save</span> Sauvegarder</strong> : exporte tous les personas dans un fichier <code>.json</code> pour reprendre la session plus tard.</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">visibility</span> Synthèse et export</strong> : affiche tous les profils dans une fenêtre, avec des boutons pour copier en <strong>Markdown</strong>, télécharger en <strong>.md</strong> ou en <strong>Word (.doc)</strong>.</li>
 </ul>
 </p>
 
-<p><strong>7. Aide</strong><br>
-<ul style=”margin-top: 5px; margin-bottom: 10px;”>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>list_alt</span> Canevas complet</strong> : exporte un fichier Markdown exhaustif listant toutes les options (cochées ou non) pour chaque persona — utile pour documenter ou réviser l’ensemble du canevas.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>help</span> Guide</strong> : affiche ce guide d’utilisation.</li>
-    <li><strong><span class=”material-icons” style=”font-size: 14px; vertical-align: middle;”>info</span> À propos</strong> : informations sur l’outil.</li>
+<p><strong>8. Aide</strong><br>
+<ul style="margin-top: 5px; margin-bottom: 10px;">
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">list_alt</span> Canevas complet</strong> : exporte un fichier Markdown exhaustif listant toutes les options (cochées ou non) pour chaque persona — utile pour documenter ou réviser l'ensemble du canevas.</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">help</span> Guide</strong> : affiche ce guide d'utilisation.</li>
+    <li><strong><span class="material-icons" style="font-size: 14px; vertical-align: middle;">info</span> À propos</strong> : informations sur l'outil.</li>
 </ul>
 </p>
 
-<p style=”margin-top: 12px;”><strong>Note</strong><br>
-Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne.</p>
+<p style="margin-top: 12px;"><strong>Note</strong><br>
+Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.</p>
             </div>
         </div>
     </div>
@@ -1892,18 +2023,31 @@ Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne
         // ══════════════════════════════════════════════════════
 
         const SECTION_LABELS = {
+            finalite:    'Finalité & validation',
             identite:    'Identité',
             localisation:'Localisation & classe',
             numerique:   'Numérique',
+            vecu:        'Vécu de formation',
             motivations: 'Motivations',
             freins:      'Freins',
-            format:      'Format'
+            collegial:   'Ancrage collégial',
+            format:      'Modalités praticables',
+            implications:'Implications pour la conception'
         };
 
         // Définition intégrée du contexte Guyane
         const GUYANE_CONTEXT = {
             name: 'Académie de Guyane',
             sections: {
+                // NEW : éléments de validation propres au territoire guyanais.
+                finalite: [
+                    { type: 'checkboxes', groupLabel: 'Validation territoriale',
+                      items: [
+                        { id: 'gy_eafc',        label: 'Persona à valider auprès du vice-rectorat / EAFC Guyane' },
+                        { id: 'gy_cpc_secteur', label: 'Persona à valider auprès des CPC/IEN du secteur concerné' }
+                      ]
+                    }
+                ],
                 identite: [
                     { type: 'radio', groupLabel: 'Origine & Mobilité', name: 'origin',
                       options: [
@@ -1949,6 +2093,18 @@ Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne
                       ]
                     }
                 ],
+                // NEW : parcours de formation typiques en Guyane.
+                vecu: [
+                    { type: 'checkboxes', groupLabel: 'Parcours de formation territorial',
+                      items: [
+                        { id: 'gy_stage_pp',       label: 'Stage « Prise de poste Guyane » suivi' },
+                        { id: 'gy_flsco',          label: 'Formation FLSco / Français langue de scolarisation suivie' },
+                        { id: 'gy_bilingue_form',  label: "Formation à l'enseignement en classe bilingue" },
+                        { id: 'gy_metropole_acces', label: "Difficulté d'accès aux formations métropolitaines (décalage, connexion)" },
+                        { id: 'gy_passation',      label: 'Apprentissage par les anciens du territoire (passation informelle)' }
+                      ]
+                    }
+                ],
                 motivations: [
                     { type: 'checkboxes',
                       items: [{ id: 'isolation', label: "Rompre l'isolement géographique" }]
@@ -1962,9 +2118,34 @@ Toutes les données restent dans votre navigateur, rien n’est envoyé en ligne
                       ]
                     }
                 ],
+                // NEW : ancrage collégial spécifique au territoire (isolement, distance hiérarchique, solidarité de site).
+                collegial: [
+                    { type: 'checkboxes', groupLabel: 'Réseaux & soutien en Guyane',
+                      items: [
+                        { id: 'gy_reseau_inter',    label: "Réseau informel inter-sites (WhatsApp, FB) pour rompre l'isolement" },
+                        { id: 'gy_tutorat_ancien',  label: 'Tutorat informel par un enseignant ancien du territoire' },
+                        { id: 'gy_appui_cpc',       label: 'Appui régulier du CPC de circonscription' },
+                        { id: 'gy_distance_hier',   label: 'Distance géographique forte avec la hiérarchie (IEN, DASEN à Cayenne)' },
+                        { id: 'gy_turnover_eq',     label: "Turnover élevé dans l'équipe (renouvellement annuel important)" },
+                        { id: 'gy_solidarite_site', label: 'Solidarité spécifique aux sites isolés (entraide quotidienne)' }
+                      ]
+                    }
+                ],
                 format: [
                     { type: 'checkboxes',
                       items: [{ id: 'offline', label: 'Mode "Hors-ligne" à considérer (Téléchargement)' }]
+                    }
+                ],
+                // NEW : implications design propres au territoire guyanais.
+                implications: [
+                    { type: 'checkboxes', groupLabel: 'Implications design — Guyane',
+                      items: [
+                        { id: 'gy_acculturation',  label: 'Acculturation territoriale à prévoir (si arrivant récent)' },
+                        { id: 'gy_plurilinguisme', label: 'Plurilinguisme / interculturalité à intégrer dans le design' },
+                        { id: 'gy_logistique',     label: 'Coût logistique du présentiel à anticiper (déplacements, hébergement, indemnités)' },
+                        { id: 'gy_calendrier',     label: 'Calendrier scolaire spécifique à respecter (dates Guyane ≠ métropole)' },
+                        { id: 'gy_offline',        label: 'Déclinaison hors ligne / téléchargement obligatoire (sites isolés)' }
+                      ]
                     }
                 ]
             }
