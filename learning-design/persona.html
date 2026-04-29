@@ -317,6 +317,49 @@
             background: var(--primary);
         }
 
+        /* Séparateur dans la sidebar entre vue per-persona et vue transversale */
+        .sidebar-separator {
+            padding: 14px 14px 6px 14px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-top: 1px solid var(--border);
+            margin-top: 6px;
+            background: #f8fafc;
+        }
+
+        /* Sous-blocs A / B (Motivations, Freins) */
+        .form-subblock {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            background: #fbfcfe;
+        }
+        .form-subblock-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        /* Cartes globales (vue transversale) */
+        .card.global-card h2 {
+            color: #6d28d9;
+        }
+        .card.global-card h2 .material-icons {
+            color: #7c3aed;
+        }
+        body.global-mode #personaBar {
+            display: none;
+        }
+
         /* Cards : une seule visible à la fois */
         .card {
             background: var(--bg-card);
@@ -770,7 +813,17 @@
             <!-- NEW: Finalité & validation (cadre la persona avant tout le reste) -->
             <div class="card" data-section="finalite">
                 <h2><span class="material-icons">flag</span> Finalité &amp; validation</h2>
-                <div class="card-desc">À quoi sert cette persona, et sur quoi repose-t-elle ?</div>
+                <div class="card-desc">Pourquoi conçoit-on cette formation, quelle transformation vise-t-on, et sur quoi cette persona repose-t-elle ?</div>
+
+                <div class="form-group">
+                    <label>Situation actuelle à transformer</label>
+                    <textarea id="finalite_situation" placeholder="Ex : les enseignants débutants en zone éloignée se retrouvent isolés face aux conflits de classe et n'ont pas de relais immédiat."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Finalité concrète / transformation visée</label>
+                    <textarea id="finalite_transformation" placeholder="Ex : leur permettre de désamorcer un conflit en classe sans attendre un soutien hiérarchique — pas seulement « connaître les techniques de médiation »."></textarea>
+                </div>
 
                 <div class="form-group">
                     <label>Question de conception</label>
@@ -852,6 +905,12 @@
                 <div class="form-group">
                     <label>Années d'expérience</label>
                     <input type="text" placeholder="Ex: 5 ans, Débutant..." id="experience">
+                </div>
+
+                <!-- Scénario / Journée type — fait partie de l'identité (synthèse narrative) -->
+                <div class="form-group">
+                    <label>Scénario / Journée type <span style="font-weight:400; color:var(--secondary);">— déroulé d'une journée pour identifier créneaux et contraintes.</span></label>
+                    <textarea id="scenario" placeholder="Ex : Décrivez une journée représentative, les contraintes de temps, de connectivité, de garde d'enfants, de transport..."></textarea>
                 </div>
 
             </div>
@@ -957,55 +1016,106 @@
                 </div>
             </div>
 
-            <!-- 4. MOTIVATIONS -->
+            <!-- 4. MOTIVATIONS — deux niveaux : profil d'apprenant + vis-à-vis du sujet/formation -->
             <div class="card" data-section="motivations">
                 <h2><span class="material-icons">psychology</span> Motivations</h2>
-                <div class="card-desc">Besoins et attentes vis-à-vis de la formation.</div>
-                
-                <!-- Champ texte libre (Détails) en premier et plus large -->
-                <div class="form-group">
-                    <label>Détails</label>
-                    <textarea id="motivationDetails" placeholder="Détails"></textarea>
-                </div>
-                <!-- Base -->
-                <div class="suggestions-panel">
+                <div class="card-desc">Deux niveaux à distinguer : ce qui motive la personne <em>en tant qu'apprenant·e</em> (modalités habituelles), et ce qui la motive <em>vis-à-vis de ce sujet/de cette formation</em>.</div>
+
+                <!-- BLOC A — Profil d'apprenant -->
+                <div class="form-subblock">
+                    <div class="form-subblock-title">A. Profil d'apprenant</div>
                     <div class="form-group">
-                        <label>Pourquoi se former ?</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item"><input type="checkbox" id="classManagement"> Gestion de classe / Autorité</label>
-                            <label class="checkbox-item"><input type="checkbox" id="security"> Préparation aux concours</label>
-                            <label class="checkbox-item"><input type="checkbox" id="time"> Gain de temps (Ressources prêtes)</label>
-                            <!-- Nouveaux ajouts -->
-                            <label class="checkbox-item"><input type="checkbox" id="innovation"> Tester de nouvelles approches (Ludification, etc.)</label>
-                            <label class="checkbox-item"><input type="checkbox" id="wellbeing"> Climat de classe / Bien-être</label>
-                            <label class="checkbox-item"><input type="checkbox" id="mutation"> Évolution de carrière/perspectives</label>
-                            <label class="checkbox-item"><input type="checkbox" id="project"> Monter un projet (Sortie, échange)</label>
+                        <label>Détails</label>
+                        <textarea id="motivation_profil_details" placeholder="Ex : aime apprendre en groupe, valorise les rencontres entre pairs, gros consommateur de podcasts/MOOC, motivé par les certifications visibles sur le CV..."></textarea>
+                    </div>
+                    <div class="suggestions-panel">
+                        <div class="form-group">
+                            <label>Comment cette personne aime apprendre ?</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item"><input type="checkbox" id="mot_profil_groupe"> Aime apprendre en groupe</label>
+                                <label class="checkbox-item"><input type="checkbox" id="mot_profil_seul"> Préfère apprendre seul·e (autonomie)</label>
+                                <label class="checkbox-item"><input type="checkbox" id="mot_profil_rencontres"> Besoin de rencontres / d'échanges entre pairs</label>
+                                <label class="checkbox-item"><input type="checkbox" id="mot_profil_contenu"> Gros consommateur de contenu (lectures, podcasts, MOOC)</label>
+                                <label class="checkbox-item"><input type="checkbox" id="mot_profil_cv"> Valorise l'enrichissement du CV</label>
+                                <label class="checkbox-item"><input type="checkbox" id="mot_profil_certif"> Motivation par certification / reconnaissance officielle</label>
+                                <label class="checkbox-item"><input type="checkbox" id="mot_profil_pratique"> Apprend mieux par la pratique / l'expérimentation</label>
+                                <label class="checkbox-item"><input type="checkbox" id="mot_profil_reflexion"> Apprend mieux par la réflexion / la lecture</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOC B — Vis-à-vis du sujet / de la formation -->
+                <div class="form-subblock">
+                    <div class="form-subblock-title">B. Vis-à-vis du sujet / de la formation</div>
+                    <div class="form-group">
+                        <label>Détails</label>
+                        <textarea id="motivationDetails" placeholder="Détails : besoins, attentes spécifiques au sujet de la formation."></textarea>
+                    </div>
+                    <div class="suggestions-panel">
+                        <div class="form-group">
+                            <label>Pourquoi se former <em>sur ce sujet</em> ?</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item"><input type="checkbox" id="classManagement"> Gestion de classe / Autorité</label>
+                                <label class="checkbox-item"><input type="checkbox" id="security"> Préparation aux concours</label>
+                                <label class="checkbox-item"><input type="checkbox" id="time"> Gain de temps (Ressources prêtes)</label>
+                                <label class="checkbox-item"><input type="checkbox" id="innovation"> Tester de nouvelles approches (Ludification, etc.)</label>
+                                <label class="checkbox-item"><input type="checkbox" id="wellbeing"> Climat de classe / Bien-être</label>
+                                <label class="checkbox-item"><input type="checkbox" id="mutation"> Évolution de carrière/perspectives</label>
+                                <label class="checkbox-item"><input type="checkbox" id="project"> Monter un projet (Sortie, échange)</label>
+                            </div>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- 5. FREINS -->
+            <!-- 5. FREINS — deux niveaux : profil d'apprenant + vis-à-vis du sujet/formation -->
             <div class="card" data-section="freins">
                 <h2><span class="material-icons">warning</span> Freins</h2>
-                <div class="card-desc">Obstacles potentiels à l'apprentissage.</div>
-                
-                <!-- Champ texte libre (Détails) en premier et plus large -->
-                <div class="form-group">
-                    <label>Détails</label>
-                    <textarea id="obstacleDetails" placeholder="Détails"></textarea>
-                </div>
-                <!-- Base -->
-                <div class="suggestions-panel">
+                <div class="card-desc">Deux niveaux à distinguer : ce qui freine la personne <em>en tant qu'apprenant·e</em> (contraintes structurelles), et ce qui la freine <em>vis-à-vis de ce sujet/de cette formation</em>.</div>
+
+                <!-- BLOC A — Profil d'apprenant / contexte structurel -->
+                <div class="form-subblock">
+                    <div class="form-subblock-title">A. Profil d'apprenant / contexte structurel</div>
                     <div class="form-group">
-                        <label>Obstacles à la formation</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item"><input type="checkbox" id="workload"> Charge de travail</label>
-                            <!-- Nouveaux ajouts -->
-                            <label class="checkbox-item"><input type="checkbox" id="training_gap"> Offre de formation inadaptée</label>
-                            <label class="checkbox-item"><input type="checkbox" id="logistics"> Transport / Logistique (Accès formation)</label>
-                            <label class="checkbox-item"><input type="checkbox" id="language_barrier"> Barrière de la langue (Enseignant/Élèves)</label>
+                        <label>Détails</label>
+                        <textarea id="obstacleDetails" placeholder="Ex : peu de temps disponible, connexion internet instable, éloignement géographique du lieu de formation..."></textarea>
+                    </div>
+                    <div class="suggestions-panel">
+                        <div class="form-group">
+                            <label>Obstacles structurels à l'apprentissage</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item"><input type="checkbox" id="workload"> Charge de travail</label>
+                                <label class="checkbox-item"><input type="checkbox" id="training_gap"> Offre de formation inadaptée</label>
+                                <label class="checkbox-item"><input type="checkbox" id="logistics"> Transport / Logistique (Accès formation)</label>
+                                <label class="checkbox-item"><input type="checkbox" id="language_barrier"> Barrière de la langue (Enseignant/Élèves)</label>
+                                <label class="checkbox-item"><input type="checkbox" id="frein_profil_temps"> Temps disponible très limité</label>
+                                <label class="checkbox-item"><input type="checkbox" id="frein_profil_connexion"> Connexion internet instable</label>
+                                <label class="checkbox-item"><input type="checkbox" id="frein_profil_distance"> Éloignement géographique du lieu de formation</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOC B — Vis-à-vis du sujet / de la formation -->
+                <div class="form-subblock">
+                    <div class="form-subblock-title">B. Vis-à-vis du sujet / de la formation</div>
+                    <div class="form-group">
+                        <label>Détails</label>
+                        <textarea id="frein_sujet_details" placeholder="Ex : déjà formé sur ce thème sans résultat tangible ; bénéfice perçu faible ; injonction hiérarchique vécue comme imposée ; contraintes du poste qui empêchent le transfert en classe."></textarea>
+                    </div>
+                    <div class="suggestions-panel">
+                        <div class="form-group">
+                            <label>Freins liés <em>au sujet</em> ou à <em>cette formation</em></label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item"><input type="checkbox" id="frein_sujet_deja_forme"> Déjà formé sur ce sujet sans résultat tangible</label>
+                                <label class="checkbox-item"><input type="checkbox" id="frein_sujet_benefice"> Bénéfice perçu faible / pas convaincu·e d'en tirer un bénéfice</label>
+                                <label class="checkbox-item"><input type="checkbox" id="frein_sujet_scepticisme"> Scepticisme vis-à-vis de la pertinence du sujet</label>
+                                <label class="checkbox-item"><input type="checkbox" id="frein_sujet_transfert"> Contraintes du poste qui empêchent le transfert en classe</label>
+                                <label class="checkbox-item"><input type="checkbox" id="frein_sujet_injonction"> Injonction hiérarchique perçue (formation imposée)</label>
+                                <label class="checkbox-item"><input type="checkbox" id="frein_sujet_negative"> Expérience antérieure négative avec ce thème</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1075,43 +1185,117 @@
 
             </div>
 
-            <!-- 7. SCÉNARIO TYPE (Full Width) -->
-            <div class="card full-width">
-                <h2><span class="material-icons">edit_note</span> Scénario / Journée Type</h2>
-                <div class="card-desc">Déroulé d'une journée type et disponibilités.</div>
-                <div class="form-group">
-                    <label data-export-label="">Racontez sa journée pour identifier les créneaux disponibles et les contraintes techniques.</label>
-                    <textarea id="scenario" placeholder="Ex: Décrivez une journée représentative, les contraintes de temps, de connectivité..."></textarea>
-                </div>
-            </div>
-
-            <!-- NEW: Implications pour la conception (rend la persona porteuse de décisions de design) -->
-            <div class="card" data-section="implications">
-                <h2><span class="material-icons">lightbulb</span> Implications pour la conception</h2>
-                <div class="card-desc">Que signifie ce profil, concrètement, pour la formation à concevoir ?</div>
-
-                <div class="form-group">
-                    <label>Modalités à privilégier</label>
-                    <textarea id="implications_modalites" placeholder="Ex : asynchrone court (15 min) avec rendez-vous synchrone optionnel ; pas de visio avant 18h ; téléchargement hors ligne nécessaire."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Contenus à prioriser</label>
-                    <textarea id="implications_contenus" placeholder="Ex : démarrer par un cas concret de classe ; éviter le vocabulaire académique non explicité ; prévoir un glossaire."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Évaluation &amp; preuves de transfert</label>
-                    <textarea id="implications_evaluation" placeholder="Ex : un livrable réutilisable en classe la semaine suivante ; une auto-évaluation « I can » ; un partage entre pairs sous 15 jours."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Points de vigilance / risques de désengagement</label>
-                    <textarea id="implications_vigilance" placeholder="Ex : ne pas commencer par la théorie ; ne pas exiger une caméra allumée ; ménager le rapport au numérique."></textarea>
-                </div>
-            </div>
-
         </form>
+
+        <!-- ════════════════════════════════════════════════════════════
+             VUE TRANSVERSALE (hors form per-persona)
+             Synthèse · Implications transversales · Pistes d'IA
+             ════════════════════════════════════════════════════════════ -->
+
+        <div class="card global-card" data-section="global_synthese">
+            <h2><span class="material-icons">visibility</span> Synthèse</h2>
+            <div class="card-desc">Vue agrégée de toutes les personas, prête à copier ou exporter pour alimenter la réflexion sur la conception.</div>
+
+            <div class="form-group">
+                <label>Synthèse Markdown (mise à jour automatique)</label>
+                <textarea id="globalSynthesisContent" readonly style="min-height: 360px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; background: #f8fafc;"></textarea>
+            </div>
+
+            <div class="btn-row" style="flex-wrap: wrap; gap: 8px; align-items: center;">
+                <button type="button" class="btn btn-outline" onclick="refreshGlobalSynthesis()" data-tooltip="Régénérer la synthèse">
+                    <span class="material-icons">refresh</span>
+                </button>
+                <button type="button" class="btn btn-outline" onclick="copyGlobalSynthesisMarkdown()" data-tooltip="Copier en Markdown">
+                    <span class="material-icons">content_copy</span>
+                </button>
+                <button type="button" class="btn btn-outline" onclick="copyGlobalSynthesisText()" data-tooltip="Copier en texte brut">
+                    <span class="material-icons">content_paste</span>
+                </button>
+                <button type="button" class="btn btn-outline" onclick="exportGlobalSynthesisMarkdown()" data-tooltip="Exporter en .md">
+                    <span class="material-icons">download</span>
+                </button>
+                <button type="button" class="btn btn-outline" onclick="exportGlobalSynthesisWord()" data-tooltip="Exporter en .doc">
+                    <span class="material-icons">description</span>
+                </button>
+                <span id="globalSynthesisFeedback" style="display:none; color: var(--primary-dark); font-size: 0.85rem;">Copié !</span>
+            </div>
+        </div>
+
+        <div class="card global-card" data-section="global_implications">
+            <h2><span class="material-icons">lightbulb</span> Implications pour la conception</h2>
+            <div class="card-desc">Quelles décisions de conception découlent de l'ensemble des personas ? Ce panneau est <strong>transversal</strong> : il ne dépend pas d'une persona en particulier.</div>
+
+            <div class="form-group">
+                <label>Stratégie de conception</label>
+                <select id="global_impl_strategie">
+                    <option value="">Sélectionner...</option>
+                    <option value="One-size-fits-all">Formation unique pour tous (« one-size-fits-all » dégradé)</option>
+                    <option value="Tronc commun + branches">Tronc commun + branches différenciées</option>
+                    <option value="Parcours propres">Parcours propres par persona</option>
+                    <option value="Diversité non réductible">Diversité non réductible : à arbitrer / à requestionner</option>
+                    <option value="Autre">Autre (à préciser dans les champs ci-dessous)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Modalités à privilégier</label>
+                <textarea id="global_impl_modalites" placeholder="Ex : asynchrone court (≤ 15 min) avec rendez-vous synchrone optionnel ; pas de visio avant 18h ; téléchargement hors ligne nécessaire pour les sites isolés."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Contenus à prioriser</label>
+                <textarea id="global_impl_contenus" placeholder="Ex : démarrer par un cas concret de classe ; éviter le vocabulaire académique non explicité ; prévoir un glossaire ; intégrer un volet plurilinguisme."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Évaluation &amp; preuves de transfert</label>
+                <textarea id="global_impl_evaluation" placeholder="Ex : un livrable réutilisable en classe la semaine suivante ; une auto-évaluation « I can » ; un partage entre pairs sous 15 jours."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Points de vigilance / risques de désengagement</label>
+                <textarea id="global_impl_vigilance" placeholder="Ex : ne pas commencer par la théorie ; ne pas exiger une caméra allumée ; ménager le rapport au numérique ; intégrer le calendrier scolaire local."></textarea>
+            </div>
+        </div>
+
+        <div class="card global-card" data-section="global_ai_prompts">
+            <h2><span class="material-icons">smart_toy</span> Pistes d'IA</h2>
+            <div class="card-desc">
+                Ces prompts sont à copier dans un LLM externe (Claude, ChatGPT…) <em>après</em> avoir collé l'export Markdown des personas. Workflow recommandé :
+                <ol style="margin: 8px 0 0 18px; padding: 0;">
+                    <li>Aller sur l'onglet <strong>Synthèse</strong> et copier le Markdown.</li>
+                    <li>Coller dans un LLM, puis ajouter le prompt voulu ci-dessous.</li>
+                    <li>Reprendre les pistes générées pour nourrir le panneau <strong>Implications pour la conception</strong>.</li>
+                </ol>
+            </div>
+
+            <div class="form-group">
+                <label>1. Pré-analyse des implications</label>
+                <textarea id="ai_prompt_1" readonly rows="4" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; background: #f8fafc;">À partir des personas ci-dessus, propose 5 implications concrètes pour la conception, classées par priorité, et identifie les 3 points d'attention transversaux (qui concernent toutes les personas). Pour chaque implication, précise sur quelle(s) persona(s) elle s'appuie.</textarea>
+                <button type="button" class="btn btn-outline" onclick="copyPromptToClipboard('ai_prompt_1')" style="margin-top: 6px;">
+                    <span class="material-icons">content_copy</span> Copier ce prompt
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>2. Stratégie de différenciation</label>
+                <textarea id="ai_prompt_2" readonly rows="5" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; background: #f8fafc;">Compte tenu de la diversité des personas ci-dessus, propose 3 scénarios de conception : (a) formation unique pour tous, (b) tronc commun + branches différenciées, (c) parcours propres par persona. Pour chaque scénario, donne avantages, coûts (temps de conception, coût de production, charge tutorale), et risques de désengagement.</textarea>
+                <button type="button" class="btn btn-outline" onclick="copyPromptToClipboard('ai_prompt_2')" style="margin-top: 6px;">
+                    <span class="material-icons">content_copy</span> Copier ce prompt
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>3. Critique de cohérence des personas</label>
+                <textarea id="ai_prompt_3" readonly rows="4" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; background: #f8fafc;">Pour chaque persona ci-dessus, identifie : les contradictions internes (incohérences entre champs), les lacunes (informations manquantes qui mériteraient un retour terrain), et les zones où la persona ressemble trop à un cliché. Propose 3 questions à poser sur le terrain pour fiabiliser le profil.</textarea>
+                <button type="button" class="btn btn-outline" onclick="copyPromptToClipboard('ai_prompt_3')" style="margin-top: 6px;">
+                    <span class="material-icons">content_copy</span> Copier ce prompt
+                </button>
+            </div>
+
+            <span id="aiPromptFeedback" style="display:none; color: var(--primary-dark); font-size: 0.85rem;">Prompt copié !</span>
+        </div>
+
         </div><!-- .content-panel -->
         </div><!-- .app-layout -->
     </div>
@@ -1402,6 +1586,37 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
         let personaStore = [];
         let currentPersonaIndex = 0;
 
+        // ── Global Store (vue transversale, hors per-persona) ─────
+        const GLOBAL_FIELD_IDS = [
+            'global_impl_strategie',
+            'global_impl_modalites',
+            'global_impl_contenus',
+            'global_impl_evaluation',
+            'global_impl_vigilance'
+        ];
+        let globalState = {};
+
+        function captureGlobalState() {
+            const out = {};
+            GLOBAL_FIELD_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) out[id] = el.value;
+            });
+            return out;
+        }
+
+        function applyGlobalState(state) {
+            GLOBAL_FIELD_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.value = (state && state[id] !== undefined) ? state[id] : '';
+            });
+        }
+
+        function isGlobalFieldId(id) {
+            return GLOBAL_FIELD_IDS.includes(id);
+        }
+
         /** Lit l'état courant du formulaire et le retourne comme objet. */
         function captureCurrentPersonaState() {
             const state = {
@@ -1411,11 +1626,16 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             };
             document.querySelectorAll('[id]').forEach(el => {
                 if (['contextToggle','suggestionsToggle','fileInput'].includes(el.id)) return;
+                if (isGlobalFieldId(el.id)) return;          // skip global fields
+                if (el.closest('.global-card')) return;       // skip anything inside global cards
                 if (el.type === 'checkbox') state.fields[el.id] = el.checked;
                 else if (el.value !== undefined) state.fields[el.id] = el.value;
             });
             const radioNames = new Set();
-            document.querySelectorAll('input[type="radio"]').forEach(el => radioNames.add(el.name));
+            document.querySelectorAll('input[type="radio"]').forEach(el => {
+                if (el.closest('.global-card')) return;
+                radioNames.add(el.name);
+            });
             radioNames.forEach(name => {
                 const checked = document.querySelector(`input[name="${name}"]:checked`);
                 if (checked) state.fields['radio:' + name] = checked.value;
@@ -1423,8 +1643,12 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             return state;
         }
 
-        /** Applique un état de persona au formulaire sans toucher au store. */
+        /** Applique un état de persona au formulaire sans toucher au store.
+         *  Préserve les champs globaux (vue transversale), qui sont hors per-persona. */
         function applyPersonaState(state) {
+            // form.reset() ne touche que les éléments dans <form>, donc les champs globaux
+            // (hors form) ne sont pas affectés. On capture quand même par sûreté.
+            const globalSnapshot = captureGlobalState();
             document.getElementById('personaForm').reset();
             // Migration : anciens états booléens → valeur texte
             const ctxValue = typeof state.contextToggle === 'boolean'
@@ -1442,18 +1666,22 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             suggestionsToggle.checked = !!state.suggestionsToggle;
             body.classList.toggle('show-suggestions', suggestionsToggle.checked);
             for (const [key, value] of Object.entries(state.fields || {})) {
+                if (isGlobalFieldId(key)) continue; // ignore les anciens états qui auraient capturé un champ global
                 if (key.startsWith('radio:')) {
                     const name = key.split(':')[1];
                     const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
                     if (radio) radio.checked = true;
                 } else {
                     const el = document.getElementById(key);
+                    if (el && el.closest('.global-card')) continue; // sécurité supplémentaire
                     if (el) {
                         if (el.type === 'checkbox') el.checked = value;
                         else el.value = value;
                     }
                 }
             }
+            // Restaure les champs globaux (au cas où form.reset les aurait touchés)
+            applyGlobalState(globalSnapshot);
             updateAllDots();
         }
 
@@ -1525,13 +1753,15 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             URL.revokeObjectURL(url);
         }
 
-        // Save Functionality — sauvegarde tous les personas (format v2)
+        // Save Functionality — sauvegarde tous les personas + état transversal (format v3)
         function saveData() {
             personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            globalState = captureGlobalState();
             const data = {
-                version: 2,
+                version: 3,
                 currentIndex: currentPersonaIndex,
-                personas: personaStore
+                personas: personaStore,
+                global: globalState
             };
             downloadTextFile(JSON.stringify(data, null, 2), 'personas_guyane.json', 'application/json');
         }
@@ -1554,15 +1784,28 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
         }
 
         function restoreForm(data) {
-            if (data.version === 2 && Array.isArray(data.personas) && data.personas.length > 0) {
-                // Format multi-personas (v2)
+            // v3 : { version: 3, currentIndex, personas, global }
+            // v2 : { version: 2, currentIndex, personas }
+            // hérité : un seul persona à plat
+            if ((data.version === 3 || data.version === 2) && Array.isArray(data.personas) && data.personas.length > 0) {
                 personaStore = data.personas;
                 currentPersonaIndex = Math.min(data.currentIndex || 0, personaStore.length - 1);
             } else {
-                // Format hérité (persona unique)
                 personaStore = [data];
                 currentPersonaIndex = 0;
             }
+            // Migration v2 → v3 : nettoyer les anciens champs implications_* per-persona,
+            // et initialiser la section globale si absente.
+            personaStore.forEach(p => {
+                if (p && p.fields) {
+                    delete p.fields['implications_modalites'];
+                    delete p.fields['implications_contenus'];
+                    delete p.fields['implications_evaluation'];
+                    delete p.fields['implications_vigilance'];
+                }
+            });
+            globalState = (data && typeof data.global === 'object' && data.global) ? data.global : {};
+            applyGlobalState(globalState);
             applyPersonaState(personaStore[currentPersonaIndex]);
             updatePersonaBar();
         }
@@ -1666,6 +1909,7 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             };
 
             document.querySelectorAll('.card').forEach(card => {
+                if (card.classList.contains('global-card')) return; // exclure la vue transversale du persona
                 let title = "";
                 const h2 = card.querySelector('h2');
                 if (h2) {
@@ -1696,6 +1940,22 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
                         Array.from(child.children).forEach(innerChild => {
                             sectionContent += processElement(innerChild);
                         });
+                    } else if (child.classList.contains('form-subblock')) {
+                        // Sous-blocs A / B (Motivations, Freins) : le titre devient un sous-titre Markdown
+                        const titleEl = child.querySelector('.form-subblock-title');
+                        const sub = titleEl ? titleEl.textContent.trim() : '';
+                        let subContent = '';
+                        Array.from(child.children).forEach(c => {
+                            if (c.classList.contains('form-subblock-title')) return;
+                            if (c.classList.contains('suggestions-panel')) {
+                                Array.from(c.children).forEach(ic => { subContent += processElement(ic); });
+                            } else {
+                                subContent += processElement(c);
+                            }
+                        });
+                        if (subContent.trim()) {
+                            sectionContent += `\n### ${sub}\n${subContent}`;
+                        }
                     } else {
                         sectionContent += processElement(child);
                     }
@@ -1709,7 +1969,26 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             return md;
         }
 
-        // Markdown Export Functionality — génère un profil pour chaque persona
+        /** Bloc Markdown pour la section transversale (Implications globales). */
+        function generateGlobalImplicationsMarkdown() {
+            const labels = {
+                global_impl_strategie:  'Stratégie de conception',
+                global_impl_modalites:  'Modalités à privilégier',
+                global_impl_contenus:   'Contenus à prioriser',
+                global_impl_evaluation: 'Évaluation & preuves de transfert',
+                global_impl_vigilance:  'Points de vigilance / risques de désengagement'
+            };
+            let body = '';
+            for (const id of GLOBAL_FIELD_IDS) {
+                const el = document.getElementById(id);
+                const val = el ? (el.value || '').trim() : '';
+                if (val) body += `- **${labels[id]}** : ${val}\n`;
+            }
+            if (!body) return '';
+            return `## Implications transversales pour la conception\n${body}`;
+        }
+
+        // Markdown Export Functionality — génère un profil pour chaque persona + section transversale
         function exportMarkdown() {
             personaStore[currentPersonaIndex] = captureCurrentPersonaState();
             let allMd = '';
@@ -1721,6 +2000,9 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             // Restaure le persona courant
             applyPersonaState(personaStore[currentPersonaIndex]);
             updatePersonaBar();
+            // Ajout de la section transversale (Implications)
+            const globalMd = generateGlobalImplicationsMarkdown();
+            if (globalMd) allMd += `\n\n---\n\n${globalMd}`;
             const label = personaStore.length === 1
                 ? `Persona_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
                 : `Personas_Guyane_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
@@ -1769,6 +2051,7 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             };
 
             document.querySelectorAll('.card').forEach(card => {
+                if (card.classList.contains('global-card')) return; // exclure la vue transversale du persona
                 let title = '';
                 const h2 = card.querySelector('h2');
                 if (h2) {
@@ -1788,6 +2071,19 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
                         if (ctx) sectionContent += `\n> **Contexte ${ctxLabel}**\n${ctx}`;
                     } else if (child.classList.contains('suggestions-panel')) {
                         Array.from(child.children).forEach(c => { sectionContent += processElementFull(c); });
+                    } else if (child.classList.contains('form-subblock')) {
+                        const titleEl = child.querySelector('.form-subblock-title');
+                        const sub = titleEl ? titleEl.textContent.trim() : '';
+                        let subContent = '';
+                        Array.from(child.children).forEach(c => {
+                            if (c.classList.contains('form-subblock-title')) return;
+                            if (c.classList.contains('suggestions-panel')) {
+                                Array.from(c.children).forEach(ic => { subContent += processElementFull(ic); });
+                            } else {
+                                subContent += processElementFull(c);
+                            }
+                        });
+                        if (subContent.trim()) sectionContent += `\n### ${sub}\n${subContent}`;
                     } else {
                         sectionContent += processElementFull(child);
                     }
@@ -1797,7 +2093,7 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             return md;
         }
 
-        // Full Canvas Export — tous les personas
+        // Full Canvas Export — tous les personas + section transversale
         function exportFullMarkdown() {
             personaStore[currentPersonaIndex] = captureCurrentPersonaState();
             let allMd = '';
@@ -1808,6 +2104,8 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             });
             applyPersonaState(personaStore[currentPersonaIndex]);
             updatePersonaBar();
+            const globalMd = generateGlobalImplicationsMarkdown();
+            if (globalMd) allMd += `\n\n---\n\n${globalMd}`;
             const label = personaStore.length === 1
                 ? `Persona_Complet_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
                 : `Personas_Complet_Guyane_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
@@ -1969,9 +2267,19 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             const sidebar = document.getElementById('sectionSidebar');
             const cards = Array.from(document.querySelectorAll('.card'));
 
+            let separatorInserted = false;
             cards.forEach((card, i) => {
                 const h2 = card.querySelector('h2');
                 if (!h2) return;
+
+                const isGlobal = card.classList.contains('global-card');
+                if (isGlobal && !separatorInserted) {
+                    const sep = document.createElement('div');
+                    sep.className = 'sidebar-separator';
+                    sep.textContent = 'Conception transversale';
+                    sidebar.appendChild(sep);
+                    separatorInserted = true;
+                }
 
                 const iconEl = h2.querySelector('.material-icons');
                 const icon = iconEl ? iconEl.textContent.trim() : 'circle';
@@ -1981,7 +2289,7 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
                     .join(' ').trim();
 
                 const item = document.createElement('div');
-                item.className = 'nav-item';
+                item.className = 'nav-item' + (isGlobal ? ' nav-item-global' : '');
                 item.dataset.index = i;
                 item.innerHTML = `<span class="material-icons">${icon}</span><span>${label}</span><span class="nav-dot" id="nav-dot-${i}"></span>`;
                 item.addEventListener('click', () => activateSection(i));
@@ -1992,11 +2300,27 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
 
             document.getElementById('personaForm').addEventListener('input', updateAllDots);
             document.getElementById('personaForm').addEventListener('change', updateAllDots);
+            // Mise à jour des dots pour les cartes globales (hors form)
+            GLOBAL_FIELD_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', updateAllDots);
+                    el.addEventListener('change', updateAllDots);
+                }
+            });
         }
 
         function activateSection(index) {
-            document.querySelectorAll('.card').forEach((c, i) => c.classList.toggle('active-section', i === index));
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((c, i) => c.classList.toggle('active-section', i === index));
             document.querySelectorAll('.nav-item').forEach((it, i) => it.classList.toggle('active', i === index));
+            const activeCard = cards[index];
+            const isGlobal = activeCard && activeCard.classList.contains('global-card');
+            document.body.classList.toggle('global-mode', !!isGlobal);
+            // Quand on entre sur la carte Synthèse, régénérer le contenu
+            if (isGlobal && activeCard.dataset.section === 'global_synthese') {
+                refreshGlobalSynthesis();
+            }
             document.querySelector('.content-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
@@ -2031,8 +2355,8 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             motivations: 'Motivations',
             freins:      'Freins',
             collegial:   'Ancrage collégial',
-            format:      'Modalités praticables',
-            implications:'Implications pour la conception'
+            format:      'Modalités praticables'
+            // « Implications pour la conception » est désormais transversale (vue globale).
         };
 
         // Définition intégrée du contexte Guyane
@@ -2136,18 +2460,9 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
                       items: [{ id: 'offline', label: 'Mode "Hors-ligne" à considérer (Téléchargement)' }]
                     }
                 ],
-                // NEW : implications design propres au territoire guyanais.
-                implications: [
-                    { type: 'checkboxes', groupLabel: 'Implications design — Guyane',
-                      items: [
-                        { id: 'gy_acculturation',  label: 'Acculturation territoriale à prévoir (si arrivant récent)' },
-                        { id: 'gy_plurilinguisme', label: 'Plurilinguisme / interculturalité à intégrer dans le design' },
-                        { id: 'gy_logistique',     label: 'Coût logistique du présentiel à anticiper (déplacements, hébergement, indemnités)' },
-                        { id: 'gy_calendrier',     label: 'Calendrier scolaire spécifique à respecter (dates Guyane ≠ métropole)' },
-                        { id: 'gy_offline',        label: 'Déclinaison hors ligne / téléchargement obligatoire (sites isolés)' }
-                      ]
-                    }
-                ]
+                // (NB : l'ancien overlay « implications » a été retiré ici car « Implications pour la conception »
+                //  est désormais transversale (vue globale, hors per-persona). Les éléments territoriaux peuvent
+                //  être ajoutés manuellement dans les champs de la vue Conception transversale.)
             }
         };
 
@@ -2497,16 +2812,8 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
         const synthesisModal = document.getElementById('synthesisModal');
 
         function openSynthesisModal() {
-            // Sauvegarde l'état courant, génère la synthèse de tous les personas, restaure
-            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
-            let allMd = '';
-            personaStore.forEach((state, i) => {
-                applyPersonaState(state);
-                if (i > 0) allMd += '\n\n---\n\n';
-                allMd += generateMarkdownContent();
-            });
-            applyPersonaState(personaStore[currentPersonaIndex]);
-            updatePersonaBar();
+            // Synthèse complète (toutes personas + section transversale)
+            const allMd = buildGlobalSynthesisMarkdown();
 
             const title = personaStore.length === 1
                 ? `Synthèse : ${personaStore[0].fields['name'] || 'Persona'}`
@@ -2571,6 +2878,86 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
                 .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                 .replace(/^---$/gm, '<hr>')
                 .replace(/\n{2,}/g, '<br><br>');
+        }
+
+        // ── Vue transversale : Synthèse / Implications / Pistes d'IA ──
+        function buildGlobalSynthesisMarkdown() {
+            personaStore[currentPersonaIndex] = captureCurrentPersonaState();
+            let allMd = '';
+            personaStore.forEach((state, i) => {
+                applyPersonaState(state);
+                if (i > 0) allMd += '\n\n---\n\n';
+                allMd += generateMarkdownContent();
+            });
+            applyPersonaState(personaStore[currentPersonaIndex]);
+            updatePersonaBar();
+            const globalMd = generateGlobalImplicationsMarkdown();
+            if (globalMd) allMd += `\n\n---\n\n${globalMd}`;
+            return allMd;
+        }
+
+        function refreshGlobalSynthesis() {
+            const ta = document.getElementById('globalSynthesisContent');
+            if (!ta) return;
+            ta.value = buildGlobalSynthesisMarkdown();
+        }
+
+        function showGlobalSynthesisFeedback() {
+            const fb = document.getElementById('globalSynthesisFeedback');
+            if (!fb) return;
+            fb.style.display = 'inline';
+            setTimeout(() => { fb.style.display = 'none'; }, 2000);
+        }
+
+        function copyGlobalSynthesisMarkdown() {
+            refreshGlobalSynthesis();
+            const md = document.getElementById('globalSynthesisContent').value;
+            navigator.clipboard.writeText(md).then(showGlobalSynthesisFeedback);
+        }
+
+        function copyGlobalSynthesisText() {
+            refreshGlobalSynthesis();
+            const md = document.getElementById('globalSynthesisContent').value;
+            navigator.clipboard.writeText(markdownToPlainText(md)).then(showGlobalSynthesisFeedback);
+        }
+
+        function exportGlobalSynthesisMarkdown() {
+            refreshGlobalSynthesis();
+            const md = document.getElementById('globalSynthesisContent').value;
+            const label = personaStore.length === 1
+                ? `Synthese_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
+                : `Synthese_Personas_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
+            downloadTextFile(md, `${label}.md`, 'text/markdown');
+        }
+
+        function exportGlobalSynthesisWord() {
+            refreshGlobalSynthesis();
+            const md = document.getElementById('globalSynthesisContent').value;
+            const label = personaStore.length === 1
+                ? `Synthese_${(personaStore[0].fields['name'] || 'Persona').replace(/\s+/g, '_')}`
+                : `Synthese_Personas_${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}`;
+            const html = markdownToHtml(md);
+            const wordContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='UTF-8'><style>
+body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;margin:2cm;}
+h2{color:#1e40af;font-size:14pt;margin-top:16pt;}
+h3{color:#475569;font-size:12pt;margin-top:12pt;}
+blockquote{border-left:3px solid #2563eb;margin-left:0;padding-left:12px;color:#475569;}
+li{margin-bottom:4px;}
+hr{border:none;border-top:1px solid #e2e8f0;margin:12pt 0;}
+</style></head><body>${html}</body></html>`;
+            downloadTextFile(wordContent, `${label}.doc`, 'application/vnd.ms-word;charset=utf-8');
+        }
+
+        function copyPromptToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            navigator.clipboard.writeText(el.value).then(() => {
+                const fb = document.getElementById('aiPromptFeedback');
+                if (!fb) return;
+                fb.style.display = 'inline';
+                setTimeout(() => { fb.style.display = 'none'; }, 2000);
+            });
         }
 
         function exportSynthesisWord() {
