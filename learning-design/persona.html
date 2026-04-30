@@ -733,7 +733,14 @@
                     <label class="switch-label">
                         <span>Suggestions</span>
                         <label class="switch">
-                            <input type="checkbox" id="suggestionsToggle" checked>
+                            <input type="checkbox" id="suggestionsToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </label>
+                    <label class="switch-label">
+                        <span>Exemples</span>
+                        <label class="switch">
+                            <input type="checkbox" id="examplesToggle">
                             <span class="slider"></span>
                         </label>
                     </label>
@@ -817,22 +824,22 @@
 
                 <div class="form-group">
                     <label>Situation actuelle à transformer</label>
-                    <textarea id="finalite_situation" placeholder="Ex : les enseignants débutants en zone éloignée se retrouvent isolés face aux conflits de classe et n'ont pas de relais immédiat."></textarea>
+                    <textarea id="finalite_situation" placeholder="Ex : les professeurs des écoles de cycle 3 manquent de repères clairs pour utiliser l'IA générative en classe et hésitent à se lancer par crainte de mal faire."></textarea>
                 </div>
 
                 <div class="form-group">
                     <label>Finalité concrète / transformation visée</label>
-                    <textarea id="finalite_transformation" placeholder="Ex : leur permettre de désamorcer un conflit en classe sans attendre un soutien hiérarchique — pas seulement « connaître les techniques de médiation »."></textarea>
+                    <textarea id="finalite_transformation" placeholder="Ex : leur permettre de concevoir une activité simple intégrant un outil d'IA générative, de l'animer en classe et d'en évaluer les apports — pas seulement « connaître les outils »."></textarea>
                 </div>
 
                 <div class="form-group">
                     <label>Question de conception</label>
-                    <textarea id="finalite_question" placeholder="Ex : Conception d'une formation hybride de 6h à l'IA générative pour des PE de cycle 3 en zone éloignée."></textarea>
+                    <textarea id="finalite_question" placeholder="Ex : Conception d'une formation hybride de 6h à l'IA générative pour des professeurs des écoles de cycle 3 en école publique."></textarea>
                 </div>
 
                 <div class="form-group">
                     <label>Sources &amp; éléments de validation</label>
-                    <textarea id="finalite_validation" placeholder="Ex : 4 entretiens individuels, observations en école, données académiques, ou « hypothèses de travail à valider »."></textarea>
+                    <textarea id="finalite_validation" placeholder="Ex : 4 entretiens individuels, observations en classe, retours via questionnaire post-formation, ou « hypothèses de travail à valider »."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -854,7 +861,7 @@
                 <!-- Base -->
                 <div class="form-group">
                     <label>Prénom</label>
-                    <input type="text" placeholder="Ex: Julie" id="name">
+                    <input type="text" placeholder="Ex : Camille" id="name">
                 </div>
                 <div class="form-group">
                     <label>Fonction</label>
@@ -889,7 +896,7 @@
                 </div>
                 <div class="form-group">
                     <label>Discipline (si 2nd degré)</label>
-                    <input type="text" placeholder="Ex: Histoire-Géo, Maths..." id="discipline">
+                    <input type="text" placeholder="Ex : polyvalent cycle 3, Histoire-Géo, Maths..." id="discipline">
                 </div>
                 
                 <div class="form-group">
@@ -904,13 +911,13 @@
 
                 <div class="form-group">
                     <label>Années d'expérience</label>
-                    <input type="text" placeholder="Ex: 5 ans, Débutant..." id="experience">
+                    <input type="text" placeholder="Ex : 7 ans, Débutant, Titulaire 2e année..." id="experience">
                 </div>
 
                 <!-- Scénario / Journée type — fait partie de l'identité (synthèse narrative) -->
                 <div class="form-group">
                     <label>Scénario / Journée type <span style="font-weight:400; color:var(--secondary);">— déroulé d'une journée pour identifier créneaux et contraintes.</span></label>
-                    <textarea id="scenario" placeholder="Ex : Décrivez une journée représentative, les contraintes de temps, de connectivité, de garde d'enfants, de transport..."></textarea>
+                    <textarea id="scenario" placeholder="Ex : Décrivez une journée représentative, les contraintes de temps, de transport domicile-école, de garde d'enfants, de réunions d'équipe, de préparation..."></textarea>
                 </div>
 
             </div>
@@ -996,7 +1003,7 @@
 
                 <div class="form-group">
                     <label>Détails</label>
-                    <textarea id="vecu_details" placeholder="Ex : a déjà suivi 2 modules M@gistère sur la différenciation, se dit « débutante » sur l'IA, se méfie des stages descendants après une mauvaise expérience en 2024."></textarea>
+                    <textarea id="vecu_details" placeholder="Ex : a déjà suivi 2 modules M@gistère sur la différenciation, se dit « débutante » sur l'IA générative, apprécie les formats interactifs et les retours d'expérience entre pairs ; trouve les apports purement descendants moins opérationnels au quotidien."></textarea>
                 </div>
 
                 <div class="suggestions-panel">
@@ -1026,7 +1033,7 @@
                     <div class="form-subblock-title">A. Profil d'apprenant</div>
                     <div class="form-group">
                         <label>Détails</label>
-                        <textarea id="motivation_profil_details" placeholder="Ex : aime apprendre en groupe, valorise les rencontres entre pairs, gros consommateur de podcasts/MOOC, motivé par les certifications visibles sur le CV..."></textarea>
+                        <textarea id="motivation_profil_details" placeholder="Ex : aime apprendre en groupe, valorise les échanges entre pairs, écoute des podcasts pédagogiques, suit ponctuellement des MOOC, motivée par des certifications visibles sur le CV..."></textarea>
                     </div>
                     <div class="suggestions-panel">
                         <div class="form-group">
@@ -1080,7 +1087,7 @@
                     <div class="form-subblock-title">A. Profil d'apprenant / contexte structurel</div>
                     <div class="form-group">
                         <label>Détails</label>
-                        <textarea id="obstacleDetails" placeholder="Ex : peu de temps disponible, connexion internet instable, éloignement géographique du lieu de formation..."></textarea>
+                        <textarea id="obstacleDetails" placeholder="Ex : peu de temps disponible, charge mentale élevée, déplacements limités le mercredi, équipement personnel ancien..."></textarea>
                     </div>
                     <div class="suggestions-panel">
                         <div class="form-group">
@@ -1103,7 +1110,7 @@
                     <div class="form-subblock-title">B. Vis-à-vis du sujet / de la formation</div>
                     <div class="form-group">
                         <label>Détails</label>
-                        <textarea id="frein_sujet_details" placeholder="Ex : déjà formé sur ce thème sans résultat tangible ; bénéfice perçu faible ; injonction hiérarchique vécue comme imposée ; contraintes du poste qui empêchent le transfert en classe."></textarea>
+                        <textarea id="frein_sujet_details" placeholder="Ex : déjà formée sur ce thème sans résultat tangible ; bénéfice perçu faible ; injonction hiérarchique vécue comme imposée ; contraintes du poste qui empêchent le transfert en classe."></textarea>
                     </div>
                     <div class="suggestions-panel">
                         <div class="form-group">
@@ -1129,7 +1136,7 @@
 
                 <div class="form-group">
                     <label>Détails</label>
-                    <textarea id="collegial_details" placeholder="Ex : équipe de cycle soudée, conseil des maîtres mensuel actif, IEN très soutenant ; pas de mentor formel ; isolement géographique compensé par un groupe WhatsApp disciplinaire."></textarea>
+                    <textarea id="collegial_details" placeholder="Ex : équipe de cycle soudée, conseil des maîtres mensuel actif, IEN soutenante ; pas de mentor formel ; échanges informels via un groupe WhatsApp d'école."></textarea>
                 </div>
 
                 <div class="suggestions-panel">
@@ -1161,7 +1168,7 @@
                 <!-- Champ texte libre (Détails) en premier et plus large -->
                 <div class="form-group">
                     <label>Détails</label>
-                    <textarea id="formatDetails" placeholder="Ex : 30 min disponibles le mercredi après-midi, pas de visio possible avant 18h, pas de wifi à domicile, école à 90 min de l'INSPE le plus proche..."></textarea>
+                    <textarea id="formatDetails" placeholder="Ex : 30 min disponibles le mercredi après-midi, pas de visio possible avant 18h, connexion personnelle limitée, école à 25 min de la circonscription..."></textarea>
                 </div>
                 <!-- Base -->
                 <div class="suggestions-panel">
@@ -1239,12 +1246,12 @@
 
             <div class="form-group">
                 <label>Modalités à privilégier</label>
-                <textarea id="global_impl_modalites" placeholder="Ex : asynchrone court (≤ 15 min) avec rendez-vous synchrone optionnel ; pas de visio avant 18h ; téléchargement hors ligne nécessaire pour les sites isolés."></textarea>
+                <textarea id="global_impl_modalites" placeholder="Ex : asynchrone court (≤ 15 min) avec rendez-vous synchrone optionnel ; pas de visio avant 18h ; ressources téléchargeables pour usage hors ligne."></textarea>
             </div>
 
             <div class="form-group">
                 <label>Contenus à prioriser</label>
-                <textarea id="global_impl_contenus" placeholder="Ex : démarrer par un cas concret de classe ; éviter le vocabulaire académique non explicité ; prévoir un glossaire ; intégrer un volet plurilinguisme."></textarea>
+                <textarea id="global_impl_contenus" placeholder="Ex : démarrer par un cas concret de classe ; éviter le vocabulaire académique non explicité ; prévoir un glossaire ; relier aux pratiques pédagogiques existantes."></textarea>
             </div>
 
             <div class="form-group">
@@ -1254,7 +1261,7 @@
 
             <div class="form-group">
                 <label>Points de vigilance / risques de désengagement</label>
-                <textarea id="global_impl_vigilance" placeholder="Ex : ne pas commencer par la théorie ; ne pas exiger une caméra allumée ; ménager le rapport au numérique ; intégrer le calendrier scolaire local."></textarea>
+                <textarea id="global_impl_vigilance" placeholder="Ex : ne pas commencer par la théorie ; ne pas exiger une caméra allumée ; ménager le rapport au numérique ; tenir compte du calendrier scolaire."></textarea>
             </div>
         </div>
 
@@ -1301,7 +1308,7 @@
     </div>
 
     <footer>
-        <p>François Jourde & Jacques Dubois (2026) • CC BY-SA<br>
+        <p>François Jourde, avec l'aide de Jacques Dubois (2026) • CC BY-SA<br>
         Code disponible sur <a href="https://github.com/jourde/artefacts" target="_blank" style="color: inherit;">https://github.com/jourde/artefacts</a></p>
     </footer>
 
@@ -1346,6 +1353,7 @@ La barre de personas, juste sous l'en-tête, permet de travailler sur plusieurs 
 <p><strong>4. Affichage</strong><br>
 <ul style="margin-top: 5px; margin-bottom: 10px;">
     <li><strong>Suggestions :</strong> affiche ou masque les listes de cases à cocher dans tous les blocs.</li>
+    <li><strong>Exemples :</strong> affiche ou masque les textes d'exemple (placeholders) à l'intérieur des champs de saisie.</li>
 </ul>
 </p>
 
@@ -1538,9 +1546,26 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
         const toggle = document.getElementById('contextToggle');
         const body = document.body;
         const suggestionsToggle = document.getElementById('suggestionsToggle');
+        const examplesToggle = document.getElementById('examplesToggle');
         const infoModal = document.getElementById('infoModal');
         const helpModal = document.getElementById('helpModal');
         const suggestionsModal = document.getElementById('suggestionsModal');
+
+        // Mémorise les placeholders d'origine pour pouvoir les masquer/restaurer
+        function captureOriginalPlaceholders() {
+            document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(el => {
+                if (el.dataset.originalPlaceholder === undefined) {
+                    el.dataset.originalPlaceholder = el.getAttribute('placeholder') || '';
+                }
+            });
+        }
+
+        // Affiche ou masque les placeholders d'exemple dans tous les champs
+        function setExamplesVisible(visible) {
+            document.querySelectorAll('[data-original-placeholder]').forEach(el => {
+                el.setAttribute('placeholder', visible ? el.dataset.originalPlaceholder : '');
+            });
+        }
 
         // Suggestions storage (local only)
         const SUGGESTIONS_STORAGE_KEY = 'persona_guyane_suggestions_v1';
@@ -1580,6 +1605,11 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             } else {
                 body.classList.remove('show-suggestions');
             }
+        });
+
+        // Exemples (placeholders) — affichage global
+        examplesToggle.addEventListener('change', function() {
+            setExamplesVisible(this.checked);
         });
 
         // ── Persona Store ──────────────────────────────────────────
@@ -1622,10 +1652,11 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             const state = {
                 contextToggle: toggle.value,
                 suggestionsToggle: suggestionsToggle.checked,
+                examplesToggle: examplesToggle.checked,
                 fields: {}
             };
             document.querySelectorAll('[id]').forEach(el => {
-                if (['contextToggle','suggestionsToggle','fileInput'].includes(el.id)) return;
+                if (['contextToggle','suggestionsToggle','examplesToggle','fileInput'].includes(el.id)) return;
                 if (isGlobalFieldId(el.id)) return;          // skip global fields
                 if (el.closest('.global-card')) return;       // skip anything inside global cards
                 if (el.type === 'checkbox') state.fields[el.id] = el.checked;
@@ -1665,6 +1696,8 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
             setActiveContext(ctxValue);
             suggestionsToggle.checked = !!state.suggestionsToggle;
             body.classList.toggle('show-suggestions', suggestionsToggle.checked);
+            examplesToggle.checked = !!state.examplesToggle;
+            setExamplesVisible(examplesToggle.checked);
             for (const [key, value] of Object.entries(state.fields || {})) {
                 if (isGlobalFieldId(key)) continue; // ignore les anciens états qui auraient capturé un champ global
                 if (key.startsWith('radio:')) {
@@ -1714,7 +1747,7 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
 
         function newPersona() {
             personaStore[currentPersonaIndex] = captureCurrentPersonaState();
-            personaStore.push({ contextToggle: 'Standard', suggestionsToggle: true, fields: {} });
+            personaStore.push({ contextToggle: 'Standard', suggestionsToggle: false, examplesToggle: false, fields: {} });
             currentPersonaIndex = personaStore.length - 1;
             applyPersonaState(personaStore[currentPersonaIndex]);
             updatePersonaBar();
@@ -2114,7 +2147,7 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
 
         function resetForm() {
             if (!confirm('Réinitialiser tous les personas ? Cette action supprime toutes les données non sauvegardées.')) return;
-            personaStore = [{ contextToggle: 'Standard', suggestionsToggle: true, fields: {} }];
+            personaStore = [{ contextToggle: 'Standard', suggestionsToggle: false, examplesToggle: false, fields: {} }];
             currentPersonaIndex = 0;
             applyPersonaState(personaStore[0]);
             updatePersonaBar();
@@ -2793,8 +2826,11 @@ Toutes les données restent dans votre navigateur, rien n'est envoyé en ligne.<
         window.addEventListener('load', () => { window.scrollTo(0, 0); });
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Mémoriser les placeholders d'origine et les masquer par défaut
+            captureOriginalPlaceholders();
+            setExamplesVisible(false);
             // Initialiser le store avec un persona vide
-            personaStore = [{ contextToggle: 'Standard', suggestionsToggle: true, fields: {} }];
+            personaStore = [{ contextToggle: 'Standard', suggestionsToggle: false, examplesToggle: false, fields: {} }];
             currentPersonaIndex = 0;
             updatePersonaBar();
             // Rendre les sections du contexte actif au démarrage
